@@ -3,59 +3,40 @@
 	.globl	test0
 	.type	test0,@function
 test0:
-	.param i32
-	.result i32
-	.local i32, i32, i32, i32, i32, i32, i32
-	block $BB0_2
-	get_local push, 0
-	set_local 7, pop
-	i32.const push, -1
-	set_local 4, pop
-	i32.gt_s push, (get_local 7), (get_local 4)
-	set_local 5, pop
-	br_if $BB0_2, (get_local 5)
-	i32.const push, 3
-	set_local 6, pop
-	i32.div_s push, (get_local 7), (get_local 6)
-	set_local 7, pop
+	.param  	i32
+	.result 	i32
+	i32.const	$push0=, -1
+	i32.gt_s	$push1=, $0, $pop0
+	block   	BB0_2
+	br_if   	$pop1, BB0_2
+	i32.const	$push2=, 3
+	i32.div_s	$0=, $0, $pop2
 BB0_2:
-	return (get_local 7)
+	return  	$0
 func_end0:
 	.size	test0, func_end0-test0
 
 	.globl	test1
 	.type	test1,@function
 test1:
-	.param i32
-	.result i32
-	.local i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32, i32
-	i32.const push, 1
-	set_local 7, pop
-	i32.const push, 0
-	set_local 10, pop
-	get_local push, 0
-	set_local 5, pop
-	get_local push, 7
-	set_local 11, pop
-	get_local push, 10
-	set_local 12, pop
+	.param  	i32
+	.result 	i32
+	.local  	i32, i32, i32, i32, i32
+	i32.const	$2=, 1
+	i32.const	$3=, 0
+	copy_local	$4=, $2
+	copy_local	$5=, $3
 BB1_1:
-	loop $BB1_2
-	get_local push, 11
-	set_local 2, pop
-	get_local push, 10
-	set_local 11, pop
-	i32.add push, (get_local 12), (get_local 7)
-	set_local 12, pop
-	i32.lt_s push, (get_local 12), (get_local 5)
-	set_local 9, pop
-	get_local push, 2
-	set_local 10, pop
-	br_if $BB1_1, (get_local 9)
-# BB#2:
-	return (get_local 11)
+	loop    	BB1_2
+	i32.add 	$5=, $5, $2
+	i32.lt_s	$push0=, $5, $0
+	copy_local	$1=, $4
+	copy_local	$4=, $3
+	copy_local	$3=, $1
+	br_if   	$pop0, BB1_1
+BB1_2:
+	return  	$4
 func_end1:
 	.size	test1, func_end1-test1
-
 
 

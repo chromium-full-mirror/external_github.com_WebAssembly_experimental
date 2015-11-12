@@ -8,4 +8,3 @@ func_end0:
 	.size	foo, func_end0-foo
 
 
-
