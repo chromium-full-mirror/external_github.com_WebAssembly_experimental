@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import shutil
 import subprocess
 import sys
 
@@ -9,13 +10,13 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 LLVM_DIR = os.path.join(WORK_DIR, 'llvm')
 CLANG_DIR = os.path.join(LLVM_DIR, 'tools', 'clang')
-SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 CHROMIUM_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
 CHROMIUM_CLANG_TOOLS = os.path.join(CHROMIUM_CLANG, 'tools')
 CHROMIUM_CLANG_TOOLS_CLANG = os.path.join(CHROMIUM_CLANG_TOOLS, 'clang')
 CHROMIUM_CLANG_BIN = os.path.join(
     CHROMIUM_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
 OUT_DIR = os.path.join(WORK_DIR, 'out')
+SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
 
 def BuildStep(name):
@@ -37,7 +38,7 @@ def Mkdir(path):
 
 
 def Sync():
-  BuildStep('Sync')
+  BuildStep('Sync LLVM')
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
   if os.path.exists(LLVM_DIR):
@@ -60,19 +61,6 @@ def Sync():
   subprocess.check_call(['git', 'pull'], cwd=LLVM_DIR)
   print 'Syncing clang'
   subprocess.check_call(['git', 'pull'], cwd=CLANG_DIR)
-  if os.path.exists(SEXPR_DIR):
-    print 'Sexpr directory already exists'
-  else:
-    print 'Cloning Sexpr'
-    subprocess.check_call(
-        ['git', 'clone',
-         'https://chromium.googlesource.com/external/'
-         'github.com/WebAssembly/sexpr-wasm-prototype.git',
-         SEXPR_DIR])
-    subprocess.check_call(
-        ['git', 'config', 'branch.master.rebase', 'true'], cwd=SEXPR_DIR)
-  print 'Syncing sexpr'
-  subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
   if os.path.exists(CHROMIUM_CLANG_TOOLS_CLANG):
     print 'Chromium clang directory already exists'
   else:
@@ -93,9 +81,29 @@ def Sync():
       [os.path.join(CHROMIUM_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
 
 
+def SyncSexpr():
+  if os.path.exists(SEXPR_DIR):
+    print 'Sexpr directory already exists'
+  else:
+    print 'Cloning Sexpr'
+    subprocess.check_call(
+        ['git', 'clone',
+         'https://chromium.googlesource.com/external/'
+         'github.com/WebAssembly/sexpr-wasm-prototype.git',
+         SEXPR_DIR])
+    subprocess.check_call(
+        ['git', 'config', 'branch.master.rebase', 'true'], cwd=SEXPR_DIR)
+  print 'Syncing sexpr'
+  subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
+
+
 def BuildLLVM():
   BuildStep('Build LLVM')
   print 'Running cmake on llvm'
+  if os.environ.get('BUILDBOT_CLOBBER'):
+    if os.path.exists(OUT_DIR):
+      print 'Removing %s' % OUT_DIR
+      shutil.rmtree(OUT_DIR)
   Mkdir(OUT_DIR)
   subprocess.check_call(
       ['cmake', '-G', 'Ninja', LLVM_DIR,
@@ -105,20 +113,21 @@ def BuildLLVM():
        '-DCMAKE_CXX_COMPILER=' + CHROMIUM_CLANG_BIN + '/clang++',
        '-DCMAKE_BUILD_TYPE=Debug',
        '-DLLVM_ENABLE_ASSERTIONS=ON',
-       '-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="WebAssembly"',
-       '-DLLVM_TARGETS_TO_BUILD="X86"'], cwd=OUT_DIR)
+       '-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly',
+       '-DLLVM_TARGETS_TO_BUILD=X86'], cwd=OUT_DIR)
   print 'Running ninja'
+  subprocess.check_call(['ninja'], cwd=OUT_DIR)
+
+
+def TestLLVM():
+  BuildStep('Test LLVM')
   subprocess.check_call(['ninja', 'check-all'], cwd=OUT_DIR)
-
-
-def BuildSexpr():
-  BuildStep('Build Sexpr')
-  subprocess.check_call(['scripts/build-d8.sh'], cwd=SEXPR_DIR)
 
 
 def main():
   Sync()
   BuildLLVM()
+  TestLLVM()
 
 
 if __name__ == '__main__':
