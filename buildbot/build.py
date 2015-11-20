@@ -170,6 +170,7 @@ def InstallLLVM():
     shutil.rmtree(INSTALL_DIR)
   subprocess.check_call(['ninja', 'install'], cwd=OUT_DIR)
   Remove(INSTALL_TAR)
+  print 'Creating %s' % INSTALL_TAR
   subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
 
 
@@ -178,6 +179,7 @@ def ArchiveLLVM(svn_rev):
     return
   if not os.environ.get('BUILDBOT_BUILDERNAME'):
     return
+  BuildStep('Archive')
   svn_gs = 'wasm-llvm/builds/svn/wasm-llvm-r%s.tbz2' % svn_rev
   git_gs = 'wasm-llvm/builds/git/wasm-llvm-%s.tbz2' % LLVM_REVISION
   subprocess.check_call(
@@ -185,8 +187,8 @@ def ArchiveLLVM(svn_rev):
   subprocess.check_call(
       ['gsutil', 'cp' , '-a',
        'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
-  print '@@@STEP_LINK@download@https://storage.googleapis.com/%s' % svn_gs
-  print '@@@STEP_LINK@git_download@https://storage.googleapis.com/%s' % git_gs
+  print '@@@STEP_LINK@download@https://storage.googleapis.com/%s@' % svn_gs
+  print '@@@STEP_LINK@git_download@https://storage.googleapis.com/%s@' % git_gs
 
 
 def main():
