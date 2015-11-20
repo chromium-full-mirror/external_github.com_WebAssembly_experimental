@@ -174,6 +174,10 @@ def InstallLLVM():
   subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
 
 
+def StepLink(label, url):
+  print '@@@STEP_LINK@%s@%s@@@' % (label, url)
+
+
 def ArchiveLLVM(svn_rev):
   if LLVM_REVISION == 'origin/master':
     return
@@ -187,8 +191,8 @@ def ArchiveLLVM(svn_rev):
   subprocess.check_call(
       ['gsutil', 'cp' , '-a',
        'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
-  print '@@@STEP_LINK@download@https://storage.googleapis.com/%s@' % svn_gs
-  print '@@@STEP_LINK@git_download@https://storage.googleapis.com/%s@' % git_gs
+  StepLink('download', 'https://storage.googleapis.com/%s@' % svn_gs)
+  StepLink('git_download', 'https://storage.googleapis.com/%s@' % git_gs)
 
 
 def main():
