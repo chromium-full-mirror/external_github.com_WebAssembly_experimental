@@ -19,6 +19,14 @@ OUT_DIR = os.path.join(WORK_DIR, 'out')
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
 
+# Try to use the llvm revision provided by buildbot.
+LLVM_REVISION = os.environ.get('BUILDBOT_GOT_REVISION', 'None')
+if LLVM_REVISION == 'None':
+  LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
+if LLVM_REVISION == 'None':
+  LLVM_REVISION = 'origin/master'
+
+
 def BuildStep(name):
   sys.stderr.write('\n@@@BUILD_STEP %s@@@\n' % name)
 
@@ -58,7 +66,8 @@ def Sync():
     subprocess.check_call(
         ['git', 'config', 'branch.master.rebase', 'true'], cwd=CLANG_DIR)
   print 'Syncing llvm'
-  subprocess.check_call(['git', 'pull'], cwd=LLVM_DIR)
+  subprocess.check_call(['git', 'fetch'], cwd=LLVM_DIR)
+  subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_DIR)
   print 'Syncing clang'
   subprocess.check_call(['git', 'pull'], cwd=CLANG_DIR)
   if os.path.exists(CHROMIUM_CLANG_TOOLS_CLANG):
