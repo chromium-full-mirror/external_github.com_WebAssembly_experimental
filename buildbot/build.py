@@ -17,6 +17,7 @@ CHROMIUM_CLANG_BIN = os.path.join(
     CHROMIUM_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
 OUT_DIR = os.path.join(WORK_DIR, 'out')
 INSTALL_DIR = os.path.join(WORK_DIR, 'install')
+INSTALL_TAR = os.path.join(WORK_DIR, 'install.tbz2')
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
 
@@ -42,6 +43,12 @@ def Mkdir(path):
     print 'Directory %s already exists' % path
   else:
     os.mkdir(path)
+
+
+def Remove(path):
+  if os.path.exists(path):
+    print 'Removing %s' % path
+    os.remove(path)
 
 
 def FindPriorRev(path, goal):
@@ -126,10 +133,10 @@ def SyncSexpr():
 
 def Clobber():
   if os.environ.get('BUILDBOT_CLOBBER'):
-    BuildStep('Clobbering out')
-    if os.path.exists(OUT_DIR):
-      print 'Removing %s' % OUT_DIR
-      shutil.rmtree(OUT_DIR)
+    BuildStep('Clobbering work dir')
+    if os.path.exists(WORK_DIR):
+      print 'Removing %s' % WORK_DIR
+      shutil.rmtree(WORK_DIR)
 
 
 def BuildLLVM():
@@ -162,6 +169,24 @@ def InstallLLVM():
     print 'Removing %s' % INSTALL_DIR
     shutil.rmtree(INSTALL_DIR)
   subprocess.check_call(['ninja', 'install'], cwd=OUT_DIR)
+  Remove(INSTALL_TAR)
+  subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
+
+
+def ArchiveLLVM(rev):
+  if LLVM_REVISION == 'origin/master':
+    return
+  if not os.environ.get('BUILDBOT_BUILDERNAME'):
+    return
+  svn_gs = 'wasm-llvm/builds/svn/wasm-llvm-r%s.tbz2' % rev
+  git_gs = 'wasm-llvm/builds/git/wasm-llvm-%s.tbz2' % LLVM_REVISION
+  subprocess.check_call(
+      ['gsutil', 'cp' , '-a', 'public-read', INSTALL_TAR, 'gs://' + svn_gs])
+  subprocess.check_call(
+      ['gsutil', 'cp' , '-a',
+       'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
+  print '@@@STEP_LINK@download@https://storage.googleapis.com/%s' % svn_gs
+  print '@@@STEP_LINK@git_download@https://storage.googleapis.com/%s' % git_gs
 
 
 def main():
@@ -170,6 +195,7 @@ def main():
   BuildLLVM()
   TestLLVM()
   InstallLLVM()
+  ArchiveLLVM()
 
 
 if __name__ == '__main__':
