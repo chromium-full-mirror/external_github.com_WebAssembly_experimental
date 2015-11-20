@@ -20,9 +20,7 @@ SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
 
 # Try to use the llvm revision provided by buildbot.
-LLVM_REVISION = os.environ.get('BUILDBOT_GOT_REVISION', 'None')
-if LLVM_REVISION == 'None':
-  LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
+LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
 if LLVM_REVISION == 'None':
   LLVM_REVISION = 'origin/master'
 
