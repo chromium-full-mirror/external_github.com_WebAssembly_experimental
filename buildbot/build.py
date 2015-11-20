@@ -191,8 +191,8 @@ def ArchiveLLVM(svn_rev):
   subprocess.check_call(
       ['gsutil', 'cp' , '-a',
        'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
-  StepLink('download', 'https://storage.googleapis.com/%s@' % svn_gs)
-  StepLink('git_download', 'https://storage.googleapis.com/%s@' % git_gs)
+  StepLink('download', 'https://storage.googleapis.com/%s' % svn_gs)
+  StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
 def main():
