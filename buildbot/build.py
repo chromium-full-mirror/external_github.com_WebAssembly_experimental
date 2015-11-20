@@ -16,6 +16,7 @@ CHROMIUM_CLANG_TOOLS_CLANG = os.path.join(CHROMIUM_CLANG_TOOLS, 'clang')
 CHROMIUM_CLANG_BIN = os.path.join(
     CHROMIUM_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
 OUT_DIR = os.path.join(WORK_DIR, 'out')
+INSTALL_DIR = os.path.join(WORK_DIR, 'install')
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
 
@@ -43,6 +44,17 @@ def Mkdir(path):
     os.mkdir(path)
 
 
+def FindPriorRev(path, goal):
+  revs = subprocess.check_output(
+      ['git', 'rev-list', 'origin/master'], cwd=path).splitlines()
+  for rev in revs:
+    num = int(subprocess.check_output(
+        ['git', 'svn', 'find-rev', rev], cwd=path).strip())
+    if num <= rev:
+      return rev
+  raise Error('Cannot find clang rev at or before %d' % goal)
+
+
 def Sync():
   BuildStep('Sync LLVM')
   Chdir(SCRIPT_DIR)
@@ -66,8 +78,15 @@ def Sync():
   print 'Syncing llvm'
   subprocess.check_call(['git', 'fetch'], cwd=LLVM_DIR)
   subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_DIR)
-  print 'Syncing clang'
-  subprocess.check_call(['git', 'pull'], cwd=CLANG_DIR)
+  print 'Getting svn rev'
+  svn_rev = int(subprocess.check_output(
+      ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_DIR).strip())
+  print 'SVN REV: %d' % svn_rev
+  print 'Finding prior clang rev'
+  prior_rev = FindPriorRev(CLANG_DIR, svn_rev)
+  print 'Checking out clang rev: %s' % prior_rev
+  subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
+
   if os.path.exists(CHROMIUM_CLANG_TOOLS_CLANG):
     print 'Chromium clang directory already exists'
   else:
@@ -82,10 +101,11 @@ def Sync():
         ['git', 'config', 'branch.master.rebase', 'true'],
         cwd=CHROMIUM_CLANG_TOOLS_CLANG)
   print 'Syncing chromium clang scripts'
-  subprocess.check_call(['git', 'pull'], cwd=CHROMIUM_CLANG_TOOLS_CLANG)
+  subprocess.check_call(['git', 'fetch'], cwd=CHROMIUM_CLANG_TOOLS_CLANG)
   print 'Syncing chromium clang'
   subprocess.check_call(
       [os.path.join(CHROMIUM_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
+  return svn_rev
 
 
 def SyncSexpr():
@@ -104,13 +124,17 @@ def SyncSexpr():
   subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
 
 
-def BuildLLVM():
-  BuildStep('Build LLVM')
-  print 'Running cmake on llvm'
+def Clobber():
   if os.environ.get('BUILDBOT_CLOBBER'):
+    BuildStep('Clobbering out')
     if os.path.exists(OUT_DIR):
       print 'Removing %s' % OUT_DIR
       shutil.rmtree(OUT_DIR)
+
+
+def BuildLLVM():
+  BuildStep('Build LLVM')
+  print 'Running cmake on llvm'
   Mkdir(OUT_DIR)
   subprocess.check_call(
       ['cmake', '-G', 'Ninja', LLVM_DIR,
@@ -118,8 +142,9 @@ def BuildLLVM():
        '-DLLVM_BUILD_TESTS=ON',
        '-DCMAKE_C_COMPILER=' + CHROMIUM_CLANG_BIN + '/clang',
        '-DCMAKE_CXX_COMPILER=' + CHROMIUM_CLANG_BIN + '/clang++',
-       '-DCMAKE_BUILD_TYPE=Debug',
-       '-DLLVM_ENABLE_ASSERTIONS=ON',
+       '-DCMAKE_BUILD_TYPE=Release',
+       '-DCMAKE_INSTALL_PREFIX=' + INSTALL_DIR,
+       '-DLLVM_ENABLE_ASSERTIONS=OFF',
        '-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly',
        '-DLLVM_TARGETS_TO_BUILD=X86'], cwd=OUT_DIR)
   print 'Running ninja'
@@ -131,10 +156,20 @@ def TestLLVM():
   subprocess.check_call(['ninja', 'check-all'], cwd=OUT_DIR)
 
 
+def InstallLLVM():
+  BuildStep('Install LLVM')
+  if os.path.exists(INSTALL_DIR):
+    print 'Removing %s' % INSTALL_DIR
+    shutil.rmtree(INSTALL_DIR)
+  subprocess.check_call(['ninja', 'install'], cwd=OUT_DIR)
+
+
 def main():
-  Sync()
+  Clobber()
+  svn_rev = Sync()
   BuildLLVM()
   TestLLVM()
+  InstallLLVM()
 
 
 if __name__ == '__main__':
