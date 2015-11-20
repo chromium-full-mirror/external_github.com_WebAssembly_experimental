@@ -173,12 +173,12 @@ def InstallLLVM():
   subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
 
 
-def ArchiveLLVM(rev):
+def ArchiveLLVM(svn_rev):
   if LLVM_REVISION == 'origin/master':
     return
   if not os.environ.get('BUILDBOT_BUILDERNAME'):
     return
-  svn_gs = 'wasm-llvm/builds/svn/wasm-llvm-r%s.tbz2' % rev
+  svn_gs = 'wasm-llvm/builds/svn/wasm-llvm-r%s.tbz2' % svn_rev
   git_gs = 'wasm-llvm/builds/git/wasm-llvm-%s.tbz2' % LLVM_REVISION
   subprocess.check_call(
       ['gsutil', 'cp' , '-a', 'public-read', INSTALL_TAR, 'gs://' + svn_gs])
@@ -195,7 +195,7 @@ def main():
   BuildLLVM()
   TestLLVM()
   InstallLLVM()
-  ArchiveLLVM()
+  ArchiveLLVM(svn_rev)
 
 
 if __name__ == '__main__':
