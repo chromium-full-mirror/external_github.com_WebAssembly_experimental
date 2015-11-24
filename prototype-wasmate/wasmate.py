@@ -264,6 +264,8 @@ class ImportsPassHandler(PassHandler):
 
     def end_pass(self):
         for i in self.imports:
+            # Split out the import symbol name, the module name, the function
+            # name, and the rest is signature information.
             parts = i.split(None, 3)
             out.write_line('(import $' + parts[0] + ' ' + parts[1] +
                            ' "' + parts[2] + '" ' + ' '.join(parts[3:]) + ')')
