@@ -9,10 +9,9 @@
   (export "main" $main)
   (func $main
     (result i32)
-    (local i32 i32)
-    (set_local 0 (i32.const 4))
-    (set_local 1 (i32.load (get_local 0)))
-    (return (get_local 1))
+    (local i32)
+    (i32.load (get_local 0) (i32.const (get_local a)))
+    (return (get_local 0))
   )
   (memory 8 8
     (segment 0

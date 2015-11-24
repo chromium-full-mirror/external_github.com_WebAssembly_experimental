@@ -1,5 +1,16 @@
 	.text
 	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/global.ll"
+	.globl	foo
+	.type	foo,@function
+foo:
+	.result 	i32
+	.local  	i32
+	i32.const	$push0=, answer
+	i32.load	$0=, $pop0
+	return  	$0
+func_end0:
+	.size	foo, func_end0-foo
+
 	.type	g,@object
 	.data
 	.align	2
@@ -100,6 +111,5 @@ f64nz:
 f64two:
 	.int64	4611686018427387904
 	.size	f64two, 8
-
 
 

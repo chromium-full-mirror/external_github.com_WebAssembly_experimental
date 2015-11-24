@@ -8,4 +8,3 @@ func_end0:
 	.size	return_void, func_end0-return_void
 
 
-

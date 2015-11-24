@@ -16,9 +16,7 @@
   (export "grow_memory" $grow_memory)
   (func $grow_memory
     (param i64)
-    (local i64)
-    (set_local 1 (get_local 0))
-    (grow_memory (get_local 1))
+    (grow_memory (get_local 0))
     (return)
   )
   (memory 0 0

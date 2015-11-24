@@ -3,58 +3,44 @@
 	.globl	ldi32
 	.type	ldi32,@function
 ldi32:
-	.param i32
-	.result i32
-	.local i32, i32
-	get_local push, 0
-	set_local 1, pop
-	i32.load push, (get_local 1)
-	set_local 2, pop
-	return (get_local 2)
+	.param  	i32
+	.result 	i32
+	i32.load	$0=, $0
+	return  	$0
 func_end0:
 	.size	ldi32, func_end0-ldi32
 
 	.globl	ldi64
 	.type	ldi64,@function
 ldi64:
-	.param i32
-	.result i64
-	.local i32, i64
-	get_local push, 0
-	set_local 1, pop
-	i64.load push, (get_local 1)
-	set_local 2, pop
-	return (get_local 2)
+	.param  	i32
+	.result 	i64
+	.local  	i64
+	i64.load	$1=, $0
+	return  	$1
 func_end1:
 	.size	ldi64, func_end1-ldi64
 
 	.globl	ldf32
 	.type	ldf32,@function
 ldf32:
-	.param i32
-	.result f32
-	.local i32, f32
-	get_local push, 0
-	set_local 1, pop
-	f32.load push, (get_local 1)
-	set_local 2, pop
-	return (get_local 2)
+	.param  	i32
+	.result 	f32
+	.local  	f32
+	f32.load	$1=, $0
+	return  	$1
 func_end2:
 	.size	ldf32, func_end2-ldf32
 
 	.globl	ldf64
 	.type	ldf64,@function
 ldf64:
-	.param i32
-	.result f64
-	.local i32, f64
-	get_local push, 0
-	set_local 1, pop
-	f64.load push, (get_local 1)
-	set_local 2, pop
-	return (get_local 2)
+	.param  	i32
+	.result 	f64
+	.local  	f64
+	f64.load	$1=, $0
+	return  	$1
 func_end3:
 	.size	ldf64, func_end3-ldf64
-
 
 

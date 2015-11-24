@@ -72,8 +72,10 @@ def error(message, line_number=None):
     sys.exit(1)
 
 def resolve_label(arg):
-    if arg[0] == '$' and data_labels.has_key(arg[1:]):
-        return str(data_labels[arg[1:]])
+    if data_labels.has_key(arg):
+        return str(data_labels[arg])
+    if arg[0].isalpha() and arg != 'infinity' and arg != 'nan':
+        return '$' + arg
     return arg
 
 class PassHandler(object):
@@ -191,8 +193,8 @@ class DataPassHandler(PassHandler):
 
     def handle_dot_asciz(self, rest):
         # Strip off the leading and trailing quotes.
-        assert rest[0] == '"'
-        assert rest[-1] == '"'
+        assert rest[0] == '"', rest
+        assert rest[-1] == '"', rest
         s = rest[1:-1]
         i = 0
         while i < len(s):
@@ -262,7 +264,11 @@ class ImportsPassHandler(PassHandler):
 
     def end_pass(self):
         for i in self.imports:
-            out.write_line('(import ' + i + ')')
+            # Split out the import symbol name, the module name, the function
+            # name, and the rest is signature information.
+            parts = i.split(None, 3)
+            out.write_line('(import $' + parts[0] + ' ' + parts[1] +
+                           ' "' + parts[2] + '" ' + ' '.join(parts[3:]) + ')')
 
     def handle_dot_import(self, args):
         i = massage_import(args[0])
@@ -274,7 +280,7 @@ def sexprify(command, args):
     s = '(' + command
     if len(args) != 0:
         s += ' '
-    s += ' '.join([resolve_label(arg) for arg in args if arg != 'push'])
+    s += ' '.join([resolve_label(arg) for arg in args if not arg.endswith('=')])
     s += ')'
     return s
 
@@ -283,96 +289,86 @@ class TextPassHandler(PassHandler):
         self.expr_stack = []
         self.current_function = None
         self.current_label = None
-        self.ends_at_label = {}
+        self.block_labels = {}
 
-    def close_block(self, label):
-        out.dedent()
-        out.write_line(')')
-
-    def block_ends_at(self, block_label, end_label):
-        if end_label not in self.ends_at_label:
-            self.ends_at_label[end_label] = []
-        self.ends_at_label[end_label].append(block_label)
+    def push_label(self, label):
+        if label in self.block_labels:
+            self.block_labels[label] += 1
+        else:
+            self.block_labels[label] = 1
 
     def end_pass(self):
-        assert len(self.expr_stack) == 0
-        assert self.current_function is None
+        assert len(self.expr_stack) == 0, self.expr_stack
+        assert self.current_function is None, self.current_function
 
     def handle_label(self, labelname):
         if current_section == ".text":
             if self.current_function is not None:
-                # Check to see if we need to close any blocks.
-                if labelname in self.ends_at_label:
-                    # Multiple blocks and loops may end at a label.
-                    ending = self.ends_at_label.pop(labelname)
-                    while ending:
-                        self.close_block(ending.pop())
-
                 # Label inside a function.
                 if labelname.startswith('func_end'):
                     pass
                 else:
+                    if labelname in self.block_labels:
+                        for i in range(0, self.block_labels[labelname]):
+                            out.dedent()
+                            out.write_line(')')
+                    self.block_labels[labelname] = 0
                     self.current_label = labelname
             else:
                 # Label for a function.
-                assert self.current_function is None
+                assert self.current_function is None, self.current_function
                 self.current_function = labelname
                 out.write_line('(func $' + labelname)
                 out.indent()
 
     def handle_mnemonic(self, command, args):
-        # TODO(binji): LLVM outputs types for some commands that shouldn't have
-        # them. Fix this upstream.
-        split = command.split('.')
-        if len(split) == 2:
-            if split[1] in ('call_indirect', 'memory_size',
-                            'grow_memory', 'switch'):
-                command = split[1]
+        # Replace uses of $pop with expressions from the stack. We iterate
+        # in reverse order since that's the order the pops are defined to
+        # happen in in the assembly syntax.
+        for i in range(len(args) - 1, -1, -1):
+            if args[i].startswith('$pop'):
+                args[i] = self.expr_stack.pop()
+            elif args[i].startswith('$') and args[i][-1] != '=':
+                # Strip the leading '$' and create a get_local.
+                args[i] = '(get_local ' + args[i][1:] + ')'
+
+        # Rewrite call to call_import.
+        # TODO: Revisit this once
+        # https://github.com/WebAssembly/design/issues/421
+        # is resolved, and if we still have a call_import, decide if LLVM should
+        # be emitting call_import itself.
+        if command == 'call':
+            for arg in args:
+                if not arg.endswith('='):
+                    if arg in import_funs:
+                        command = 'call_import'
+                        break
 
         if command == 'block':
-            # Blocks end at the label you jump to.
-            label = args[0][1:] # strip leading $
-            out.write_line('(block $' + label)
+            out.write_line('(block $' + args[0])
+            self.push_label(args[0])
             out.indent()
-            assert len(self.expr_stack) == 0
-            self.block_ends_at(label, label)
-        elif command == 'loop':
-            # The label you jump to is before the loop, the label the loop ends
-            # at is after the loop.
-            # This creates an inconsistency between LLVM and sexprs where LLVM
-            # declares "begin: loop $end ... end: ..." but sexprs declare
-            # "(loop $begin ...)", the nature of the argument to the "loop"
-            # command differs.
-            label = args[0][1:] # strip leading $
-            out.write_line('(loop $' + self.current_label)
+            return
+        if command == 'loop':
+            out.write_line('(loop $' + args[0] + ' $' + self.current_label)
+            assert len(self.expr_stack) == 0, self.expr_stack
+            self.push_label(args[0])
             out.indent()
-            assert len(self.expr_stack) == 0
-            self.block_ends_at(self.current_label, label)
-        elif command == 'set_local':
-            assert args[1] == 'pop'
-            out.write_line('(set_local ' + args[0] + ' ' +
-                        self.expr_stack.pop() + ')')
-            assert len(self.expr_stack) == 0
-        elif (command in ['br_if', 'br', 'switch', 'return', 'grow_memory'] or
-              'store' in command):
-            assert 'push' not in args
-            out.write_line(sexprify(command, args))
-            assert len(self.expr_stack) == 0
-        elif command == 'call' and args[0] in import_funs:
-            line = sexprify('call_import', args)
-            if 'push' in args:
-                self.expr_stack.append(line)
-            else:
-                out.write_line(line)
+            return
+
+        if command == 'copy_local':
+            # This is a no-op which just produces a get_local and set_local.
+            line = args[1]
         else:
-            # HACK to work around http://reviews.llvm.org/D14587
-            if command == 'global':
-                command = 'i32.const'
             line = sexprify(command, args)
-            if 'push' in args:
-                self.expr_stack.append(line)
-            else:
-                out.write_line(line)
+
+        if len([x for x in args if x.startswith('$push')]) != 0:
+            self.expr_stack.append(line)
+        elif len(args) > 0 and args[0].endswith('=') and args[0] != '$discard=':
+            assert args[0][0] == '$', args[0]
+            out.write_line('(set_local ' + args[0][1:-1] + ' ' + line + ')')
+        else:
+            out.write_line(line)
 
     def handle_dot_globl(self, args):
         # .globl statement could be declaring a name for either a global
@@ -382,7 +378,7 @@ class TextPassHandler(PassHandler):
             out.write_line('(export "' + args[0] + '" $' + args[0] + ')')
 
     def handle_dot_param(self, args):
-        out.write_line('(param ' + args[0] + ')')
+        out.write_line(' '.join(['(param ' + x + ')' for x in args]))
 
     def handle_dot_result(self, args):
         out.write_line('(result ' + args[0] + ')')
@@ -394,10 +390,10 @@ class TextPassHandler(PassHandler):
         global current_function_number
 
         if current_section == '.text':
-            assert args[0] == self.current_function
-            assert not self.ends_at_label, self.ends_at_label
+            assert args[0] == self.current_function, args[0]
             # End of function body.
-            self.close_block('$' + self.current_function)
+            out.dedent()
+            out.write_line(')')
             self.current_function = None
             current_function_number += 1
 
@@ -567,7 +563,7 @@ def Main():
   out.write_line(')')
 
   # Check invariants.
-  assert len(out.current_indent) == 0, out.get_output()
+  assert len(out.current_indent) == 0, len(out.current_indent)
 
   text = out.get_output()
 
