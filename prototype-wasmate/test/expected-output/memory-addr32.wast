@@ -9,9 +9,7 @@
   (export "memory_size" $memory_size)
   (func $memory_size
     (result i32)
-    (local i32)
-    (set_local 0 (memory_size ))
-    (return (get_local 0))
+    (return (memory_size ))
   )
   (export "grow_memory" $grow_memory)
   (func $grow_memory

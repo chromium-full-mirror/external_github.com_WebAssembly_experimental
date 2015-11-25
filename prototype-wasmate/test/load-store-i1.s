@@ -5,8 +5,8 @@
 load_u_i1_i32:
 	.param  	i32
 	.result 	i32
-	i32.load8_u	$0=, $0
-	return  	$0
+	i32.load8_u	$push0=, $0
+	return  	$pop0
 func_end0:
 	.size	load_u_i1_i32, func_end0-load_u_i1_i32
 
@@ -15,12 +15,11 @@ func_end0:
 load_s_i1_i32:
 	.param  	i32
 	.result 	i32
-	.local  	i32
-	i32.load8_u	$1=, $0
+	i32.load8_u	$push0=, $0
 	i32.const	$0=, 31
-	i32.shl 	$push0=, $1, $0
-	i32.shr_s	$push1=, $pop0, $0
-	return  	$pop1
+	i32.shl 	$push1=, $pop0, $0
+	i32.shr_s	$push2=, $pop1, $0
+	return  	$pop2
 func_end1:
 	.size	load_s_i1_i32, func_end1-load_s_i1_i32
 
@@ -29,9 +28,8 @@ func_end1:
 load_u_i1_i64:
 	.param  	i32
 	.result 	i64
-	.local  	i64
-	i64.load8_u	$1=, $0
-	return  	$1
+	i64.load8_u	$push0=, $0
+	return  	$pop0
 func_end2:
 	.size	load_u_i1_i64, func_end2-load_u_i1_i64
 
@@ -40,12 +38,12 @@ func_end2:
 load_s_i1_i64:
 	.param  	i32
 	.result 	i64
-	.local  	i64, i64
-	i64.load8_u	$1=, $0
-	i64.const	$2=, 63
-	i64.shl 	$push0=, $1, $2
-	i64.shr_s	$push1=, $pop0, $2
-	return  	$pop1
+	.local  	i64
+	i64.load8_u	$push0=, $0
+	i64.const	$1=, 63
+	i64.shl 	$push1=, $pop0, $1
+	i64.shr_s	$push2=, $pop1, $1
+	return  	$pop2
 func_end3:
 	.size	load_s_i1_i64, func_end3-load_s_i1_i64
 

@@ -4,9 +4,8 @@
 	.type	memory_size,@function
 memory_size:
 	.result 	i64
-	.local  	i64
-	memory_size	$0=
-	return  	$0
+	memory_size	$push0=
+	return  	$pop0
 func_end0:
 	.size	memory_size, func_end0-memory_size
 

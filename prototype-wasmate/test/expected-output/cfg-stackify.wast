@@ -43,12 +43,10 @@
   (export "test2" $test2)
   (func $test2
     (param i32) (param i32)
-    (local f64)
     (block $BB2_2
       (br_if (i32.lt_s (get_local 1) (i32.const 1)) $BB2_2)
       (loop $BB2_2 $BB2_1
-        (set_local 2 (f64.load (get_local 0)))
-        (f64.store (get_local 0) (f64.mul (get_local 2) (f64.const 0x1.999999999999ap1)))
+        (f64.store (get_local 0) (f64.mul (f64.load (get_local 0)) (f64.const 0x1.999999999999ap1)))
         (set_local 1 (i32.add (get_local 1) (i32.const -1)))
         (set_local 0 (i32.add (get_local 0) (i32.const 8)))
         (br_if (i32.ne (get_local 1) (i32.const 0)) $BB2_1)
@@ -61,8 +59,7 @@
     (param i32) (param i32) (param i32)
     (result i32)
     (local i32)
-    (set_local 3 (i32.const 0))
-    (i32.store (get_local 2) (get_local 3))
+    (set_local 3 (i32.store (get_local 2) (i32.const 0)))
     (block $BB3_5
       (block $BB3_2
         (br_if (i32.ne (get_local 0) (get_local 3)) $BB3_2)
@@ -85,8 +82,7 @@
     (param i32) (param i32)
     (result i32)
     (local i32)
-    (set_local 2 (i32.const 0))
-    (i32.store (get_local 0) (get_local 2))
+    (set_local 2 (i32.store (get_local 0) (i32.const 0)))
     (block $BB4_2
       (br_if (i32.ne (get_local 1) (get_local 2)) $BB4_2)
       (i32.store (get_local 0) (i32.const 1))
@@ -99,8 +95,7 @@
     (param i32) (param i32)
     (result i32)
     (local i32)
-    (set_local 2 (i32.const 0))
-    (i32.store (get_local 0) (get_local 2))
+    (set_local 2 (i32.store (get_local 0) (i32.const 0)))
     (block $BB5_3
       (block $BB5_2
         (br_if (i32.ne (get_local 1) (get_local 2)) $BB5_2)
@@ -116,10 +111,7 @@
   (func $single_block
     (param i32)
     (result i32)
-    (local i32)
-    (set_local 1 (i32.const 0))
-    (i32.store (get_local 0) (get_local 1))
-    (return (get_local 1))
+    (return (i32.store (get_local 0) (i32.const 0)))
   )
   (export "minimal_loop" $minimal_loop)
   (func $minimal_loop
@@ -136,8 +128,7 @@
     (param i32) (param i32)
     (result i32)
     (local i32 i32)
-    (set_local 2 (i32.const 0))
-    (i32.store (get_local 0) (get_local 2))
+    (set_local 2 (i32.store (get_local 0) (i32.const 0)))
     (loop $BB8_2 $BB8_1
       (set_local 3 (i32.const 1))
       (i32.store (get_local 0) (get_local 3))
@@ -151,8 +142,7 @@
     (param i32) (param i32) (param i32)
     (result i32)
     (local i32)
-    (set_local 3 (i32.const 0))
-    (i32.store (get_local 2) (get_local 3))
+    (set_local 3 (i32.store (get_local 2) (i32.const 0)))
     (block $BB9_4
       (br_if (i32.ne (get_local 0) (get_local 3)) $BB9_4)
       (i32.store (get_local 2) (i32.const 2))
@@ -170,8 +160,7 @@
     (param i32) (param i32) (param i32)
     (result i32)
     (local i32)
-    (set_local 3 (i32.const 0))
-    (i32.store (get_local 2) (get_local 3))
+    (set_local 3 (i32.store (get_local 2) (i32.const 0)))
     (block $BB10_4
       (block $BB10_2
         (br_if (i32.ne (get_local 0) (get_local 3)) $BB10_2)
@@ -191,8 +180,7 @@
     (result i32)
     (local i32)
     (loop $BB11_7 $BB11_1
-      (set_local 3 (i32.const 0))
-      (i32.store (get_local 2) (get_local 3))
+      (set_local 3 (i32.store (get_local 2) (i32.const 0)))
       (block $BB11_6
         (block $BB11_3
           (br_if (i32.ne (get_local 0) (get_local 3)) $BB11_3)

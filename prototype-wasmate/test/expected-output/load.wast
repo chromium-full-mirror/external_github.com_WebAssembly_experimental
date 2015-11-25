@@ -10,32 +10,25 @@
   (func $ldi32
     (param i32)
     (result i32)
-    (set_local 0 (i32.load (get_local 0)))
-    (return (get_local 0))
+    (return (i32.load (get_local 0)))
   )
   (export "ldi64" $ldi64)
   (func $ldi64
     (param i32)
     (result i64)
-    (local i64)
-    (set_local 1 (i64.load (get_local 0)))
-    (return (get_local 1))
+    (return (i64.load (get_local 0)))
   )
   (export "ldf32" $ldf32)
   (func $ldf32
     (param i32)
     (result f32)
-    (local f32)
-    (set_local 1 (f32.load (get_local 0)))
-    (return (get_local 1))
+    (return (f32.load (get_local 0)))
   )
   (export "ldf64" $ldf64)
   (func $ldf64
     (param i32)
     (result f64)
-    (local f64)
-    (set_local 1 (f64.load (get_local 0)))
-    (return (get_local 1))
+    (return (f64.load (get_local 0)))
   )
   (memory 0 0
     (segment 0
