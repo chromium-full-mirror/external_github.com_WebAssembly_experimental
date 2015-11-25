@@ -5,7 +5,7 @@
 foo:
 	.result 	i32
 	i32.const	$push0=, answer
-	i32.load	$push1=, $pop0
+	i32.load	$push1=, 0($pop0)
 	return  	$pop1
 func_end0:
 	.size	foo, func_end0-foo

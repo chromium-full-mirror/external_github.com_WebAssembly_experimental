@@ -25,17 +25,16 @@ BB0_3:
 	loop    	BB0_4
 	i32.const	$push3=, -1
 	i32.add 	$9=, $9, $pop3
-	i32.store	$discard=, $8, $7
+	i32.store	$discard=, 0($8), $7
 	i32.const	$push4=, 4
 	i32.add 	$8=, $8, $pop4
-	i32.ne  	$push5=, $9, $5
 	i32.add 	$7=, $7, $6
-	br_if   	$pop5, BB0_3
+	br_if   	$9, BB0_3
 BB0_4:
 	i32.add 	$6=, $6, $4
-	i32.ne  	$push6=, $6, $2
+	i32.ne  	$push5=, $6, $2
 	i32.add 	$0=, $0, $3
-	br_if   	$pop6, BB0_2
+	br_if   	$pop5, BB0_2
 BB0_5:
 	return
 func_end0:

@@ -42,11 +42,12 @@ f4:
 	.local  	i32
 	i32.const	$1=, 1
 	i32.and 	$push0=, $0, $1
-	i32.const	$0=, 0
-	i32.eq  	$push1=, $pop0, $0
 	block   	BB4_2
-	br_if   	$pop1, BB4_2
-	return  	$0
+	i32.const	$push2=, 0
+	i32.eq  	$push3=, $pop0, $pop2
+	br_if   	$pop3, BB4_2
+	i32.const	$push1=, 0
+	return  	$pop1
 BB4_2:
 	return  	$1
 func_end4:

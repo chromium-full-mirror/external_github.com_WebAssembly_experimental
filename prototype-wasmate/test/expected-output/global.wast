@@ -9,7 +9,7 @@
   (export "foo" $foo)
   (func $foo
     (result i32)
-    (return (i32.load (i32.const 20)))
+    (return (i32.load offset=0 (i32.const 20)))
   )
   (export "call_memcpy" $call_memcpy)
   (func $call_memcpy

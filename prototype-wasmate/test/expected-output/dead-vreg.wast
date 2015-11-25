@@ -24,10 +24,10 @@
           (br_if (i32.lt_s (get_local 1) (get_local 4)) $BB0_4)
           (loop $BB0_4 $BB0_3
             (set_local 9 (i32.add (get_local 9) (i32.const -1)))
-            (i32.store (get_local 8) (get_local 7))
+            (i32.store offset=0 (get_local 8) (get_local 7))
             (set_local 8 (i32.add (get_local 8) (i32.const 4)))
             (set_local 7 (i32.add (get_local 7) (get_local 6)))
-            (br_if (i32.ne (get_local 9) (get_local 5)) $BB0_3)
+            (br_if (get_local 9) $BB0_3)
           )
         )
         (set_local 6 (i32.add (get_local 6) (get_local 4)))
