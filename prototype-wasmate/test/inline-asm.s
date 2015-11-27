@@ -35,4 +35,16 @@ imm:
 func_end2:
 	.size	imm, func_end2-imm
 
+	.globl	foo_i64
+	.type	foo_i64,@function
+foo_i64:
+	.param  	i64
+	.result 	i64
+	#APP
+	# $0 = aaa($0)
+	#NO_APP
+	return  	$0
+func_end3:
+	.size	foo_i64, func_end3-foo_i64
+
 

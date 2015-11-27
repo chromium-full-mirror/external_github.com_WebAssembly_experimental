@@ -68,7 +68,7 @@
       )
       (i32.store (get_local 2) (i32.const 2))
       (block $BB3_4
-        (br_if (i32.ne (get_local 0) (get_local 3)) $BB3_4)
+        (br_if (i32.ne (get_local 1) (get_local 3)) $BB3_4)
         (i32.store (get_local 2) (i32.const 3))
         (br $BB3_5)
       )
@@ -147,7 +147,7 @@
       (br_if (i32.ne (get_local 0) (get_local 3)) $BB9_4)
       (i32.store (get_local 2) (i32.const 2))
       (block $BB9_3
-        (br_if (i32.ne (get_local 0) (get_local 3)) $BB9_3)
+        (br_if (i32.ne (get_local 1) (get_local 3)) $BB9_3)
         (i32.store (get_local 2) (i32.const 3))
       )
       (i32.store (get_local 2) (i32.const 4))
@@ -168,7 +168,7 @@
         (br $BB10_4)
       )
       (i32.store (get_local 2) (i32.const 2))
-      (br_if (i32.ne (get_local 0) (get_local 3)) $BB10_4)
+      (br_if (i32.ne (get_local 1) (get_local 3)) $BB10_4)
       (i32.store (get_local 2) (i32.const 3))
     )
     (i32.store (get_local 2) (i32.const 4))

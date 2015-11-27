@@ -23,6 +23,12 @@
     (local i32)
     (return (get_local 0))
   )
+  (export "foo_i64" $foo_i64)
+  (func $foo_i64
+    (param i64)
+    (result i64)
+    (return (get_local 0))
+  )
   (memory 0 0
     (segment 0
       ""

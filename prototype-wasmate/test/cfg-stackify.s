@@ -88,7 +88,7 @@ doublediamond:
 BB3_2:
 	i32.const	$push2=, 2
 	i32.store	$discard=, $2, $pop2
-	i32.ne  	$push3=, $0, $3
+	i32.ne  	$push3=, $1, $3
 	block   	BB3_4
 	br_if   	$pop3, BB3_4
 	i32.const	$push5=, 3
@@ -210,7 +210,7 @@ doubletriangle:
 	br_if   	$pop1, BB9_4
 	i32.const	$push2=, 2
 	i32.store	$discard=, $2, $pop2
-	i32.ne  	$push3=, $0, $3
+	i32.ne  	$push3=, $1, $3
 	block   	BB9_3
 	br_if   	$pop3, BB9_3
 	i32.const	$push4=, 3
@@ -243,7 +243,7 @@ ifelse_earlyexits:
 BB10_2:
 	i32.const	$push2=, 2
 	i32.store	$discard=, $2, $pop2
-	i32.ne  	$push3=, $0, $3
+	i32.ne  	$push3=, $1, $3
 	br_if   	$pop3, BB10_4
 	i32.const	$push4=, 3
 	i32.store	$discard=, $2, $pop4
