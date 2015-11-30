@@ -27,5 +27,3 @@ func_end2:
 	.size	call_something, func_end2-call_something
 
 
-	.imports
-	.import return_something "" return_something (result i32)

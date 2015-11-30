@@ -5,6 +5,56 @@ import cStringIO
 import re
 import sys
 
+# The environment currently provided by the spec repo for the purpose
+# of writing spec tests.
+spectest_environment = {
+    'print': ('print', 'spectest', 'i32', ''),
+    'print_i32': ('print_i32', 'spectest', 'i32', ''),
+    'print_i64': ('print_i64', 'spectest', 'i64', ''),
+    'print_f32': ('print_f32', 'spectest', 'f32', ''),
+    'print_f64': ('print_f64', 'spectest', 'f64', ''),
+    'print_i32_f32': ('print_i32_f32', 'spectest', 'i32 f32', ''),
+    'print_i64_f64': ('print_i64_f64', 'spectest' 'i64 f64', ''),
+}
+
+# A made-up environment based on the set of functions that are called in
+# testcases generated from the LLVM codegen tests.
+misctest_environment = {
+    'a': ('a', 'misctest', 'i32', ''),
+    'abort': ('abort', 'misctest', '', ''),
+    'add2': ('add2', 'misctest', 'i32 i32', 'i32'),
+    'bar': ('bar', 'misctest', '', ''),
+    'callee': ('callee', 'misctest', '', ''),
+    'double_nullary': ('double_nullary', 'misctest', '', 'f64'),
+    'expanded_arg': ('expanded_arg', 'misctest', 'i32', ''),
+    'exit': ('exit', 'misctest', 'i32', ''),
+    'float_nullary': ('float_nullary', 'misctest', '', 'f32'),
+    'foo0': ('foo0', 'misctest', '', ''),
+    'foo1': ('foo1', 'misctest', '', ''),
+    'foo2': ('foo2', 'misctest', '', ''),
+    'foo3': ('foo3', 'misctest', '', ''),
+    'foo4': ('foo4', 'misctest', '', ''),
+    'foo5': ('foo5', 'misctest', '', ''),
+    'i32_binary': ('i32_binary', 'misctest', 'i32 i32', 'i32'),
+    'i32_nullary': ('i32_nullary', 'misctest', '', 'i32'),
+    'i32_unary': ('i32_unary', 'misctest', 'i32', 'i32'),
+    'i64_nullary': ('i64_nullary', 'misctest', '', 'i64'),
+    'lowered_result': ('lowered_result', 'misctest', '', 'i32'),
+    'memcpy': ('memcpy', 'misctest', 'i32 i32 i32', 'i32'),
+    'printf': ('printf', 'misctest', 'f32', 'f32'),
+    'printi': ('printi', 'misctest', 'i32', 'i32'),
+    'printv': ('printv', 'misctest', '', ''),
+    'return_something': ('return_something', 'misctest', '', 'i32'),
+    'something': ('something', 'misctest', '', ''),
+    'split_arg': ('split_arg', 'misctest', 'i64 i64', ''),
+    'void_nullary': ('void_nullary', 'misctest', '', ''),
+    '_ZN5AppleC1Ev': ('_ZN5AppleC1Ev', 'misctest', 'i32', 'i32'),
+    '_Znwm': ('_Znwm', 'misctest', 'i32', 'i32'),
+}
+
+# Default to using the spectest environment for now.
+import_environment = spectest_environment
+
 def ParseArgs():
   parser = argparse.ArgumentParser(
 description="""Convert from the "flat" text
@@ -16,6 +66,8 @@ a hack. A real toolchain will eventually be needed.""")
                       help='output `.wasm` s-expression file')
   parser.add_argument('input', metavar='INPUT', nargs='?',
                       help='input `.s` LLVM assembly file')
+  parser.add_argument('-l', dest='library', type=str, default=None,
+                      help='"link" with the given set of externals (eg. -l spectest)')
   return parser.parse_args()
 
 def readInput(input_file):
@@ -62,7 +114,7 @@ current_line_number = 0
 current_section = ".text"
 current_function_number = 0
 data_labels = {}
-import_funs = []
+import_funs = set([])
 
 def error(message, line_number=None):
     if line_number is None:
@@ -143,9 +195,6 @@ class PassHandler(object):
             error("TODO: implement .align for functions")
 
     def handle_dot_lcomm(self, args):
-        pass
-
-    def handle_dot_import(self, args):
         pass
 
 def reduce_to_bytes(x, num_bytes):
@@ -299,52 +348,6 @@ class DataPassHandler(PassHandler):
         self.handle_label(name)
         self.segment.append_zeros(size)
 
-sig_element_match = re.compile(r'(\((param|result) ([^\)]+)\))')
-
-# For functions with more than one parameter, LLVM is currently generating:
-# (param i32) (param i32) (result i32)
-# when it should really be generating:
-# (param i32 i32) (result i32)
-# Do some string manipulation to fix this, but make sure we will accept the
-# correct input, too.
-def massage_import(text):
-    params = []
-    results = []
-    for _, which, types in sig_element_match.findall(text):
-        # Accumulate the types being declared.
-        if which == "param":
-            params.extend(types.split())
-        elif which == "result":
-            results.extend(types.split())
-        else:
-            raise NotImplementedError(which)
-    # Remove the original param and result declarations.
-    text = sig_element_match.sub("", text).strip()
-    # Recreate the params.
-    if params:
-        text = "%s (param %s)" % (text, " ".join(params))
-    # Recreate the results.
-    if results:
-        text = "%s (result %s)" % (text, " ".join(results))
-    return text
-
-class ImportsPassHandler(PassHandler):
-    def __init__(self):
-        self.imports = []
-
-    def end_pass(self):
-        for i in self.imports:
-            # Split out the import symbol name, the module name, the function
-            # name, and the rest is signature information.
-            parts = i.split(None, 3)
-            out.write_line('(import $' + parts[0] + ' ' + parts[1] +
-                           ' "' + parts[2] + '" ' + ' '.join(parts[3:]) + ')')
-
-    def handle_dot_import(self, args):
-        i = massage_import(args[0])
-        self.imports.append(i)
-        import_funs.append(i[0:i.find(' ')])
-
 # Convert an instruction from mnemonic syntax to sexpr syntax.
 def sexprify(command, args):
     s = '(' + command
@@ -426,8 +429,9 @@ class TextPassHandler(PassHandler):
         if command == 'call':
             for arg in args:
                 if not arg.endswith('='):
-                    if arg in import_funs:
+                    if import_environment.has_key(arg):
                         command = 'call_import'
+                        import_funs.add(arg)
                         break
 
         if command == 'block':
@@ -539,8 +543,6 @@ def handle_dot_directive(handler, command, args, rest):
         current_section = ".text"
     elif command == 'data':
         current_section = ".data"
-    elif command == 'imports':
-      current_section = 'imports'
     elif command in ['file', 'type']:
         pass
     elif command == 'globl':
@@ -575,8 +577,6 @@ def handle_dot_directive(handler, command, args, rest):
         handler.handle_dot_align(args)
     elif command == 'lcomm':
         handler.handle_dot_lcomm(args)
-    elif command == 'import':
-        handler.handle_dot_import(args)
     else:
         error("unknown dot command: ." + command)
 
@@ -642,8 +642,18 @@ def write_data_segment(segment):
     out.write_line(')')
 
 def Main():
+  global import_environment
+
   cmd_args = ParseArgs()
   all_lines = readInput(cmd_args.input)
+
+  if cmd_args.library:
+      if cmd_args.library == 'spectest':
+          import_environment = spectest_environment
+      if cmd_args.library == 'misctest':
+          import_environment = misctest_environment
+      else:
+          error("Unrecognized import environment name: " + cmd_args.library)
 
   out.write_line(
 """;; This file was generated by wasmate.py, which is a script that converts
@@ -660,14 +670,22 @@ def Main():
 
   segment = DataSegment()
 
-  # Make three passes over the code: once to read all the data directives, once
-  # to process all the text, and once for all the imports. This lets us resolve
-  # all the data symbols so we can plug in absolute offsets into the text, while
-  # having all the imports on top (which then lets us transform call to
-  # call_import).
+  # Make two passes over the code: once to read all the data directives, and
+  # once to process all the text. This lets us resolve all the data symbols so
+  # we can plug in absolute offsets into the text.
   do_pass(DataPassHandler(segment), all_lines)
-  do_pass(ImportsPassHandler(), all_lines)
   do_pass(TextPassHandler(), all_lines)
+
+  # Write out the import declarations.
+  for sym in import_funs:
+      if import_environment.has_key(sym):
+          name, module, params, returns = import_environment[sym]
+          out.write_line('(import $' + sym + ' "' + module + '" "' + name + '"' +
+                         ((' (param ' + params + ')') if params else '') +
+                         ((' (return ' + returns + ')') if returns else '') +
+                         ')')
+      else:
+          error('import ' + sym + ' not found in import environment')
 
   write_data_segment(segment)
 

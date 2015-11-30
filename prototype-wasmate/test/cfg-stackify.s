@@ -618,7 +618,3 @@ func_end21:
 	.size	test12, func_end21-test12
 
 
-	.imports
-	.import something "" something
-	.import bar "" bar
-	.import a "" a (result i32)

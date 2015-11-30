@@ -6,7 +6,6 @@
 ;;
 
 (module
-  (import $return_something "" "return_something" (result i32))
   (export "unused_first" $unused_first)
   (func $unused_first
     (param i32) (param i32)
@@ -24,6 +23,7 @@
     (call_import $return_something)
     (return)
   )
+  (import $return_something "misctest" "return_something" (return i32))
   (memory 0 0
   )
 )

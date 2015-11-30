@@ -9,6 +9,7 @@ import unittest
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WASMATE = os.path.join(SCRIPT_DIR, 'wasmate.py')
+ENVIRONMENT = 'misctest'
 
 def DiffLines(expected, actual):
     expected_lines = expected.splitlines(1)
@@ -25,7 +26,7 @@ class RunTests(unittest.TestCase):
         except OSError:
             pass
 
-        commandStr = ("%s %s > %s") % (WASMATE, fileName, logPath)
+        commandStr = ("%s -l %s %s > %s") % (WASMATE, ENVIRONMENT, fileName, logPath)
         exitCode = subprocess.call(commandStr, shell=True)
         self.assertEqual(0, exitCode, "test runner failed with exit code %i" % exitCode)
 

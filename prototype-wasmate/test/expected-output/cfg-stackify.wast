@@ -6,9 +6,6 @@
 ;;
 
 (module
-  (import $something "" "something" )
-  (import $bar "" "bar" )
-  (import $a "" "a" (result i32))
   (export "test0" $test0)
   (func $test0
     (param i32)
@@ -418,6 +415,9 @@
       (br $BB21_1)
     )
   )
+  (import $a "misctest" "a" (param i32))
+  (import $bar "misctest" "bar")
+  (import $something "misctest" "something")
   (memory 0 0
   )
 )

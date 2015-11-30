@@ -22,7 +22,3 @@ func_end1:
 	.size	_Z3barPvS_l, func_end1-_Z3barPvS_l
 
 
-	.imports
-	.import _Znwm "" _Znwm (param i32) (result i32)
-	.import _ZN5AppleC1Ev "" _ZN5AppleC1Ev (param i32) (result i32)
-	.import memcpy "" memcpy (param i32 i32 i32) (result i32)

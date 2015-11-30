@@ -108,11 +108,3 @@ func_end11:
 	.size	coldcc_tail_call_void_nullary, func_end11-coldcc_tail_call_void_nullary
 
 
-	.imports
-	.import i32_nullary "" i32_nullary (result i32)
-	.import i32_unary "" i32_unary (param i32) (result i32)
-	.import i32_binary "" i32_binary (param i32 i32) (result i32)
-	.import i64_nullary "" i64_nullary (result i64)
-	.import float_nullary "" float_nullary (result f32)
-	.import double_nullary "" double_nullary (result f64)
-	.import void_nullary "" void_nullary

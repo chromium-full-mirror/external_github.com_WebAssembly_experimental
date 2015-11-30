@@ -6,12 +6,6 @@
 ;;
 
 (module
-  (import $foo0 "" "foo0" )
-  (import $foo1 "" "foo1" )
-  (import $foo2 "" "foo2" )
-  (import $foo3 "" "foo3" )
-  (import $foo4 "" "foo4" )
-  (import $foo5 "" "foo5" )
   (export "bar32" $bar32)
   (func $bar32
     (param i32)
@@ -76,6 +70,12 @@
     )
     (return)
   )
+  (import $foo4 "misctest" "foo4")
+  (import $foo5 "misctest" "foo5")
+  (import $foo0 "misctest" "foo0")
+  (import $foo1 "misctest" "foo1")
+  (import $foo2 "misctest" "foo2")
+  (import $foo3 "misctest" "foo3")
   (memory 0 0
   )
 )
