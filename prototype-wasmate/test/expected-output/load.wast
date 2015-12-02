@@ -30,6 +30,12 @@
     (result f64)
     (return (f64.load (get_local 0)))
   )
+  (export "ldoff" $ldoff)
+  (func $ldoff
+    (param i32)
+    (result i32)
+    (return (i32.load offset=0 (get_local 0)))
+  )
   (memory 0 0
     (segment 0
       ""

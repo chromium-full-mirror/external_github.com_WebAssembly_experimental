@@ -40,4 +40,12 @@ ldf64:
 func_end3:
 	.size	ldf64, func_end3-ldf64
 
-
+        .globl  ldoff
+        .type   ldoff,@function
+ldoff:
+        .param          i32
+        .result         i32
+        i32.load        offset=0, $push0=, $0
+        return          $pop0
+func_end4:
+        .size   ldoff, func_end4-ldoff

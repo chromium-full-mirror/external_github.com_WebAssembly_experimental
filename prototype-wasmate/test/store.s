@@ -36,4 +36,11 @@ stf64:
 func_end3:
 	.size	stf64, func_end3-stf64
 
-
+	.globl	stoff
+	.type	stoff,@function
+stoff:
+	.param  	i32, i32
+	i32.store	offset=1, $discard=, $0, $1
+	return
+func_end4:
+	.size	stoff, func_end4-stoff

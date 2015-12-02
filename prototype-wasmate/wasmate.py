@@ -355,6 +355,12 @@ class TextPassHandler(PassHandler):
             self.push_label(args[0])
             out.indent()
             return
+        # Make the offset part of the command instead of an arg, otherwise
+        # sexprify wil interpret offset as a label and prepend a '$'
+        if 'load' in command or 'store' in command:
+          if 'offset=' in args[0]:
+            command += ' ' + args[0]
+            del args[0]
 
         if command == 'copy_local':
             # This is a no-op which just produces a get_local and set_local.
