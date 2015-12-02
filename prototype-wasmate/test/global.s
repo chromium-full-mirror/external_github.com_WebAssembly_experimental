@@ -1,5 +1,26 @@
 	.text
 	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/global.ll"
+	.globl	foo
+	.type	foo,@function
+foo:
+	.result 	i32
+	i32.const	$push0=, answer
+	i32.load	$push1=, $pop0
+	return  	$pop1
+func_end0:
+	.size	foo, func_end0-foo
+
+	.globl	call_memcpy
+	.type	call_memcpy,@function
+call_memcpy:
+	.param  	i32, i32, i32
+	.result 	i32
+	i32.const	$push0=, memcpy
+	call_indirect	$pop0, $0, $1, $2
+	return  	$0
+func_end1:
+	.size	call_memcpy, func_end1-call_memcpy
+
 	.type	g,@object
 	.data
 	.align	2
@@ -100,6 +121,5 @@ f64nz:
 f64two:
 	.int64	4611686018427387904
 	.size	f64two, 8
-
 
 

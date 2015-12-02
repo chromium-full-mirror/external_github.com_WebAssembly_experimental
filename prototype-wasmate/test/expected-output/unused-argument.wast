@@ -6,23 +6,23 @@
 ;;
 
 (module
+  (import $return_something "" "return_something" (result i32))
   (export "unused_first" $unused_first)
   (func $unused_first
-    (param i32)
-    (param i32)
+    (param i32) (param i32)
     (result i32)
-    (local i32)
-    (set_local 2 (get_local 1))
-    (return (get_local 2))
+    (return (get_local 1))
   )
   (export "unused_second" $unused_second)
   (func $unused_second
-    (param i32)
-    (param i32)
+    (param i32) (param i32)
     (result i32)
-    (local i32)
-    (set_local 2 (get_local 0))
-    (return (get_local 2))
+    (return (get_local 0))
+  )
+  (export "call_something" $call_something)
+  (func $call_something
+    (call_import $return_something)
+    (return)
   )
   (memory 0 0
     (segment 0

@@ -13,24 +13,36 @@
   (export "f1" $f1)
   (func $f1
     (result i32)
-    (local i32)
-    (set_local 0 (i32.const 0))
-    (return (get_local 0))
+    (return (i32.const 0))
   )
   (export "f2" $f2)
   (func $f2
-    (param i32)
-    (param f32)
+    (param i32) (param f32)
     (result i32)
-    (local i32)
-    (set_local 2 (i32.const 0))
-    (return (get_local 2))
+    (return (i32.const 0))
   )
   (export "f3" $f3)
   (func $f3
-    (param i32)
-    (param f32)
+    (param i32) (param f32)
     (return)
+  )
+  (export "f4" $f4)
+  (func $f4
+    (param i32)
+    (result i32)
+    (local i32)
+    (set_local 1 (i32.const 1))
+    (set_local 0 (i32.const 0))
+    (block $BB4_2
+      (br_if (i32.eq (i32.and (get_local 0) (get_local 1)) (get_local 0)) $BB4_2)
+      (return (get_local 0))
+    )
+    (return (get_local 1))
+  )
+  (export "f5" $f5)
+  (func $f5
+    (result f32)
+    (unreachable)
   )
   (memory 0 0
     (segment 0

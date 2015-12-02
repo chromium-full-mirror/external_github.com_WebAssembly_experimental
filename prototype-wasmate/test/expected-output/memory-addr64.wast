@@ -9,16 +9,12 @@
   (export "memory_size" $memory_size)
   (func $memory_size
     (result i64)
-    (local i64)
-    (set_local 0 (memory_size ))
-    (return (get_local 0))
+    (return (memory_size ))
   )
   (export "grow_memory" $grow_memory)
   (func $grow_memory
     (param i64)
-    (local i64)
-    (set_local 1 (get_local 0))
-    (grow_memory (get_local 1))
+    (grow_memory (get_local 0))
     (return)
   )
   (memory 0 0
