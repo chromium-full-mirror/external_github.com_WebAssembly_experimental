@@ -90,6 +90,7 @@ def Sync():
       ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_DIR).strip())
   print 'SVN REV: %d' % svn_rev
   print 'Finding prior clang rev'
+  subprocess.check_call(['git', 'fetch'], cwd=CLANG_DIR)
   prior_rev = FindPriorRev(CLANG_DIR, svn_rev)
   print 'Checking out clang rev: %s' % prior_rev
   subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
