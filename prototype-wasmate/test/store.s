@@ -40,7 +40,7 @@ func_end3:
 	.type	stoff,@function
 stoff:
 	.param  	i32, i32
-	i32.store	offset=1, $discard=, $0, $1
+	i32.store	$discard=, 1($0), $1
 	return
 func_end4:
 	.size	stoff, func_end4-stoff
