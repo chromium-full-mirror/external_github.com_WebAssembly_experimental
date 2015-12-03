@@ -46,3 +46,11 @@ func_end4:
 	.size	trunc_i32_i64, func_end4-trunc_i32_i64
 
 
+	.globl	trunc_i8_i32_off
+	.type	trunc_i8_i32_off,@function
+trunc_i8_i32_off:
+	.param  	i32, i32
+	i32.store8	$discard=, 1234($0), $1
+	return
+func_end5:
+	.size	trunc_i8_i32_off, func_end5-trunc_i8_i32_off

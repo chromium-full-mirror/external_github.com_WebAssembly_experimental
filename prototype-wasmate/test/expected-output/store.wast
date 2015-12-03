@@ -30,6 +30,12 @@
     (f64.store (get_local 0) (get_local 1))
     (return)
   )
+  (export "stoff" $stoff)
+  (func $stoff
+    (param i32) (param i32)
+    (i32.store offset=1 (get_local 0) (get_local 1))
+    (return)
+  )
   (memory 0 0
     (segment 0
       ""

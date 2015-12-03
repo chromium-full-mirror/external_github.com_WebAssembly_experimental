@@ -322,6 +322,15 @@ class TextPassHandler(PassHandler):
                 out.indent()
 
     def handle_mnemonic(self, command, args):
+        # Handle address arguments of stores which have offsets.
+        # Make the offset part of the command instead of an arg, otherwise
+        # sexprify will interpret 'offset' as a label and prepend a '$'
+        if 'load' in command or 'store' in command:
+          m = re.match(r'(.+)\((.+)\)', args[1])
+          if m:
+            command += ' offset=' + m.group(1)
+            args[1] = m.group(2)
+
         # Replace uses of $pop with expressions from the stack. We iterate
         # in reverse order since that's the order the pops are defined to
         # happen in in the assembly syntax.
