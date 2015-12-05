@@ -10,21 +10,32 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 LLVM_DIR = os.path.join(WORK_DIR, 'llvm')
 CLANG_DIR = os.path.join(LLVM_DIR, 'tools', 'clang')
-CHROMIUM_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
-CHROMIUM_CLANG_TOOLS = os.path.join(CHROMIUM_CLANG, 'tools')
-CHROMIUM_CLANG_TOOLS_CLANG = os.path.join(CHROMIUM_CLANG_TOOLS, 'clang')
-CHROMIUM_CLANG_BIN = os.path.join(
-    CHROMIUM_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
+GCC_DIR = os.path.join(WORK_DIR, 'gcc')
+PREBUILT_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
+PREBUILT_CLANG_TOOLS = os.path.join(PREBUILT_CLANG, 'tools')
+PREBUILT_CLANG_TOOLS_CLANG = os.path.join(PREBUILT_CLANG_TOOLS, 'clang')
+PREBUILT_CLANG_BIN = os.path.join(
+    PREBUILT_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
 OUT_DIR = os.path.join(WORK_DIR, 'out')
 INSTALL_DIR = os.path.join(WORK_DIR, 'install')
 INSTALL_TAR = os.path.join(WORK_DIR, 'install.tbz2')
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
+GIT_MIRROR_BASE = 'https://chromium.googlesource.com/'
+LLVM_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/llvm'
+CLANG_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/clang'
+GCC_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/gcc'
+SEXPR_GIT = (GIT_MIRROR_BASE + 'external/' +
+             'github.com/WebAssembly/sexpr-wasm-prototype.git')
 
 # Try to use the llvm revision provided by buildbot.
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
 if LLVM_REVISION == 'None':
   LLVM_REVISION = 'origin/master'
+
+GCC_REVISION = os.environ.get('BUILDBOT_GCC_REVISION', 'None')
+if GCC_REVISION == 'None':
+  GCC_REVISION = 'origin/master'
 
 
 def BuildStep(name):
@@ -51,69 +62,79 @@ def Remove(path):
     os.remove(path)
 
 
+def GitConfigRebaseMaster(cwd):
+  subprocess.check_call(
+    ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
+
+
 def FindPriorRev(path, goal):
   revs = subprocess.check_output(
       ['git', 'rev-list', 'origin/master'], cwd=path).splitlines()
   for rev in revs:
-    num = int(subprocess.check_output(
-        ['git', 'svn', 'find-rev', rev], cwd=path).strip())
-    if num <= goal:
+    num = subprocess.check_output(
+        ['git', 'svn', 'find-rev', rev], cwd=path).strip()
+    if int(num) <= goal:
       return num
   raise Error('Cannot find clang rev at or before %d' % goal)
 
 
-def Sync():
+def SyncLLVMClang():
   BuildStep('Sync LLVM')
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
   if os.path.exists(LLVM_DIR):
     print 'LLVM directory already exists'
   else:
-    print 'Cloning llvm and clang'
-    subprocess.check_call(
-        ['git', 'clone',
-         'https://chromium.googlesource.com/chromiumos/third_party/llvm',
-         LLVM_DIR])
-    subprocess.check_call(
-        ['git', 'config', 'branch.master.rebase', 'true'], cwd=LLVM_DIR)
-    subprocess.check_call(
-        ['git', 'clone',
-         'https://chromium.googlesource.com/chromiumos/third_party/clang',
-         CLANG_DIR])
-    subprocess.check_call(
-        ['git', 'config', 'branch.master.rebase', 'true'], cwd=CLANG_DIR)
-  print 'Syncing llvm'
+    print 'Cloning LLVM and Clang'
+    subprocess.check_call(['git', 'clone', LLVM_GIT, LLVM_DIR])
+    GitConfigRebaseMaster(LLVM_DIR)
+    subprocess.check_call(['git', 'clone', CLANG_GIT, CLANG_DIR])
+    GitConfigRebaseMaster(CLANG_DIR)
+  print 'Syncing LLVM'
   subprocess.check_call(['git', 'fetch'], cwd=LLVM_DIR)
   subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_DIR)
-  print 'Getting svn rev'
+  print 'Getting SVN rev'
   svn_rev = int(subprocess.check_output(
       ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_DIR).strip())
   print 'SVN REV: %d' % svn_rev
-  print 'Finding prior clang rev'
+  print 'Finding prior Clang rev'
   subprocess.check_call(['git', 'fetch'], cwd=CLANG_DIR)
   prior_rev = FindPriorRev(CLANG_DIR, svn_rev)
-  print 'Checking out clang rev: %s' % prior_rev
-  subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
-
-  if os.path.exists(CHROMIUM_CLANG_TOOLS_CLANG):
-    print 'Chromium clang directory already exists'
-  else:
-    print 'Cloning chromium clang directory'
-    Mkdir(CHROMIUM_CLANG)
-    Mkdir(CHROMIUM_CLANG_TOOLS)
-    subprocess.check_call(
-        ['git', 'clone',
-         'https://chromium.googlesource.com/chromium/src/tools/clang',
-         CHROMIUM_CLANG_TOOLS_CLANG])
-    subprocess.check_call(
-        ['git', 'config', 'branch.master.rebase', 'true'],
-        cwd=CHROMIUM_CLANG_TOOLS_CLANG)
-  print 'Syncing chromium clang scripts'
-  subprocess.check_call(['git', 'fetch'], cwd=CHROMIUM_CLANG_TOOLS_CLANG)
-  print 'Syncing chromium clang'
-  subprocess.check_call(
-      [os.path.join(CHROMIUM_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
+  print 'Checking out Clang rev: %s' % prior_rev
+  # TODO: broken, should this be:
+  #       ['git', 'svn', 'log', '--show-commit', '--revision=%s' % prior_rev]
+  #subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
   return svn_rev
+
+
+def SyncGCC():
+  if os.path.exists(GCC_DIR):
+    print 'GCC directory already exists'
+  else:
+    print 'Cloning GCC'
+    subprocess.check_call(['git', 'clone', GCC_GIT, GCC_DIR])
+    GitConfigRebaseMaster(GCC_DIR)
+  print 'Syncing GCC'
+  subprocess.check_call(['git', 'fetch'], cwd=GCC_DIR)
+  subprocess.check_call(['git', 'checkout', GCC_REVISION], cwd=GCC_DIR)
+
+
+def SyncPrebuiltClang():
+  if os.path.exists(PREBUILT_CLANG_TOOLS_CLANG):
+    print 'Prebuilt Chromium Clang directory already exists'
+  else:
+    print 'Cloning Prebuilt Chromium Clang directory'
+    Mkdir(PREBUILT_CLANG)
+    Mkdir(PREBUILT_CLANG_TOOLS)
+    subprocess.check_call(
+        ['git', 'clone', CLANG_GIT, PREBUILT_CLANG_TOOLS_CLANG])
+    GitConfigRebaseMaster(PREBUILT_CLANG_TOOLS_CLANG)
+  print 'Syncing Prebuilt Chromium Clang scripts'
+  subprocess.check_call(['git', 'fetch'], cwd=PREBUILT_CLANG_TOOLS_CLANG)
+  print 'Syncing Prebuilt Chromium Clang'
+  # TODO: this doesn't seem to exist?
+  #subprocess.check_call(
+  #    [os.path.join(PREBUILT_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
 
 
 def SyncSexpr():
@@ -121,14 +142,9 @@ def SyncSexpr():
     print 'Sexpr directory already exists'
   else:
     print 'Cloning Sexpr'
-    subprocess.check_call(
-        ['git', 'clone',
-         'https://chromium.googlesource.com/external/'
-         'github.com/WebAssembly/sexpr-wasm-prototype.git',
-         SEXPR_DIR])
-    subprocess.check_call(
-        ['git', 'config', 'branch.master.rebase', 'true'], cwd=SEXPR_DIR)
-  print 'Syncing sexpr'
+    subprocess.check_call(['git', 'clone', SEXPR_GIT, SEXPR_DIR])
+    GitConfigRebaseMaster(SEXPR_DIR)
+  print 'Syncing Sexpr'
   subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
 
 
@@ -148,8 +164,8 @@ def BuildLLVM():
       ['cmake', '-G', 'Ninja', LLVM_DIR,
        '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
        '-DLLVM_BUILD_TESTS=ON',
-       '-DCMAKE_C_COMPILER=' + CHROMIUM_CLANG_BIN + '/clang',
-       '-DCMAKE_CXX_COMPILER=' + CHROMIUM_CLANG_BIN + '/clang++',
+       '-DCMAKE_C_COMPILER=' + PREBUILT_CLANG_BIN + '/clang',
+       '-DCMAKE_CXX_COMPILER=' + PREBUILT_CLANG_BIN + '/clang++',
        '-DCMAKE_BUILD_TYPE=Release',
        '-DCMAKE_INSTALL_PREFIX=' + INSTALL_DIR,
        '-DLLVM_ENABLE_ASSERTIONS=OFF',
@@ -198,7 +214,10 @@ def ArchiveLLVM(svn_rev):
 
 def main():
   Clobber()
-  svn_rev = Sync()
+  svn_rev = SyncLLVMClang()
+  SyncGCC()
+  SyncPrebuiltClang()
+  SyncSexpr()
   BuildLLVM()
   TestLLVM()
   InstallLLVM()
