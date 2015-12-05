@@ -57,8 +57,8 @@ def FindPriorRev(path, goal):
   for rev in revs:
     num = int(subprocess.check_output(
         ['git', 'svn', 'find-rev', rev], cwd=path).strip())
-    if num <= rev:
-      return rev
+    if num <= goal:
+      return num
   raise Error('Cannot find clang rev at or before %d' % goal)
 
 
