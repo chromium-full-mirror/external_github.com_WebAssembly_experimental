@@ -110,7 +110,8 @@ def SyncLLVMClang():
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
   if os.path.exists(LLVM_DIR):
-    print 'LLVM directory already exists'
+    assert os.path.exists(CLANG_DIR), 'Assuming LLVM present implies Clang too'
+    print 'LLVM and Clang directories already exist'
   else:
     print 'Cloning LLVM and Clang'
     subprocess.check_call(['git', 'clone', LLVM_GIT, LLVM_DIR])
