@@ -72,8 +72,22 @@ def error(message, line_number=None):
     sys.exit(1)
 
 def resolve_label(arg):
-    if data_labels.has_key(arg):
-        return str(data_labels[arg])
+    # Labels can be of the form 'foo' or 'foo+47'. Split the offset out so that
+    # we can resolve the base symbol and then re-add the offset to the result
+    # to produce a simple constant.
+    #
+    # If the symbol is undefined, we'll just emit it as '$foo+47', which isn't
+    # currently valid syntax, but unresolved global variable addresses aren't
+    # supported in wasm anyway, and if we do add support for them to wasm, we
+    # should add support for offsets too :-).
+    #
+    # Test for '(' so that we avoid revisiting sexprified stacked operands.
+    if (arg[0] != '('):
+        parts = arg.split('+', 1)
+        base = parts[0]
+        offset = 0 if len(parts) == 1 else int(parts[1])
+        if data_labels.has_key(base):
+            return str(data_labels[base] + offset)
     if arg[0].isalpha() and arg != 'infinity' and arg != 'nan':
         return '$' + arg
     return arg
