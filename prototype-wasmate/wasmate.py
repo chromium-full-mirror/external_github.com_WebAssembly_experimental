@@ -73,7 +73,14 @@ def error(message, line_number=None):
 
 def resolve_label(arg):
     # Labels can be of the form 'foo' or 'foo+47'. Split the offset out so that
-    # we can resolve the base symbol and then re-add the offset to the result.
+    # we can resolve the base symbol and then re-add the offset to the result
+    # to produce a simple constant.
+    #
+    # If the symbol is undefined, we'll just emit it as '$foo+47', which isn't
+    # currently valid syntax, but unresolved global variable addresses aren't
+    # supported in wasm anyway, and if we do add support for them to wasm, we
+    # should add support for offsets too :-).
+    #
     # Test for '(' so that we avoid revisiting sexprified stacked operands.
     if (arg[0] != '('):
         parts = arg.split('+', 1)
