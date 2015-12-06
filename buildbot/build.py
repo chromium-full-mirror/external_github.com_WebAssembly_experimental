@@ -35,6 +35,7 @@ INSTALL_TAR = os.path.join(WORK_DIR, 'install.tbz2')
 GIT_MIRROR_BASE = 'https://chromium.googlesource.com/'
 LLVM_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/llvm'
 CLANG_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/clang'
+PREBUILT_CLANG_GIT = GIT_MIRROR_BASE + 'chromium/src/tools/clang'
 GCC_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/gcc'
 SEXPR_GIT = (GIT_MIRROR_BASE + 'external/' +
              'github.com/WebAssembly/sexpr-wasm-prototype.git')
@@ -112,9 +113,7 @@ def SyncLLVMClang():
   subprocess.check_call(['git', 'fetch'], cwd=CLANG_DIR)
   prior_rev = FindPriorRev(CLANG_DIR, svn_rev)
   print 'Checking out Clang rev: %s' % prior_rev
-  # TODO: broken, should this be:
-  #       ['git', 'svn', 'log', '--show-commit', '--revision=%s' % prior_rev]
-  #subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
+  subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
   return svn_rev
 
 
@@ -138,14 +137,13 @@ def SyncPrebuiltClang():
     Mkdir(PREBUILT_CLANG)
     Mkdir(PREBUILT_CLANG_TOOLS)
     subprocess.check_call(
-        ['git', 'clone', CLANG_GIT, PREBUILT_CLANG_TOOLS_CLANG])
+        ['git', 'clone', PREBUILT_CLANG_GIT, PREBUILT_CLANG_TOOLS_CLANG])
     GitConfigRebaseMaster(PREBUILT_CLANG_TOOLS_CLANG)
   print 'Syncing Prebuilt Chromium Clang scripts'
   subprocess.check_call(['git', 'fetch'], cwd=PREBUILT_CLANG_TOOLS_CLANG)
   print 'Syncing Prebuilt Chromium Clang'
-  # TODO: this doesn't seem to exist?
-  #subprocess.check_call(
-  #    [os.path.join(PREBUILT_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
+  subprocess.check_call(
+      [os.path.join(PREBUILT_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
 
 
 def SyncSexpr():
