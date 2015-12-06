@@ -90,6 +90,9 @@ def Remove(path):
 
 
 def GitConfigRebaseMaster(cwd):
+  # The upstream repository is in Subversion, use git pull --rebase instead
+  # of git pull to avoid generating a non-linear history in the clone:
+  #   llvm.org/docs/GettingStarted.html#git-mirror
   subprocess.check_call(
     ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
 
