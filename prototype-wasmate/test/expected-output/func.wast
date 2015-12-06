@@ -32,10 +32,9 @@
     (result i32)
     (local i32)
     (set_local 1 (i32.const 1))
-    (set_local 0 (i32.const 0))
     (block $BB4_2
-      (br_if (i32.eq (i32.and (get_local 0) (get_local 1)) (get_local 0)) $BB4_2)
-      (return (get_local 0))
+      (br_if (i32.eq (i32.and (get_local 0) (get_local 1)) (i32.const 0)) $BB4_2)
+      (return (i32.const 0))
     )
     (return (get_local 1))
   )

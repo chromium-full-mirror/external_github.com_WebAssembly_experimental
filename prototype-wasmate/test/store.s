@@ -4,7 +4,7 @@
 	.type	sti32,@function
 sti32:
 	.param  	i32, i32
-	i32.store	$discard=, $0, $1
+	i32.store	$discard=, 0($0), $1
 	return
 func_end0:
 	.size	sti32, func_end0-sti32
@@ -13,7 +13,7 @@ func_end0:
 	.type	sti64,@function
 sti64:
 	.param  	i32, i64
-	i64.store	$discard=, $0, $1
+	i64.store	$discard=, 0($0), $1
 	return
 func_end1:
 	.size	sti64, func_end1-sti64
@@ -22,7 +22,7 @@ func_end1:
 	.type	stf32,@function
 stf32:
 	.param  	i32, f32
-	f32.store	$discard=, $0, $1
+	f32.store	$discard=, 0($0), $1
 	return
 func_end2:
 	.size	stf32, func_end2-stf32
@@ -31,16 +31,16 @@ func_end2:
 	.type	stf64,@function
 stf64:
 	.param  	i32, f64
-	f64.store	$discard=, $0, $1
+	f64.store	$discard=, 0($0), $1
 	return
 func_end3:
 	.size	stf64, func_end3-stf64
 
-	.globl	stoff
-	.type	stoff,@function
+	.globl  stoff
+	.type   stoff,@function
 stoff:
-	.param  	i32, i32
-	i32.store	$discard=, 1($0), $1
+	.param          i32, i32
+	i32.store       $discard=, 1($0), $1
 	return
 func_end4:
-	.size	stoff, func_end4-stoff
+	.size   stoff, func_end4-stoff
