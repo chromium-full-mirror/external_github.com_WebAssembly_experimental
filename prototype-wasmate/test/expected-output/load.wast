@@ -37,8 +37,5 @@
     (return (i32.load offset=0 (get_local 0)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

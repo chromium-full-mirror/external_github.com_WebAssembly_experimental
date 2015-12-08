@@ -67,8 +67,5 @@
     (return (i64.load32_u offset=0 (get_local 0)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

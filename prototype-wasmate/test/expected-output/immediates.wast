@@ -127,8 +127,5 @@
     (return (f64.const -infinity))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

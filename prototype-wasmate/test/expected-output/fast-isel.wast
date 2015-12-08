@@ -17,8 +17,5 @@
     (return (f64.const 0x1.4p1))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

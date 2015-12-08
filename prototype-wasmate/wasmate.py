@@ -173,7 +173,7 @@ class DataSegment(object):
         b = reduce_to_bytes(value, num_bytes)
         self.data[pos:pos + num_bytes] = b
 
-    def appendByte(self, byte):
+    def append_byte(self, byte):
         if byte == '\0':
             # We want to trim trailing zeros from the end of the data segment,
             # so defer writing them until we encounter a non-zero byte.
@@ -191,11 +191,11 @@ class DataSegment(object):
             self.trailing_zeros = 0
             self.data.append(byte)
 
-    def appendInteger(self, value, num_bytes):
+    def append_integer(self, value, num_bytes):
         for b in reduce_to_bytes(value, num_bytes):
-            self.appendByte(b)
+            self.append_byte(b)
 
-    def appendZeros(self, num_bytes):
+    def append_zeros(self, num_bytes):
         self.trailing_zeros += num_bytes
 
     def end(self):
@@ -231,7 +231,7 @@ class DataPassHandler(PassHandler):
             # data segment, so set all the bits of the variable, for now.
             x = 2**(num_bytes*8)-1
             self.reloc.append((self.segment.end(), num_bytes, arg, current_line_number))
-        self.segment.appendInteger(x, num_bytes)
+        self.segment.append_integer(x, num_bytes)
 
     def handle_dot_int8(self, args):
         self.handle_dot_intx(args[0], 1)
@@ -246,7 +246,7 @@ class DataPassHandler(PassHandler):
         self.handle_dot_intx(args[0], 8)
 
     def handle_dot_zero(self, args):
-        self.segment.appendZeros(int(args[0]))
+        self.segment.append_zeros(int(args[0]))
 
     def handle_dot_asciz(self, rest):
         # Strip off the leading and trailing quotes.
@@ -260,19 +260,19 @@ class DataPassHandler(PassHandler):
                 i += 1
                 c = s[i]
                 if c == 'n':
-                    self.segment.appendByte('\n')
+                    self.segment.append_byte('\n')
                 elif c == 't':
-                    self.segment.appendByte('\t')
+                    self.segment.append_byte('\t')
                 elif c == '\\':
-                    self.segment.appendByte('\\')
+                    self.segment.append_byte('\\')
                 elif c == '\'':
-                    self.segment.appendByte('\'')
+                    self.segment.append_byte('\'')
                 else:
                     error("unsupported escape!")
             else:
-                self.segment.appendByte(c)
+                self.segment.append_byte(c)
             i = i + 1
-        self.segment.appendByte('\0')
+        self.segment.append_byte('\0')
 
     def handle_dot_align(self, args):
         self.align_data_to(1 << int(args[0]))
@@ -283,7 +283,7 @@ class DataPassHandler(PassHandler):
         align = (1 << int(args[2]))
         self.align_data_to(align)
         self.handle_label(name)
-        self.segment.appendZeros(size)
+        self.segment.append_zeros(size)
 
 sig_element_match = re.compile(r'(\((param|result) ([^\)]+)\))')
 

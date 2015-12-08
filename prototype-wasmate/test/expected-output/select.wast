@@ -79,8 +79,5 @@
     (return (f64.select (get_local 0) (get_local 1) (get_local 2)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )
