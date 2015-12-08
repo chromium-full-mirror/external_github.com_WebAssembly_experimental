@@ -65,7 +65,8 @@ def run(c, cxx, testsuite):
     if failure:
       print failure[1]
   print 'Ran %s tests.' % len(c_test_files)
-  print 'Got %s failures.' % failure_count
+  print 'Got %s failures:' % failure_count
+  print '\n'.join(sorted('\t' + f[0] for f in failures if f))
   # TODO(jfb) Figure out which failures are expected.
   return failure_count
 
