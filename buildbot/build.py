@@ -210,7 +210,8 @@ def TortureLLVM():
   BuildStep('Torture LLVM')
   c = os.path.join(OUT_DIR, 'bin', 'clang')
   cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
-  torture_test.run(c, cxx, GCC_TEST_DIR)
+  # TODO(jfb) Report failure.
+  failure_count = torture_test.run(c, cxx, GCC_TEST_DIR)
 
 
 def InstallLLVM():
