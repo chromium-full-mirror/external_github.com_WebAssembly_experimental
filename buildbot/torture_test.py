@@ -73,7 +73,7 @@ def run(c, cxx, testsuite):
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   pool = multiprocessing.Pool()
   results = sorted(pool.map(Tester(c), c_test_files))
-  failure_count = sum([1 for result in results if result])
+  failure_count = sum([1 for result in results if not result])
   for result in results:
     print result
   print 'Ran %s tests.' % len(results)
