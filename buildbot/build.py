@@ -19,6 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
+import torture_test
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,9 +32,6 @@ LLVM_KNOWN_TORTURE_FAILURES = os.path.join(
 
 GCC_DIR = os.path.join(WORK_DIR, 'gcc')
 GCC_TEST_DIR = os.path.join(GCC_DIR, 'gcc', 'testsuite')
-# TODO(jfb): There are other C and C++ tests that we'll want to run.
-C_TORTURE_TEST_DIR = os.path.join(GCC_TEST_DIR, 'gcc.c-torture', 'execute')
-CPP_EH_TEST_DIR = os.path.join(GCC_TEST_DIR, 'g++.dg', 'eh')
 
 PREBUILT_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
 PREBUILT_CLANG_TOOLS = os.path.join(PREBUILT_CLANG, 'tools')
@@ -208,6 +206,14 @@ def TestLLVM():
   subprocess.check_call(['ninja', 'check-all'], cwd=OUT_DIR)
 
 
+def TortureLLVM():
+  BuildStep('Torture LLVM')
+  c = os.path.join(OUT_DIR, 'bin', 'clang')
+  cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
+  # TODO(jfb) Report failure.
+  failure_count = torture_test.run(c, cxx, GCC_TEST_DIR)
+
+
 def InstallLLVM():
   BuildStep('Install LLVM')
   if os.path.exists(INSTALL_DIR):
@@ -248,6 +254,7 @@ def main():
   SyncSexpr()
   BuildLLVM()
   TestLLVM()
+  TortureLLVM()
   InstallLLVM()
   ArchiveLLVM(svn_rev)
 
