@@ -91,8 +91,5 @@
     (return (i32.or (f32.ge (get_local 0) (get_local 1)) (i32.or (f32.ne (get_local 0) (get_local 0)) (f32.ne (get_local 1) (get_local 1)))))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

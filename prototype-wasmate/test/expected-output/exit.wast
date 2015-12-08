@@ -14,8 +14,5 @@
     (call_import $exit (i32.const 0))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

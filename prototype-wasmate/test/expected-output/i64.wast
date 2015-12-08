@@ -115,8 +115,5 @@
     (return (i64.popcnt (get_local 0)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

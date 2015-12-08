@@ -97,8 +97,5 @@
     (return (f32.max (get_local 0) (f32.const 0x0p0)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

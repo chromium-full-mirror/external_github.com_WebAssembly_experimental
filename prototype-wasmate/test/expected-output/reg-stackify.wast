@@ -49,8 +49,5 @@
     (return (get_local 4))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

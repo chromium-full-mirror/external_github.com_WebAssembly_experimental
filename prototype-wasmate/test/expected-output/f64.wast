@@ -97,8 +97,5 @@
     (return (f64.max (get_local 0) (f64.const 0x0p0)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )

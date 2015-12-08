@@ -67,8 +67,5 @@
     (return (i32.ge_u (get_local 0) (get_local 1)))
   )
   (memory 0 0
-    (segment 0
-      ""
-    )
   )
 )
