@@ -27,6 +27,21 @@ CFLAGS = ['--std=gnu89', '--target=wasm32-unknown-unknown', '-S', '-O2',
           '-Wno-implicit-function-declaration', '-Wno-implicit-int']
 
 
+class Result:
+  def __init__(self, test, success, output):
+    self.test = test
+    self.success = success
+    self.output = output
+  def __str__(self):
+    return '%s %s%s%s' % ('SUCCEEDED' if self.success else 'FAILED',
+                          self.test, '\n' if self.output else '', self.output)
+  def __nonzero__(self):
+    return self.success
+  def __lt__(self, other):
+    """Sort by test name so that the output files can be compared easily."""
+    return self.test < other.test
+
+
 class Tester(object):
   def __init__(self, compiler):
     self.compiler = compiler
@@ -35,18 +50,15 @@ class Tester(object):
     basename = os.path.basename(test_file)
     outname = basename + '.o'
     try:
-      # Ignore the output on success, including warnings.
-      subprocess.check_output(
+      output = subprocess.check_output(
         [self.compiler, test_file, '-o', outname] + CFLAGS,
         stderr=subprocess.STDOUT)
       assert os.path.exists(outname), 'Missing output file %s'
       # TODO(jfb) Run the program.
       os.remove(outname)
-      return None
+      return Result(test=basename, success=True, output=output)
     except subprocess.CalledProcessError as e:
-      return [basename,
-              ('Got return code %s while executing %s, output:\n%s\n' %
-               (e.returncode, ' '.join(e.cmd), e.output))]
+      return Result(test=basename, success=False, output=e.output)
 
 
 def run(c, cxx, testsuite):
@@ -60,14 +72,13 @@ def run(c, cxx, testsuite):
                                     c_torture)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   pool = multiprocessing.Pool()
-  failures = pool.map(Tester(c), c_test_files)
-  failure_count = sum([1 if f else 0 for f in failures])
-  for failure in failures:
-    if failure:
-      print failure[1]
-  print 'Ran %s tests.' % len(c_test_files)
+  results = sorted(pool.map(Tester(c), c_test_files))
+  failure_count = sum([1 for result in results if result])
+  for result in results:
+    print result
+  print 'Ran %s tests.' % len(results)
   print 'Got %s failures:' % failure_count
-  print '\n'.join(sorted('\t' + f[0] for f in failures if f))
+  print '\n'.join('\t' + result.test for result in results if not result)
   # TODO(jfb) Figure out which failures are expected.
   return failure_count
 
@@ -82,6 +93,7 @@ def getargs():
   parser.add_argument('--testsuite', type=str, required=True,
                       help='GCC testsuite tests path')
   return parser.parse_args()
+
 
 if __name__ == '__main__':
   args = getargs()
