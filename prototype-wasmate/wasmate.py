@@ -157,36 +157,81 @@ def reduce_to_bytes(x, num_bytes):
     assert x == 0 or x == -1
     return data
 
+# TODO split data segment if there is enough space between non-zero bytes.
+class DataSegment(object):
+    def __init__(self):
+        self.base = 0
+        self.data = []
+        self.trailing_zeros = 0
+
+    def align_to(self, align):
+        while self.end() % align != 0:
+            self.trailing_zeros += 1
+
+    def fixup(self, addr, value, num_bytes):
+        pos = addr - self.base
+        b = reduce_to_bytes(value, num_bytes)
+        self.data[pos:pos + num_bytes] = b
+
+    def appendByte(self, byte):
+        if byte == '\0':
+            # We want to trim trailing zeros from the end of the data segment,
+            # so defer writing them until we encounter a non-zero byte.
+            self.trailing_zeros += 1
+        else:
+            if self.data:
+                # Flush the accumuated zeros before outputing this non-zero
+                # byte.
+                for i in range(self.trailing_zeros):
+                    self.data.append('\0')
+            else:
+                # There is currently nothing in the data segment but zeros, so
+                # shift the begining of the data segment to this non-zero byte.
+                self.base += self.trailing_zeros
+            self.trailing_zeros = 0
+            self.data.append(byte)
+
+    def appendInteger(self, value, num_bytes):
+        for b in reduce_to_bytes(value, num_bytes):
+            self.appendByte(b)
+
+    def appendZeros(self, num_bytes):
+        self.trailing_zeros += num_bytes
+
+    def end(self):
+        return self.base + len(self.data) + self.trailing_zeros
+
 class DataPassHandler(PassHandler):
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, segment):
+        self.segment = segment
         self.reloc = []
 
     def end_pass(self):
         # Fix up relocations.
         for pos, num_bytes, symbol, line_number in self.reloc:
             if symbol in data_labels:
-                b = reduce_to_bytes(data_labels[symbol], num_bytes)
-                self.data[pos:pos + num_bytes] = b
+                self.segment.fixup(pos, data_labels[symbol], num_bytes)
             else:
                 error("can't resolve symbol %r" % symbol, line_number)
 
     def align_data_to(self, align):
-        while len(self.data) % align != 0:
-            self.data.append('\0')
+        self.segment.align_to(align)
 
     def handle_label(self, labelname):
         if current_section == ".data":
-            data_labels[labelname] = len(self.data)
+            data_labels[labelname] = self.segment.end()
 
     def handle_dot_intx(self, arg, num_bytes):
         try:
             x = int(arg)
         except ValueError:
             # It's a symbol, fix it up later.
-            x = 0
-            self.reloc.append((len(self.data), num_bytes, arg, current_line_number))
-        self.data.extend(reduce_to_bytes(x, num_bytes))
+            # We need to ensure that variables needing relocation are allocated
+            # in the data segment. Any zero byte could be stripped out of the
+            # data segment, so set all the bits of the variable, for now.
+            x = 2**(num_bytes*8)-1
+            self.reloc.append((self.segment.end(), num_bytes, arg, current_line_number))
+        self.segment.appendInteger(x, num_bytes)
 
     def handle_dot_int8(self, args):
         self.handle_dot_intx(args[0], 1)
@@ -201,9 +246,7 @@ class DataPassHandler(PassHandler):
         self.handle_dot_intx(args[0], 8)
 
     def handle_dot_zero(self, args):
-        size = int(args[0])
-        for i in range(size):
-            self.data.append('\0')
+        self.segment.appendZeros(int(args[0]))
 
     def handle_dot_asciz(self, rest):
         # Strip off the leading and trailing quotes.
@@ -217,19 +260,19 @@ class DataPassHandler(PassHandler):
                 i += 1
                 c = s[i]
                 if c == 'n':
-                    self.data.append('\n')
+                    self.segment.appendByte('\n')
                 elif c == 't':
-                    self.data.append('\t')
+                    self.segment.appendByte('\t')
                 elif c == '\\':
-                    self.data.append('\\')
+                    self.segment.appendByte('\\')
                 elif c == '\'':
-                    self.data.append('\\')
+                    self.segment.appendByte('\'')
                 else:
                     error("unsupported escape!")
             else:
-                self.data.append(c)
+                self.segment.appendByte(c)
             i = i + 1
-        self.data.append('\0')
+        self.segment.appendByte('\0')
 
     def handle_dot_align(self, args):
         self.align_data_to(1 << int(args[0]))
@@ -240,8 +283,7 @@ class DataPassHandler(PassHandler):
         align = (1 << int(args[2]))
         self.align_data_to(align)
         self.handle_label(name)
-        for i in range(0, size):
-            self.data.append('\0')
+        self.segment.appendZeros(size)
 
 sig_element_match = re.compile(r'(\((param|result) ([^\)]+)\))')
 
@@ -521,33 +563,34 @@ def do_pass(handler, all_lines):
 
     handler.end_pass()
 
-def write_data_segment(data):
-    out.write_line(('(memory ' + str(len(data)) + ' ' +
-                 str(len(data))))
+def write_data_segment(segment):
+    mem_size = segment.end()
+    out.write_line(('(memory ' + str(mem_size) + ' ' + str(mem_size)))
     out.indent()
-    out.write_line('(segment 0')
-    out.indent()
-    out.write('"')
-    for c in data:
-        if c == '\n':
-            s = '\\n'
-        elif c == '\t':
-            s = '\\t'
-        elif c == '\\':
-            s = '\\\\'
-        elif c == '\'':
-            s = '\\\''
-        elif ord(c) >= 32 and ord(c) < 127:
-            # ASCII printable
-            s = c
-        else:
-          s = '\\%02x' % ord(c)
-        out.write(s)
+    if segment.data:
+        out.write_line('(segment %d' % segment.base)
+        out.indent()
+        out.write('"')
+        for c in segment.data:
+            if c == '\n':
+                s = '\\n'
+            elif c == '\t':
+                s = '\\t'
+            elif c == '\\':
+                s = '\\\\'
+            elif c == '\'':
+                s = '\\\''
+            elif ord(c) >= 32 and ord(c) < 127:
+                # ASCII printable
+                s = c
+            else:
+              s = '\\%02x' % ord(c)
+            out.write(s)
 
-    out.write('"')
-    out.end_of_line()
-    out.dedent()
-    out.write_line(')')
+        out.write('"')
+        out.end_of_line()
+        out.dedent()
+        out.write_line(')')
     out.dedent()
     out.write_line(')')
 
@@ -568,18 +611,18 @@ def Main():
   out.write_line('(module')
   out.indent()
 
-  data = []
+  segment = DataSegment()
 
   # Make three passes over the code: once to read all the data directives, once
   # to process all the text, and once for all the imports. This lets us resolve
   # all the data symbols so we can plug in absolute offsets into the text, while
   # having all the imports on top (which then lets us transform call to
   # call_import).
-  do_pass(DataPassHandler(data), all_lines)
+  do_pass(DataPassHandler(segment), all_lines)
   do_pass(ImportsPassHandler(), all_lines)
   do_pass(TextPassHandler(), all_lines)
 
-  write_data_segment(data)
+  write_data_segment(segment)
 
   # Close the module.
   out.dedent()
