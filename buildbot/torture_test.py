@@ -40,6 +40,7 @@ class Tester(object):
         [self.compiler, test_file, '-o', outname] + CFLAGS,
         stderr=subprocess.STDOUT)
       assert os.path.exists(outname), 'Missing output file %s'
+      # TODO(jfb) Run the program.
       os.remove(outname)
       return None
     except subprocess.CalledProcessError as e:
