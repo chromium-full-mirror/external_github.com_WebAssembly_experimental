@@ -49,6 +49,9 @@ class Tester(object):
     """Test a single source file."""
     basename = os.path.basename(test_file)
     outname = basename + '.o'
+    # Print something simple so buildbots don't think the script is dead.
+    sys.stdout.write('.')
+    sys.stdout.flush()
     try:
       output = subprocess.check_output(
         [self.compiler, test_file, '-o', outname] + CFLAGS,
@@ -72,13 +75,19 @@ def run(c, cxx, testsuite):
                                     c_torture)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   pool = multiprocessing.Pool()
+  sys.stdout.write('Running')
+  sys.stdout.flush()
   results = sorted(pool.map(Tester(c), c_test_files))
+  sys.stdout.flush()
+  sys.stdout.write('\nDone.')
   failure_count = sum([1 for result in results if not result])
   for result in results:
-    print result
-  print 'Ran %s tests.' % len(results)
-  print 'Got %s failures:' % failure_count
-  print '\n'.join('\t' + result.test for result in results if not result)
+    sys.stdout.write(str(result) + '\n')
+  sys.stdout.write('Ran %s tests.\n' % len(results))
+  sys.stdout.write('Got %s failures:\n' % failure_count)
+  for result in results:
+    if not result:
+      sys.stdout.write('\t%s\n' % result.test)
   # TODO(jfb) Figure out which failures are expected.
   return failure_count
 
