@@ -120,7 +120,8 @@ def run(c, cxx, testsuite, fails):
                'Expected %s failures.' % len(expected_failures),
                'Got %s expected failures.' % len(r_expected_failures),
                'Got %s unexpected failures.' % len(r_unexpected_failures),
-               'Got %s unexpected successes.' % len(r_unexpected_successes)]))
+               'Got %s unexpected successes.' % len(r_unexpected_successes),
+               '\n']))
   return len(r_unexpected_failures) + len(r_unexpected_successes)
 
 
