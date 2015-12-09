@@ -89,7 +89,6 @@ def run(c, cxx, testsuite):
     if not result:
       sys.stdout.write('\t%s\n' % result.test)
   # TODO(jfb) Figure out which failures are expected.
-  sys.stdout.flush()
   return failure_count
 
 
