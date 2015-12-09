@@ -63,13 +63,23 @@ class Tester(object):
       return Result(test=basename, success=False, output=e.output)
 
 
-def run(c, cxx, testsuite):
+def get_expected_failures(fails):
+  """One failure per line, some whitespace, Python-style comments."""
+  assert os.path.isfile(fails), 'Cannot find known failures at %s' % fails
+  res = []
+  with open(fails, 'r') as fails_file:
+    res = fails_file.readlines()
+  return sorted([r for r in [r.split('#')[0].strip() for r in res] if len(r)])
+
+
+def run(c, cxx, testsuite, fails):
   """Run all torture tests."""
   assert os.path.isfile(c), 'Cannot find C compiler at %s' % c
   assert os.path.isfile(cxx), 'Cannot find C++ compiler at %s' % cxx
   assert os.path.isdir(testsuite), 'Cannot find testsuite at %s' % testsuite
   # TODO(jfb) Also run other C tests, as well as C++ tests under g++.dg.
   c_torture = os.path.join(testsuite, 'gcc.c-torture', 'execute')
+  expected_failures = get_expected_failures(fails)
   assert os.path.isdir(c_torture), ('Cannot find C torture tests at %s' %
                                     c_torture)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
@@ -83,6 +93,7 @@ def run(c, cxx, testsuite):
   for result in results:
     sys.stdout.write(str(result) + '\n')
   sys.stdout.write('Ran %s tests.\n' % len(results))
+  sys.stdout.write('Expected %s failures.\n' % len(expected_failures))
   sys.stdout.write('Got %s failures:\n' % failure_count)
   for result in results:
     if not result:
@@ -100,9 +111,11 @@ def getargs():
                       help='C++ compiler path')
   parser.add_argument('--testsuite', type=str, required=True,
                       help='GCC testsuite tests path')
+  parser.add_argument('--fails', type=str, required=True,
+                      help='Expected failures')
   return parser.parse_args()
 
 
 if __name__ == '__main__':
   args = getargs()
-  sys.exit(run(args.c, args.cxx, args.testsuite))
+  sys.exit(run(args.c, args.cxx, args.testsuite, args.fails))
