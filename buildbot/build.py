@@ -196,7 +196,7 @@ def BuildLLVM():
        '-DCMAKE_CXX_COMPILER=' + PREBUILT_CLANG_BIN + '/clang++',
        '-DCMAKE_BUILD_TYPE=Release',
        '-DCMAKE_INSTALL_PREFIX=' + INSTALL_DIR,
-       '-DLLVM_ENABLE_ASSERTIONS=OFF',
+       '-DLLVM_ENABLE_ASSERTIONS=ON',
        '-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly',
        '-DLLVM_TARGETS_TO_BUILD=X86'], cwd=OUT_DIR)
   print 'Running ninja'
