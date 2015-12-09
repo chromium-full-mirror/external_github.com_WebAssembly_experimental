@@ -89,17 +89,31 @@ def run(c, cxx, testsuite, fails):
   results = sorted(pool.map(Tester(c), c_test_files))
   sys.stdout.flush()
   sys.stdout.write('\nDone.')
-  failure_count = sum([1 for result in results if not result])
+  r_successes = [r for r in results if r]
+  r_failures = [r for r in results if not r]
+  r_expected_failures = [f for f in r_failures
+                         if f.test in expected_failures]
+  r_unexpected_failures = [f for f in r_failures
+                           if f.test not in expected_failures]
+  sys.stdout.write('Results:\n')
   for result in results:
-    sys.stdout.write(str(result) + '\n')
+    sys.stdout.write(str(result) + '\n\n')
+  if r_expected_failures:
+    sys.stdout.write('Expected failures:\n')
+    for f in r_expected_failures:
+      sys.stdout.write('\t%s\n' % f.test)
+  if r_unexpected_failures:
+    sys.stdout.write('Unexpected failures:\n')
+    for f in r_unexpected_failures:
+      sys.stdout.write('\t%s\n' % f.test)
+  sys.stdout.write('\n')
   sys.stdout.write('Ran %s tests.\n' % len(results))
+  sys.stdout.write('Got %s successes.\n' % len(r_successes))
+  sys.stdout.write('Got %s failures.\n' % len(r_failures))
   sys.stdout.write('Expected %s failures.\n' % len(expected_failures))
-  sys.stdout.write('Got %s failures:\n' % failure_count)
-  for result in results:
-    if not result:
-      sys.stdout.write('\t%s\n' % result.test)
-  # TODO(jfb) Figure out which failures are expected.
-  return failure_count
+  sys.stdout.write('Got %s expected failures.\n' % len(r_expected_failures))
+  sys.stdout.write('Got %s unexpected failures.\n' % len(r_unexpected_failures))
+  return len(r_failures)
 
 
 def getargs():
