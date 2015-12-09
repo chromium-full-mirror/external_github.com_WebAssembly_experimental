@@ -20,7 +20,6 @@ import os
 import os.path
 import subprocess
 import sys
-import tempfile
 
 
 CFLAGS = ['--std=gnu89', '--target=wasm32-unknown-unknown', '-S', '-O2',
