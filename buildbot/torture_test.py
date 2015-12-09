@@ -91,10 +91,12 @@ def run(c, cxx, testsuite, fails):
   sys.stdout.write('\nDone.')
   r_successes = [r for r in results if r]
   r_failures = [r for r in results if not r]
-  r_expected_failures = [f for f in r_failures
-                         if f.test in expected_failures]
-  r_unexpected_failures = [f for f in r_failures
-                           if f.test not in expected_failures]
+  r_expected_failures = [t for t in r_failures
+                         if t.test in expected_failures]
+  r_unexpected_failures = [t for t in r_failures
+                           if t.test not in expected_failures]
+  r_unexpected_successes = [t for t in r_successes
+                            if t.test in expected_failures]
   sys.stdout.write('Results:\n')
   for result in results:
     sys.stdout.write(str(result) + '\n\n')
@@ -106,14 +108,20 @@ def run(c, cxx, testsuite, fails):
     sys.stdout.write('Unexpected failures:\n')
     for f in r_unexpected_failures:
       sys.stdout.write('\t%s\n' % f.test)
-  sys.stdout.write('\n')
-  sys.stdout.write('Ran %s tests.\n' % len(results))
-  sys.stdout.write('Got %s successes.\n' % len(r_successes))
-  sys.stdout.write('Got %s failures.\n' % len(r_failures))
-  sys.stdout.write('Expected %s failures.\n' % len(expected_failures))
-  sys.stdout.write('Got %s expected failures.\n' % len(r_expected_failures))
-  sys.stdout.write('Got %s unexpected failures.\n' % len(r_unexpected_failures))
-  return len(r_failures)
+  if r_unexpected_successes:
+    sys.stdout.write('Unexpected successes:\n')
+    for f in r_unexpected_successes:
+      sys.stdout.write('\t%s\n' % f.test)
+  sys.stdout.write(
+    '\n'.join(['\n',
+               'Ran %s tests.' % len(results),
+               'Got %s successes.' % len(r_successes),
+               'Got %s failures.' % len(r_failures),
+               'Expected %s failures.' % len(expected_failures),
+               'Got %s expected failures.' % len(r_expected_failures),
+               'Got %s unexpected failures.' % len(r_unexpected_failures),
+               'Got %s unexpected successes.' % len(r_unexpected_successes)]))
+  return len(r_unexpected_failures) + len(r_unexpected_successes)
 
 
 def getargs():

@@ -212,9 +212,9 @@ def TortureLLVM():
   BuildStep('Torture LLVM')
   c = os.path.join(OUT_DIR, 'bin', 'clang')
   cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
-  # TODO(jfb) Report failure.
-  failure_count = torture_test.run(c, cxx, GCC_TEST_DIR,
-                                   LLVM_KNOWN_TORTURE_FAILURES)
+  unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
+                                             LLVM_KNOWN_TORTURE_FAILURES)
+  # TODO(jfb) Report failure to buildbot.
 
 
 def InstallLLVM():
