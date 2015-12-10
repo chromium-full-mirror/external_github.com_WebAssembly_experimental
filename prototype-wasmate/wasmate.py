@@ -429,10 +429,12 @@ class TextPassHandler(PassHandler):
 
         if len([x for x in args if x.startswith('$push')]) != 0:
             self.expr_stack.append(line)
-        elif len(args) > 0 and args[0].endswith('=') and args[0] != '$discard=':
-            assert args[0][0] == '$', args[0]
-            out.write_line('(set_local ' + args[0][1:-1] + ' ' + line + ')')
         else:
+            if self.expr_stack:
+                error("internal error - tried to emit an op with a dirty expression stack")
+            if len(args) > 0 and args[0].endswith('=') and args[0] != '$discard=':
+                assert args[0][0] == '$', args[0]
+                line = '(set_local ' + args[0][1:-1] + ' ' + line + ')'
             out.write_line(line)
 
     def handle_dot_globl(self, args):
