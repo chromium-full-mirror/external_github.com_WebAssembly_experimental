@@ -210,4 +210,56 @@ f32_demote_f64:
 func_end20:
 	.size	f32_demote_f64, func_end20-f32_demote_f64
 
+	.globl	anyext
+	.type	anyext,@function
+anyext:
+	.param  	i32
+	.result 	i64
+	i64.extend_u/i32	$push0=, $0
+	i64.const	$push1=, 32
+	i64.shl 	$push2=, $pop0, $pop1
+	return  	$pop2
+func_end21:
+	.size	anyext, func_end21-anyext
+
+	.globl	bitcast_i32_to_float
+	.type	bitcast_i32_to_float,@function
+bitcast_i32_to_float:
+	.param  	i32
+	.result 	f32
+	f32.reinterpret/i32	$push0=, $0
+	return  	$pop0
+func_end22:
+	.size	bitcast_i32_to_float, func_end22-bitcast_i32_to_float
+
+	.globl	bitcast_float_to_i32
+	.type	bitcast_float_to_i32,@function
+bitcast_float_to_i32:
+	.param  	f32
+	.result 	i32
+	i32.reinterpret/f32	$push0=, $0
+	return  	$pop0
+func_end23:
+	.size	bitcast_float_to_i32, func_end23-bitcast_float_to_i32
+
+	.globl	bitcast_i64_to_double
+	.type	bitcast_i64_to_double,@function
+bitcast_i64_to_double:
+	.param  	i64
+	.result 	f64
+	f64.reinterpret/i64	$push0=, $0
+	return  	$pop0
+func_end24:
+	.size	bitcast_i64_to_double, func_end24-bitcast_i64_to_double
+
+	.globl	bitcast_double_to_i64
+	.type	bitcast_double_to_i64,@function
+bitcast_double_to_i64:
+	.param  	f64
+	.result 	i64
+	i64.reinterpret/f64	$push0=, $0
+	return  	$pop0
+func_end25:
+	.size	bitcast_double_to_i64, func_end25-bitcast_double_to_i64
+
 

@@ -132,6 +132,36 @@
     (result f32)
     (return (f32.demote/f64 (get_local 0)))
   )
+  (export "anyext" $anyext)
+  (func $anyext
+    (param i32)
+    (result i64)
+    (return (i64.shl (i64.extend_u/i32 (get_local 0)) (i64.const 32)))
+  )
+  (export "bitcast_i32_to_float" $bitcast_i32_to_float)
+  (func $bitcast_i32_to_float
+    (param i32)
+    (result f32)
+    (return (f32.reinterpret/i32 (get_local 0)))
+  )
+  (export "bitcast_float_to_i32" $bitcast_float_to_i32)
+  (func $bitcast_float_to_i32
+    (param f32)
+    (result i32)
+    (return (i32.reinterpret/f32 (get_local 0)))
+  )
+  (export "bitcast_i64_to_double" $bitcast_i64_to_double)
+  (func $bitcast_i64_to_double
+    (param i64)
+    (result f64)
+    (return (f64.reinterpret/i64 (get_local 0)))
+  )
+  (export "bitcast_double_to_i64" $bitcast_double_to_i64)
+  (func $bitcast_double_to_i64
+    (param f64)
+    (result i64)
+    (return (i64.reinterpret/f64 (get_local 0)))
+  )
   (memory 0 0
   )
 )

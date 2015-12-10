@@ -15,7 +15,7 @@
   (func $call_memcpy
     (param i32) (param i32) (param i32)
     (result i32)
-    (call_indirect (i32.const $memcpy) (get_local 0) (get_local 1) (get_local 2))
+    (call $memcpy (get_local 0) (get_local 1) (get_local 2))
     (return (get_local 0))
   )
   (memory 136 136

@@ -15,8 +15,7 @@ func_end0:
 call_memcpy:
 	.param  	i32, i32, i32
 	.result 	i32
-	i32.const	$push0=, memcpy
-	call_indirect	$pop0, $0, $1, $2
+	call    	memcpy, $0, $1, $2
 	return  	$0
 func_end1:
 	.size	call_memcpy, func_end1-call_memcpy

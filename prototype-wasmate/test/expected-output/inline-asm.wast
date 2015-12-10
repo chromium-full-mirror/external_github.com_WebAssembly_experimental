@@ -29,6 +29,22 @@
     (result i64)
     (return (get_local 0))
   )
+  (export "X_i16" $X_i16)
+  (func $X_i16
+    (param i32)
+    (local i32)
+    (foo (get_local 1))
+    (i32.store16 offset=0 (get_local 0) (get_local 1))
+    (return)
+  )
+  (export "X_ptr" $X_ptr)
+  (func $X_ptr
+    (param i32)
+    (local i32)
+    (foo (get_local 1))
+    (i32.store offset=0 (get_local 0) (get_local 1))
+    (return)
+  )
   (memory 0 0
   )
 )
