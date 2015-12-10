@@ -135,7 +135,7 @@ class PassHandler(object):
     def handle_dot_zero(self, args):
         pass
 
-    def handle_dot_asciz(self, rest):
+    def handle_dot_ascii(self, rest, terminate):
         pass
 
     def handle_dot_align(self, args):
@@ -248,31 +248,45 @@ class DataPassHandler(PassHandler):
     def handle_dot_zero(self, args):
         self.segment.append_zeros(int(args[0]))
 
-    def handle_dot_asciz(self, rest):
+    def handle_dot_ascii(self, rest, terminate):
         # Strip off the leading and trailing quotes.
         assert rest[0] == '"', rest
         assert rest[-1] == '"', rest
         s = rest[1:-1]
         i = 0
+
+        escapes = {
+            'n': '\n',
+            'r': '\r',
+            't': '\t',
+            'f': '\f',
+            'b': '\b',
+            '\\': '\\',
+            '\'': '\'',
+            '"': '"',
+        }
         while i < len(s):
             c = s[i]
             if c == '\\':
                 i += 1
                 c = s[i]
-                if c == 'n':
-                    self.segment.append_byte('\n')
-                elif c == 't':
-                    self.segment.append_byte('\t')
-                elif c == '\\':
-                    self.segment.append_byte('\\')
-                elif c == '\'':
-                    self.segment.append_byte('\'')
+                if c in escapes:
+                    self.segment.append_byte(escapes[c])
+                    i += 1
+                elif '0' <= c and c <= '7' and i + 2 < len(s):
+                    data = s[i:i+3]
+                    try:
+                        self.segment.append_byte(chr(int(data, 8)))
+                        i += 3
+                    except ValueError:
+                        error("bad octal escape - " + data)
                 else:
-                    error("unsupported escape!")
+                    error("unsupported escape - " + c)
             else:
                 self.segment.append_byte(c)
-            i = i + 1
-        self.segment.append_byte('\0')
+                i += 1
+        if terminate:
+            self.segment.append_byte('\0')
 
     def handle_dot_align(self, args):
         self.align_data_to(1 << int(args[0]))
@@ -471,9 +485,29 @@ def cleanup_line(line):
         line = 'BB' + str(current_function_number) + '_' + line[5:]
 
     # Strip comments.
-    x = line.find('#')
-    if x != -1:
-        line = line[0:x]
+    i = 0
+    while i < len(line):
+        if line[i] == '"':
+            # It's a string that may contain a hash character, so make sure we
+            # don't confuse its contents with the start of a comment.
+            i += 1
+            while i < len(line):
+                if line[i] == '"':
+                    # End of string.
+                    i += 1
+                    break
+                elif line[i] == '\\' and i + 1 < len(line) and line[i+1] == '"':
+                    # Skip past escaped quotes.
+                    i += 2
+                else:
+                    # String data.
+                    i += 1
+        elif line[i] == '#':
+            # Strip the comment
+            line = line[:i]
+            break
+        i += 1
+
     return line.strip()
 
 def parse_line(line):
@@ -525,7 +559,11 @@ def handle_dot_directive(handler, command, args, rest):
     elif command == 'asciz':
         # Strings can contain embedded commas, so as a hack, pass the rest
         # of the line as a single argument.
-        handler.handle_dot_asciz(rest)
+        handler.handle_dot_ascii(rest, terminate=True)
+    elif command == 'ascii':
+        # Strings can contain embedded commas, so as a hack, pass the rest
+        # of the line as a single argument.
+        handler.handle_dot_ascii(rest, terminate=False)
     elif command == 'align':
         handler.handle_dot_align(args)
     elif command == 'lcomm':
@@ -580,6 +618,8 @@ def write_data_segment(segment):
                 s = '\\\\'
             elif c == '\'':
                 s = '\\\''
+            elif c == '"':
+                s = '\\"'
             elif ord(c) >= 32 and ord(c) < 127:
                 # ASCII printable
                 s = c
