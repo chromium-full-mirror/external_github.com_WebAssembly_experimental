@@ -66,7 +66,7 @@ if GCC_REVISION == 'None':
 def BuildStep(name):
   sys.stdout.flush()
   sys.stderr.flush()
-  sys.stderr.write('\n@@@BUILD_STEP %s@@@\n' % name)
+  sys.stdout.write('\n@@@BUILD_STEP %s@@@\n' % name)
 
 
 def Chdir(path):
