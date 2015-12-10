@@ -58,9 +58,9 @@ LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
 if LLVM_REVISION == 'None':
   LLVM_REVISION = 'origin/master'
 
-GCC_REVISION = os.environ.get('BUILDBOT_GCC_REVISION', 'None')
-if GCC_REVISION == 'None':
-  GCC_REVISION = 'origin/master'
+# Pin the GCC revision so that new torture tests don't break the bot. This
+# should be manually updated when convenient.
+GCC_REVISION = 'b6125c702850488ac3bfb1079ae5c9db89989406'
 
 
 def BuildStep(name):
