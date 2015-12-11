@@ -73,9 +73,9 @@ def StepLink(label, url):
   sys.stdout.write('@@@STEP_LINK@%s@%s@@@' % (label, url))
 
 
-def StepFail(name):
+def StepFail():
   """Mark one step as failing, but keep going."""
-  sys.stdout.write('\n@@@STEP_FAILURE %s@@@\n' % name)
+  sys.stdout.write('\n@@@STEP_FAILURE@@@\n')
 
 
 def Chdir(path):
@@ -225,7 +225,7 @@ def TortureLLVM():
   unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
                                              LLVM_KNOWN_TORTURE_FAILURES)
   if 0 != unexpected_result_count:
-    StepFail(name)
+    StepFail()
     return 1
   return 0
 
