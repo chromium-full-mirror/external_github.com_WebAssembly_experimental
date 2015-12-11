@@ -85,9 +85,7 @@ def run(c, cxx, testsuite, fails):
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   pool = multiprocessing.Pool()
   sys.stdout.write('Running')
-  sys.stdout.flush()
   results = sorted(pool.map(Tester(c), c_test_files))
-  sys.stdout.flush()
   sys.stdout.write('\nDone.')
   r_successes = [r for r in results if r]
   r_failures = [r for r in results if not r]

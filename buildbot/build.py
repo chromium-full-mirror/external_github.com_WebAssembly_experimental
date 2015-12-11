@@ -64,8 +64,6 @@ GCC_REVISION = 'b6125c702850488ac3bfb1079ae5c9db89989406'
 
 
 def BuildStep(name):
-  sys.stdout.flush()
-  sys.stderr.flush()
   sys.stdout.write('\n@@@BUILD_STEP %s@@@\n' % name)
 
 
