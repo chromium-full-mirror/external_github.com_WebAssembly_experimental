@@ -74,7 +74,7 @@ def StepLink(label, url):
 
 
 def StepFail():
-  """Mark one step as failing, but keep going."""
+  """Mark one step as failing, but keep going. Throwing would stop all steps."""
   sys.stdout.write('\n@@@STEP_FAILURE@@@\n')
 
 
@@ -217,19 +217,6 @@ def TestLLVM():
   subprocess.check_call(['ninja', 'check-all'], cwd=OUT_DIR)
 
 
-def TortureLLVM():
-  name = 'Torture LLVM'
-  BuildStep(name)
-  c = os.path.join(OUT_DIR, 'bin', 'clang')
-  cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
-  unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
-                                             LLVM_KNOWN_TORTURE_FAILURES)
-  if 0 != unexpected_result_count:
-    StepFail()
-    return 1
-  return 0
-
-
 def InstallLLVM():
   BuildStep('Install LLVM')
   if os.path.exists(INSTALL_DIR):
@@ -258,6 +245,24 @@ def ArchiveLLVM(svn_rev):
   StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
+def TortureLLVM():
+  name = 'Torture LLVM'
+  BuildStep(name)
+  c = os.path.join(OUT_DIR, 'bin', 'clang')
+  cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
+  unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
+                                             LLVM_KNOWN_TORTURE_FAILURES)
+  if 0 != unexpected_result_count:
+    StepFail()
+    return 1
+  return 0
+
+
+def Summary(failed_steps):
+  BuildStep('Summary')
+  sys.stdout.write('Failed steps: %s.' % failed_steps)
+
+
 def main():
   failed_steps = 0
   Clobber()
@@ -270,6 +275,9 @@ def main():
   InstallLLVM()
   ArchiveLLVM(svn_rev)
   failed_steps = failed_steps + TortureLLVM()
+  # Keep the summary step last: it'll be marked as red if the return code is
+  # non-zero. Individual steps are marked as red with StepFail().
+  Summary(failed_steps)
   return failed_steps
 
 
