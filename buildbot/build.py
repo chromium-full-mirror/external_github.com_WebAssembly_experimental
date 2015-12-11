@@ -63,8 +63,19 @@ if LLVM_REVISION == 'None':
 GCC_REVISION = 'b6125c702850488ac3bfb1079ae5c9db89989406'
 
 
+# Magic annotations:
+# https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/common/annotator.py
 def BuildStep(name):
   sys.stdout.write('\n@@@BUILD_STEP %s@@@\n' % name)
+
+
+def StepLink(label, url):
+  sys.stdout.write('@@@STEP_LINK@%s@%s@@@' % (label, url))
+
+
+def StepFail(name):
+  """Mark one step as failing, but keep going."""
+  sys.stdout.write('\n@@@STEP_FAILURE %s@@@\n' % name)
 
 
 def Chdir(path):
@@ -207,12 +218,16 @@ def TestLLVM():
 
 
 def TortureLLVM():
-  BuildStep('Torture LLVM')
+  name = 'Torture LLVM'
+  BuildStep(name)
   c = os.path.join(OUT_DIR, 'bin', 'clang')
   cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
   unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
                                              LLVM_KNOWN_TORTURE_FAILURES)
-  # TODO(jfb) Report failure to buildbot.
+  if 0 != unexpected_result_count:
+    StepFail(name)
+    return 1
+  return 0
 
 
 def InstallLLVM():
@@ -224,10 +239,6 @@ def InstallLLVM():
   Remove(INSTALL_TAR)
   print 'Creating %s' % INSTALL_TAR
   subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
-
-
-def StepLink(label, url):
-  print '@@@STEP_LINK@%s@%s@@@' % (label, url)
 
 
 def ArchiveLLVM(svn_rev):
@@ -248,6 +259,7 @@ def ArchiveLLVM(svn_rev):
 
 
 def main():
+  failed_steps = 0
   Clobber()
   svn_rev = SyncLLVMClang()
   SyncGCC()
@@ -255,10 +267,11 @@ def main():
   SyncSexpr()
   BuildLLVM()
   TestLLVM()
-  TortureLLVM()
   InstallLLVM()
   ArchiveLLVM(svn_rev)
+  failed_steps = failed_steps + TortureLLVM()
+  return failed_steps
 
 
 if __name__ == '__main__':
-  main()
+  sys.exit(main())
