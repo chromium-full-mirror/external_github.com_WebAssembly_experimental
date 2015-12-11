@@ -63,8 +63,19 @@ if LLVM_REVISION == 'None':
 GCC_REVISION = 'b6125c702850488ac3bfb1079ae5c9db89989406'
 
 
+# Magic annotations:
+# https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/common/annotator.py
 def BuildStep(name):
   sys.stdout.write('\n@@@BUILD_STEP %s@@@\n' % name)
+
+
+def StepLink(label, url):
+  sys.stdout.write('@@@STEP_LINK@%s@%s@@@' % (label, url))
+
+
+def StepFail():
+  """Mark one step as failing, but keep going. Throwing would stop all steps."""
+  sys.stdout.write('\n@@@STEP_FAILURE@@@\n')
 
 
 def Chdir(path):
@@ -206,15 +217,6 @@ def TestLLVM():
   subprocess.check_call(['ninja', 'check-all'], cwd=OUT_DIR)
 
 
-def TortureLLVM():
-  BuildStep('Torture LLVM')
-  c = os.path.join(OUT_DIR, 'bin', 'clang')
-  cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
-  unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
-                                             LLVM_KNOWN_TORTURE_FAILURES)
-  # TODO(jfb) Report failure to buildbot.
-
-
 def InstallLLVM():
   BuildStep('Install LLVM')
   if os.path.exists(INSTALL_DIR):
@@ -224,10 +226,6 @@ def InstallLLVM():
   Remove(INSTALL_TAR)
   print 'Creating %s' % INSTALL_TAR
   subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
-
-
-def StepLink(label, url):
-  print '@@@STEP_LINK@%s@%s@@@' % (label, url)
 
 
 def ArchiveLLVM(svn_rev):
@@ -247,7 +245,26 @@ def ArchiveLLVM(svn_rev):
   StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
+def TortureLLVM():
+  name = 'Torture LLVM'
+  BuildStep(name)
+  c = os.path.join(OUT_DIR, 'bin', 'clang')
+  cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
+  unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
+                                             LLVM_KNOWN_TORTURE_FAILURES)
+  if 0 != unexpected_result_count:
+    StepFail()
+    return 1
+  return 0
+
+
+def Summary(failed_steps):
+  BuildStep('Summary')
+  sys.stdout.write('Failed steps: %s.' % failed_steps)
+
+
 def main():
+  failed_steps = 0
   Clobber()
   svn_rev = SyncLLVMClang()
   SyncGCC()
@@ -255,10 +272,14 @@ def main():
   SyncSexpr()
   BuildLLVM()
   TestLLVM()
-  TortureLLVM()
   InstallLLVM()
   ArchiveLLVM(svn_rev)
+  failed_steps = failed_steps + TortureLLVM()
+  # Keep the summary step last: it'll be marked as red if the return code is
+  # non-zero. Individual steps are marked as red with StepFail().
+  Summary(failed_steps)
+  return failed_steps
 
 
 if __name__ == '__main__':
-  main()
+  sys.exit(main())
