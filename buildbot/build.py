@@ -222,7 +222,7 @@ def TestLLVM():
 
 def InstallLLVM():
   BuildStep('Install LLVM')
-  Remove((LLVM_INSTALL_DIR)
+  Remove(LLVM_INSTALL_DIR)
   subprocess.check_call(['ninja', 'install'], cwd=LLVM_OUT_DIR)
   Remove(LLVM_INSTALL_TAR)
   print 'Creating %s' % LLVM_INSTALL_TAR
