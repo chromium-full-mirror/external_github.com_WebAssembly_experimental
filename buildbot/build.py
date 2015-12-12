@@ -89,7 +89,7 @@ def Chdir(path):
 def Mkdir(path):
   if os.path.exists(path):
     if not os.path.isdir(path):
-      raise Error('Path %s is not a directory!' % path)
+      raise Exception('Path %s is not a directory!' % path)
     print 'Directory %s already exists' % path
   else:
     os.mkdir(path)
@@ -145,7 +145,7 @@ def FindPriorRev(path, goal):
         ['git', 'svn', 'find-rev', rev], cwd=path).strip()
     if int(num) <= goal:
       return rev
-  raise Error('Cannot find clang rev at or before %d' % goal)
+  raise Exception('Cannot find clang rev at or before %d' % goal)
 
 
 def SyncLLVMClang():
