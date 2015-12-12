@@ -41,9 +41,11 @@ PREBUILT_CLANG_BIN = os.path.join(
 
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
-LLVM_OUT_DIR = os.path.join(WORK_DIR, 'out')
+LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
 LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
+TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
+TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
 GIT_MIRROR_BASE = 'https://chromium.googlesource.com/'
 LLVM_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/llvm'
@@ -57,6 +59,7 @@ SEXPR_GIT = (GIT_MIRROR_BASE + 'external/' +
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
 if LLVM_REVISION == 'None':
   LLVM_REVISION = 'origin/master'
+LLVM_SVN_REV = None # Found after the sync step, corresponds to LLVM_REVISION.
 
 # Pin the GCC revision so that new torture tests don't break the bot. This
 # should be manually updated when convenient.
@@ -93,12 +96,37 @@ def Mkdir(path):
 
 
 def Remove(path):
+  """Remove file or directory if it exists, do nothing otherwise."""
   if os.path.exists(path):
     print 'Removing %s' % path
     if os.path.isdir(path):
       shutil.rmtree(path)
     else:
       os.remove(path)
+
+
+def Tar(tar, directory):
+  """Create a tar file from directory."""
+  Remove(tar)
+  print 'Creating %s' % tar
+  subprocess.check_call(['tar', 'cjf', tar, '.'], cwd=directory)
+
+
+def Archive(name, tar):
+  """Archive the tar file with the given name, and with the LLVM git hash."""
+  if not os.environ.get('BUILDBOT_BUILDERNAME'):
+    return
+  BuildStep('Archive %s' % name)
+  svn_gs = 'wasm-llvm/builds/svn/wasm-%s-r%s.tbz2' % (name, LLVM_SVN_REV)
+  git_gs = 'wasm-llvm/builds/git/wasm-%s-%s.tbz2' % (name, LLVM_REVISION)
+  subprocess.check_call(
+      ['gsutil', 'cp' , '-a',
+       'public-read', tar, 'gs://' + svn_gs])
+  subprocess.check_call(
+      ['gsutil', 'cp' , '-a',
+       'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
+  StepLink('download', 'https://storage.googleapis.com/%s' % svn_gs)
+  StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
 def GitConfigRebaseMaster(cwd):
@@ -121,7 +149,6 @@ def FindPriorRev(path, goal):
 
 
 def SyncLLVMClang():
-  BuildStep('Sync LLVM')
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
   if os.path.exists(LLVM_DIR):
@@ -137,15 +164,15 @@ def SyncLLVMClang():
   subprocess.check_call(['git', 'fetch'], cwd=LLVM_DIR)
   subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_DIR)
   print 'Getting SVN rev'
-  svn_rev = int(subprocess.check_output(
+  global LLVM_SVN_REV
+  LLVM_SVN_REV = int(subprocess.check_output(
       ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_DIR).strip())
-  print 'SVN REV: %d' % svn_rev
+  print 'SVN REV: %d' % LLVM_SVN_REV
   print 'Finding prior Clang rev'
   subprocess.check_call(['git', 'fetch'], cwd=CLANG_DIR)
-  prior_rev = FindPriorRev(CLANG_DIR, svn_rev)
+  prior_rev = FindPriorRev(CLANG_DIR, LLVM_SVN_REV)
   print 'Checking out Clang rev: %s' % prior_rev
   subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
-  return svn_rev
 
 
 def SyncGCC():
@@ -196,6 +223,14 @@ def Clobber():
       shutil.rmtree(WORK_DIR)
 
 
+def SyncRepos():
+  BuildStep('Sync Repos')
+  SyncLLVMClang()
+  SyncGCC()
+  SyncPrebuiltClang()
+  SyncSexpr()
+
+
 def BuildLLVM():
   BuildStep('Build LLVM')
   print 'Running cmake on llvm'
@@ -224,28 +259,13 @@ def InstallLLVM():
   BuildStep('Install LLVM')
   Remove(LLVM_INSTALL_DIR)
   subprocess.check_call(['ninja', 'install'], cwd=LLVM_OUT_DIR)
-  Remove(LLVM_INSTALL_TAR)
-  print 'Creating %s' % LLVM_INSTALL_TAR
-  subprocess.check_call(['tar', 'cjf', LLVM_INSTALL_TAR, '.'],
-                        cwd=LLVM_INSTALL_DIR)
+  Tar(tar=LLVM_INSTALL_TAR, directory=LLVM_INSTALL_DIR)
 
 
-def ArchiveLLVM(svn_rev):
+def ArchiveLLVM():
   if LLVM_REVISION == 'origin/master':
     return
-  if not os.environ.get('BUILDBOT_BUILDERNAME'):
-    return
-  BuildStep('Archive')
-  svn_gs = 'wasm-llvm/builds/svn/wasm-llvm-r%s.tbz2' % svn_rev
-  git_gs = 'wasm-llvm/builds/git/wasm-llvm-%s.tbz2' % LLVM_REVISION
-  subprocess.check_call(
-      ['gsutil', 'cp' , '-a', 'public-read', LLVM_INSTALL_TAR,
-       'gs://' + svn_gs])
-  subprocess.check_call(
-      ['gsutil', 'cp' , '-a',
-       'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
-  StepLink('download', 'https://storage.googleapis.com/%s' % svn_gs)
-  StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
+  Archive('LLVM', LLVM_INSTALL_TAR)
 
 
 def TortureLLVM():
@@ -253,12 +273,23 @@ def TortureLLVM():
   BuildStep(name)
   c = os.path.join(LLVM_OUT_DIR, 'bin', 'clang')
   cxx = os.path.join(LLVM_OUT_DIR, 'bin', 'clang++')
-  unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
-                                             LLVM_KNOWN_TORTURE_FAILURES)
+  Remove(TORTURE_OUT_DIR)
+  Mkdir(TORTURE_OUT_DIR)
+  unexpected_result_count = torture_test.run(
+    c=c, cxx=cxx, testsuite=GCC_TEST_DIR,
+    fails=LLVM_KNOWN_TORTURE_FAILURES,
+    out=TORTURE_OUT_DIR)
+  # Create the tar file even if there were some failures.
+  Tar(tar=TORTURE_TAR, directory=TORTURE_OUT_DIR)
   if 0 != unexpected_result_count:
     StepFail()
     return 1
   return 0
+
+
+def ArchiveTorture():
+  if os.path.isfile(TORTURE_TAR):
+    Archive('Torture', TORTURE_TAR)
 
 
 def Summary(failed_steps):
@@ -269,15 +300,13 @@ def Summary(failed_steps):
 def main():
   failed_steps = 0
   Clobber()
-  svn_rev = SyncLLVMClang()
-  SyncGCC()
-  SyncPrebuiltClang()
-  SyncSexpr()
+  SyncRepos()
   BuildLLVM()
   TestLLVM()
   InstallLLVM()
-  ArchiveLLVM(svn_rev)
+  ArchiveLLVM()
   failed_steps = failed_steps + TortureLLVM()
+  ArchiveTorture()
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
   Summary(failed_steps)

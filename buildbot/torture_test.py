@@ -42,22 +42,23 @@ class Result:
 
 
 class Tester(object):
-  def __init__(self, compiler):
-    self.compiler = compiler
+  def __init__(self, c, cxx, out):
+    self.c = c
+    self.cxx = cxx
+    self.out = out
   def __call__(self, test_file):
     """Test a single source file."""
     basename = os.path.basename(test_file)
-    outname = basename + '.o'
+    outname = basename + '.s'
+    outfile = os.path.join(self.out, outname)
     # Print something simple so buildbots don't think the script is dead.
     sys.stdout.write('.')
     sys.stdout.flush()
     try:
       output = subprocess.check_output(
-        [self.compiler, test_file, '-o', outname] + CFLAGS,
-        stderr=subprocess.STDOUT)
-      assert os.path.exists(outname), 'Missing output file %s'
-      # TODO(jfb) Run the program.
-      os.remove(outname)
+        [self.c, test_file, '-o', outname] + CFLAGS,
+        stderr=subprocess.STDOUT, cwd=self.out)
+      assert os.path.exists(outfile), 'Missing output file %s'
       return Result(test=basename, success=True, output=output)
     except subprocess.CalledProcessError as e:
       return Result(test=basename, success=False, output=e.output)
@@ -72,7 +73,7 @@ def get_expected_failures(fails):
   return sorted([r for r in [r.split('#')[0].strip() for r in res] if len(r)])
 
 
-def run(c, cxx, testsuite, fails):
+def run(c, cxx, testsuite, fails, out):
   """Run all torture tests."""
   assert os.path.isfile(c), 'Cannot find C compiler at %s' % c
   assert os.path.isfile(cxx), 'Cannot find C++ compiler at %s' % cxx
@@ -82,10 +83,11 @@ def run(c, cxx, testsuite, fails):
   expected_failures = get_expected_failures(fails)
   assert os.path.isdir(c_torture), ('Cannot find C torture tests at %s' %
                                     c_torture)
+  assert os.path.isdir(out)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   pool = multiprocessing.Pool()
   sys.stdout.write('Running')
-  results = sorted(pool.map(Tester(c), c_test_files))
+  results = sorted(pool.map(Tester(c=c, cxx=cxx, out=out), c_test_files))
   sys.stdout.write('\nDone.')
   r_successes = [r for r in results if r]
   r_failures = [r for r in results if not r]
@@ -134,9 +136,11 @@ def getargs():
                       help='GCC testsuite tests path')
   parser.add_argument('--fails', type=str, required=True,
                       help='Expected failures')
+  parser.add_argument('--out', type=str, required=True,
+                      help='Output directory')
   return parser.parse_args()
 
 
 if __name__ == '__main__':
   args = getargs()
-  sys.exit(run(args.c, args.cxx, args.testsuite, args.fails))
+  sys.exit(run(args.c, args.cxx, args.testsuite, args.fails, args.out))
