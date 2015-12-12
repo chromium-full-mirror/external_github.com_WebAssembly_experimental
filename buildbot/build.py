@@ -41,9 +41,9 @@ PREBUILT_CLANG_BIN = os.path.join(
 
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 
-OUT_DIR = os.path.join(WORK_DIR, 'out')
-INSTALL_DIR = os.path.join(WORK_DIR, 'install')
-INSTALL_TAR = os.path.join(WORK_DIR, 'install.tbz2')
+LLVM_OUT_DIR = os.path.join(WORK_DIR, 'out')
+LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
+LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
 
 GIT_MIRROR_BASE = 'https://chromium.googlesource.com/'
 LLVM_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/llvm'
@@ -95,7 +95,10 @@ def Mkdir(path):
 def Remove(path):
   if os.path.exists(path):
     print 'Removing %s' % path
-    os.remove(path)
+    if os.path.isdir(path):
+      shutil.rmtree(path)
+    else:
+      os.remove(path)
 
 
 def GitConfigRebaseMaster(cwd):
@@ -196,7 +199,7 @@ def Clobber():
 def BuildLLVM():
   BuildStep('Build LLVM')
   print 'Running cmake on llvm'
-  Mkdir(OUT_DIR)
+  Mkdir(LLVM_OUT_DIR)
   subprocess.check_call(
       ['cmake', '-G', 'Ninja', LLVM_DIR,
        '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
@@ -204,28 +207,27 @@ def BuildLLVM():
        '-DCMAKE_C_COMPILER=' + PREBUILT_CLANG_BIN + '/clang',
        '-DCMAKE_CXX_COMPILER=' + PREBUILT_CLANG_BIN + '/clang++',
        '-DCMAKE_BUILD_TYPE=Release',
-       '-DCMAKE_INSTALL_PREFIX=' + INSTALL_DIR,
+       '-DCMAKE_INSTALL_PREFIX=' + LLVM_INSTALL_DIR,
        '-DLLVM_ENABLE_ASSERTIONS=ON',
        '-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly',
-       '-DLLVM_TARGETS_TO_BUILD=X86'], cwd=OUT_DIR)
+       '-DLLVM_TARGETS_TO_BUILD=X86'], cwd=LLVM_OUT_DIR)
   print 'Running ninja'
-  subprocess.check_call(['ninja'], cwd=OUT_DIR)
+  subprocess.check_call(['ninja'], cwd=LLVM_OUT_DIR)
 
 
 def TestLLVM():
   BuildStep('Test LLVM')
-  subprocess.check_call(['ninja', 'check-all'], cwd=OUT_DIR)
+  subprocess.check_call(['ninja', 'check-all'], cwd=LLVM_OUT_DIR)
 
 
 def InstallLLVM():
   BuildStep('Install LLVM')
-  if os.path.exists(INSTALL_DIR):
-    print 'Removing %s' % INSTALL_DIR
-    shutil.rmtree(INSTALL_DIR)
-  subprocess.check_call(['ninja', 'install'], cwd=OUT_DIR)
-  Remove(INSTALL_TAR)
-  print 'Creating %s' % INSTALL_TAR
-  subprocess.check_call(['tar', 'cjf', INSTALL_TAR, '.'], cwd=INSTALL_DIR)
+  Remove((LLVM_INSTALL_DIR)
+  subprocess.check_call(['ninja', 'install'], cwd=LLVM_OUT_DIR)
+  Remove(LLVM_INSTALL_TAR)
+  print 'Creating %s' % LLVM_INSTALL_TAR
+  subprocess.check_call(['tar', 'cjf', LLVM_INSTALL_TAR, '.'],
+                        cwd=LLVM_INSTALL_DIR)
 
 
 def ArchiveLLVM(svn_rev):
@@ -237,7 +239,8 @@ def ArchiveLLVM(svn_rev):
   svn_gs = 'wasm-llvm/builds/svn/wasm-llvm-r%s.tbz2' % svn_rev
   git_gs = 'wasm-llvm/builds/git/wasm-llvm-%s.tbz2' % LLVM_REVISION
   subprocess.check_call(
-      ['gsutil', 'cp' , '-a', 'public-read', INSTALL_TAR, 'gs://' + svn_gs])
+      ['gsutil', 'cp' , '-a', 'public-read', LLVM_INSTALL_TAR,
+       'gs://' + svn_gs])
   subprocess.check_call(
       ['gsutil', 'cp' , '-a',
        'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
@@ -248,8 +251,8 @@ def ArchiveLLVM(svn_rev):
 def TortureLLVM():
   name = 'Torture LLVM'
   BuildStep(name)
-  c = os.path.join(OUT_DIR, 'bin', 'clang')
-  cxx = os.path.join(OUT_DIR, 'bin', 'clang++')
+  c = os.path.join(LLVM_OUT_DIR, 'bin', 'clang')
+  cxx = os.path.join(LLVM_OUT_DIR, 'bin', 'clang++')
   unexpected_result_count = torture_test.run(c, cxx, GCC_TEST_DIR,
                                              LLVM_KNOWN_TORTURE_FAILURES)
   if 0 != unexpected_result_count:
