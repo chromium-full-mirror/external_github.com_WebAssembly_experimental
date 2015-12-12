@@ -73,7 +73,7 @@ def BuildStep(name):
 
 
 def StepLink(label, url):
-  sys.stdout.write('@@@STEP_LINK@%s@%s\n' % (label, url))
+  sys.stdout.write('@@@STEP_LINK@%s@%s@@@\n' % (label, url))
 
 
 def StepFail():
@@ -126,8 +126,7 @@ def Archive(name, tar):
       ['gsutil', 'cp' , '-a',
        'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
   StepLink('download', 'https://storage.googleapis.com/%s' % svn_gs)
-  # TODO(bradnelson) buildbot waterfall can only hadle one link?
-  # StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
+  StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
 def GitConfigRebaseMaster(cwd):
