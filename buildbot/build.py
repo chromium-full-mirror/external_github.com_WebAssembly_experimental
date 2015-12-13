@@ -298,8 +298,6 @@ def Summary(failed_steps):
 
 
 def main():
-  # TODO(jfb): Temporarily remove the old out directory, which I just renamed.
-  Remove(os.path.join(WORK_DIR, 'out'))
   failed_steps = 0
   Clobber()
   SyncRepos()
