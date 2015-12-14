@@ -268,8 +268,8 @@ def ArchiveLLVM():
   Archive('LLVM', LLVM_INSTALL_TAR)
 
 
-def TortureLLVM():
-  name = 'Torture LLVM'
+def CompileLLVMTorture():
+  name = 'Compile LLVM Torture'
   BuildStep(name)
   c = os.path.join(LLVM_OUT_DIR, 'bin', 'clang')
   cxx = os.path.join(LLVM_OUT_DIR, 'bin', 'clang++')
@@ -279,8 +279,6 @@ def TortureLLVM():
     c=c, cxx=cxx, testsuite=GCC_TEST_DIR,
     fails=LLVM_KNOWN_TORTURE_FAILURES,
     out=TORTURE_OUT_DIR)
-  # Create the tar file even if there were some failures.
-  Tar(tar=TORTURE_TAR, directory=TORTURE_OUT_DIR)
   if 0 != unexpected_result_count:
     StepFail()
     return 1
@@ -288,7 +286,8 @@ def TortureLLVM():
 
 
 def ArchiveTorture():
-  if os.path.isfile(TORTURE_TAR):
+  if os.path.isdir(TORTURE_OUT_DIR):
+    Tar(tar=TORTURE_TAR, directory=TORTURE_OUT_DIR)
     Archive('Torture', TORTURE_TAR)
 
 
@@ -305,7 +304,7 @@ def main():
   TestLLVM()
   InstallLLVM()
   ArchiveLLVM()
-  failed_steps = failed_steps + TortureLLVM()
+  failed_steps = failed_steps + CompileLLVMTorture()
   ArchiveTorture()
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().

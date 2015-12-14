@@ -74,11 +74,11 @@ def get_expected_failures(fails):
 
 
 def run(c, cxx, testsuite, fails, out):
-  """Run all torture tests."""
+  """Compiler all torture tests."""
   assert os.path.isfile(c), 'Cannot find C compiler at %s' % c
   assert os.path.isfile(cxx), 'Cannot find C++ compiler at %s' % cxx
   assert os.path.isdir(testsuite), 'Cannot find testsuite at %s' % testsuite
-  # TODO(jfb) Also run other C tests, as well as C++ tests under g++.dg.
+  # TODO(jfb) Also compile other C tests, as well as C++ tests under g++.dg.
   c_torture = os.path.join(testsuite, 'gcc.c-torture', 'execute')
   expected_failures = get_expected_failures(fails)
   assert os.path.isdir(c_torture), ('Cannot find C torture tests at %s' %
@@ -86,7 +86,7 @@ def run(c, cxx, testsuite, fails, out):
   assert os.path.isdir(out)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   pool = multiprocessing.Pool()
-  sys.stdout.write('Running')
+  sys.stdout.write('Compiling')
   results = sorted(pool.map(Tester(c=c, cxx=cxx, out=out), c_test_files))
   sys.stdout.write('\nDone.')
   r_successes = [r for r in results if r]
@@ -127,7 +127,7 @@ def run(c, cxx, testsuite, fails, out):
 
 def getargs():
   import argparse
-  parser = argparse.ArgumentParser(description='Run GCC torture tests.')
+  parser = argparse.ArgumentParser(description='Compile GCC torture tests.')
   parser.add_argument('--c', type=str, required=True,
                       help='C compiler path')
   parser.add_argument('--cxx', type=str, required=True,
