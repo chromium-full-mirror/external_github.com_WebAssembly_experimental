@@ -15,6 +15,7 @@
 #   limitations under the License.
 
 
+import glob
 import os
 import shutil
 import subprocess
@@ -29,6 +30,8 @@ LLVM_DIR = os.path.join(WORK_DIR, 'llvm')
 CLANG_DIR = os.path.join(LLVM_DIR, 'tools', 'clang')
 LLVM_KNOWN_TORTURE_FAILURES = os.path.join(
   LLVM_DIR, 'lib', 'Target', 'WebAssembly', 'known_gcc_test_failures.txt')
+
+LINKER = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate', 'wasmate.py')
 
 GCC_DIR = os.path.join(WORK_DIR, 'gcc')
 GCC_TEST_DIR = os.path.join(GCC_DIR, 'gcc', 'testsuite')
@@ -285,6 +288,30 @@ def CompileLLVMTorture():
   return 0
 
 
+def LinkLLVMTorture():
+  BuildStep('Link LLVM Torture')
+  assert os.path.isfile(LINKER), 'Cannot find linker at %s' % LINKER
+  assembly_files = sorted(glob.glob(os.path.join(TORTURE_OUT_DIR, '*.s')))
+  sys.stdout.write('Found %s assembly files.\n' % len(assembly_files))
+  failures = 0
+  for s in assembly_files:
+    basename = os.path.basename(s)
+    outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wast')
+    try:
+      output = subprocess.check_output(
+          [LINKER, '--output', outfile, s],
+          stderr=subprocess.STDOUT)
+      sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
+    except subprocess.CalledProcessError as e:
+      sys.stdout.write('FAILED %s\n%s\n' % (s, e.output))
+      failures = failures + 1
+  # TODO(jfb) Failures are ignored for now, until wasmate is fixed.
+  # if 0 != failures:
+  #   StepFail()
+  #   return 1
+  return 0
+
+
 def ArchiveTorture():
   if os.path.isdir(TORTURE_OUT_DIR):
     Tar(tar=TORTURE_TAR, directory=TORTURE_OUT_DIR)
@@ -304,7 +331,8 @@ def main():
   TestLLVM()
   InstallLLVM()
   ArchiveLLVM()
-  failed_steps = failed_steps + CompileLLVMTorture()
+  failed_steps += CompileLLVMTorture()
+  failed_steps += LinkLLVMTorture()
   ArchiveTorture()
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
