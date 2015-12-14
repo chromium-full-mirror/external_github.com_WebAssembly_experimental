@@ -152,4 +152,14 @@ fmax32:
 func_end14:
 	.size	fmax32, func_end14-fmax32
 
+	.globl	fma32
+	.type	fma32,@function
+fma32:
+	.param  	f32, f32, f32
+	.result 	f32
+	f32.call	$push0=, fmaf, $0, $1, $2
+	return  	$pop0
+func_end15:
+	.size	fma32, func_end15-fma32
+
 

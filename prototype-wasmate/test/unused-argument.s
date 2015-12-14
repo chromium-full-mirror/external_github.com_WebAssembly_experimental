@@ -21,7 +21,7 @@ func_end1:
 	.globl	call_something
 	.type	call_something,@function
 call_something:
-	call    	$discard=, return_something
+	i32.call	$discard=, return_something
 	return
 func_end2:
 	.size	call_something, func_end2-call_something

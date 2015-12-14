@@ -8,6 +8,7 @@
 (module
   (import $something "" "something" )
   (import $bar "" "bar" )
+  (import $a "" "a" (result i32))
   (export "test0" $test0)
   (func $test0
     (param i32)
@@ -207,6 +208,215 @@
       (unreachable)
     )
     (return)
+  )
+  (export "test4" $test4)
+  (func $test4
+    (param i32)
+    (block $BB13_8
+      (block $BB13_7
+        (block $BB13_4
+          (br_if (i32.gt_s (get_local 0) (i32.const 3)) $BB13_4)
+          (block $BB13_3
+            (br_if (i32.eq (get_local 0) (i32.const 0)) $BB13_3)
+            (br_if (i32.ne (get_local 0) (i32.const 2)) $BB13_7)
+          )
+          (return)
+        )
+        (br_if (i32.eq (get_local 0) (i32.const 4)) $BB13_8)
+        (br_if (i32.ne (get_local 0) (i32.const 622)) $BB13_7)
+        (return)
+      )
+      (return)
+    )
+    (return)
+  )
+  (export "test5" $test5)
+  (func $test5
+    (param i32) (param i32)
+    (local i32 i32)
+    (block $BB14_4
+      (loop $BB14_3 $BB14_1
+        (set_local 2 (i32.const 0))
+        (set_local 3 (i32.store offset=0 (get_local 2) (get_local 2)))
+        (set_local 2 (i32.const 1))
+        (br_if (i32.eq (i32.and (get_local 0) (get_local 2)) (i32.const 0)) $BB14_4)
+        (br_if (i32.and (get_local 1) (i32.store offset=0 (get_local 3) (get_local 2))) $BB14_1)
+      )
+      (i32.store offset=0 (get_local 3) (i32.const 3))
+      (return)
+    )
+    (i32.store offset=0 (get_local 3) (i32.const 2))
+    (return)
+  )
+  (export "test6" $test6)
+  (func $test6
+    (param i32) (param i32)
+    (local i32 i32 i32)
+    (block $BB15_6
+      (block $BB15_5
+        (loop $BB15_4 $BB15_1
+          (set_local 2 (i32.const 0))
+          (i32.store offset=0 (get_local 2) (get_local 2))
+          (set_local 3 (i32.const 1))
+          (br_if (i32.eq (i32.and (get_local 0) (get_local 3)) (i32.const 0)) $BB15_6)
+          (i32.store offset=0 (get_local 2) (get_local 3))
+          (set_local 4 (i32.and (get_local 1) (get_local 3)))
+          (br_if (i32.eq (get_local 4) (i32.const 0)) $BB15_5)
+          (i32.store offset=0 (get_local 2) (get_local 3))
+          (br_if (get_local 4) $BB15_1)
+        )
+        (i32.store offset=0 (get_local 2) (i32.const 2))
+        (return)
+      )
+      (i32.store offset=0 (get_local 2) (i32.const 3))
+    )
+    (i32.store offset=0 (get_local 2) (i32.const 4))
+    (return)
+  )
+  (export "test7" $test7)
+  (func $test7
+    (param i32) (param i32)
+    (local i32 i32)
+    (set_local 3 (i32.const 0))
+    (set_local 2 (i32.store offset=0 (get_local 3) (get_local 3)))
+    (loop $BB16_5 $BB16_1
+      (set_local 3 (i32.store offset=0 (get_local 2) (i32.const 1)))
+      (block $BB16_4
+        (br_if (i32.and (get_local 0) (get_local 3)) $BB16_4)
+        (i32.store offset=0 (get_local 2) (i32.const 2))
+        (br_if (i32.and (get_local 1) (get_local 3)) $BB16_1)
+        (i32.store offset=0 (get_local 2) (i32.const 4))
+        (unreachable)
+      )
+      (i32.store offset=0 (get_local 2) (i32.const 3))
+      (br_if (i32.and (get_local 1) (get_local 3)) $BB16_1)
+    )
+    (i32.store offset=0 (get_local 2) (i32.const 5))
+    (unreachable)
+  )
+  (export "test8" $test8)
+  (func $test8
+    (result i32)
+    (local i32)
+    (set_local 0 (i32.const 0))
+    (loop $BB17_4 $BB17_1
+      (block $BB17_3
+        (br_if (i32.eq (get_local 0) (i32.const 0)) $BB17_3)
+        (br_if (i32.eq (get_local 0) (i32.const 0)) $BB17_1)
+      )
+      (loop $BB17_4 $BB17_3
+        (br_if (get_local 0) $BB17_3)
+        (br $BB17_1)
+      )
+    )
+  )
+  (export "test9" $test9)
+  (func $test9
+    (local i32 i32)
+    (set_local 1 (i32.const 0))
+    (set_local 0 (i32.store offset=0 (get_local 1) (get_local 1)))
+    (loop $BB18_5 $BB18_1
+      (set_local 1 (i32.store offset=0 (get_local 0) (i32.const 1)))
+      (br_if (i32.eq (i32.and (call_import $a) (get_local 1)) (i32.const 0)) $BB18_5)
+      (loop $BB18_5 $BB18_2
+        (i32.store offset=0 (get_local 0) (i32.const 2))
+        (block $BB18_4
+          (br_if (i32.eq (i32.and (call_import $a) (get_local 1)) (i32.const 0)) $BB18_4)
+          (i32.store offset=0 (get_local 0) (i32.const 3))
+          (br_if (i32.and (call_import $a) (get_local 1)) $BB18_2)
+          (br $BB18_1)
+        )
+        (i32.store offset=0 (get_local 0) (i32.const 4))
+        (br_if (i32.and (call_import $a) (get_local 1)) $BB18_2)
+        (br $BB18_1)
+      )
+    )
+    (i32.store offset=0 (get_local 0) (i32.const 5))
+    (return)
+  )
+  (export "test10" $test10)
+  (func $test10
+    (local i32 i32 i32 i32 i32)
+    (set_local 0 (i32.const 2))
+    (loop $BB19_7 $BB19_1
+      (set_local 4 (get_local 1))
+      (set_local 3 (get_local 0))
+      (set_local 1 (i32.const 0))
+      (set_local 0 (i32.const 3))
+      (set_local 2 (i32.const 4))
+      (br_if (get_local 4) $BB19_1)
+      (block $BB19_6
+        (loop $BB19_5 $BB19_2
+          (set_local 4 (get_local 3))
+          (set_local 3 (get_local 2))
+          (loop $BB19_5 $BB19_3
+            (set_local 2 (get_local 4))
+            (br_if (i32.gt_u (get_local 2) (i32.const 4)) $BB19_1)
+            (set_local 4 (get_local 3))
+            (tableswitch (get_local 2) $BB19_3 $BB19_3 $BB19_5 $BB19_1 $BB19_2 $BB19_6)
+          )
+        )
+        (return)
+      )
+      (set_local 1 (i32.const 1))
+      (br $BB19_1)
+    )
+  )
+  (export "test11" $test11)
+  (func $test11
+    (local i32)
+    (set_local 0 (i32.const 0))
+    (i32.store offset=0 (get_local 0) (get_local 0))
+    (block $BB20_8
+      (block $BB20_7
+        (block $BB20_6
+          (block $BB20_4
+            (br_if (get_local 0) $BB20_4)
+            (i32.store offset=0 (get_local 0) (i32.const 1))
+            (block $BB20_3
+              (br_if (get_local 0) $BB20_3)
+              (i32.store offset=0 (get_local 0) (i32.const 2))
+              (br_if (get_local 0) $BB20_6)
+            )
+            (i32.store offset=0 (get_local 0) (i32.const 3))
+            (return)
+          )
+          (i32.store offset=0 (get_local 0) (i32.const 4))
+          (br_if (get_local 0) $BB20_8)
+          (i32.store offset=0 (get_local 0) (i32.const 5))
+          (br_if (i32.eq (get_local 0) (i32.const 0)) $BB20_7)
+        )
+        (i32.store offset=0 (get_local 0) (i32.const 7))
+        (return)
+      )
+      (i32.store offset=0 (get_local 0) (i32.const 6))
+      (return)
+    )
+    (i32.store offset=0 (get_local 0) (i32.const 8))
+    (return)
+  )
+  (export "test12" $test12)
+  (func $test12
+    (param i32)
+    (local i32)
+    (loop $BB21_8 $BB21_1
+      (set_local 1 (i32.load8_u offset=0 (get_local 0)))
+      (block $BB21_7
+        (block $BB21_6
+          (block $BB21_4
+            (br_if (i32.gt_s (get_local 1) (i32.const 103)) $BB21_4)
+            (br_if (i32.eq (get_local 1) (i32.const 42)) $BB21_7)
+            (br_if (i32.eq (get_local 1) (i32.const 76)) $BB21_7)
+            (br $BB21_6)
+          )
+          (br_if (i32.eq (get_local 1) (i32.const 108)) $BB21_7)
+          (br_if (i32.eq (get_local 1) (i32.const 104)) $BB21_7)
+        )
+        (return)
+      )
+      (set_local 0 (i32.add (get_local 0) (i32.const 1)))
+      (br $BB21_1)
+    )
   )
   (memory 0 0
   )

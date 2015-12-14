@@ -152,4 +152,14 @@ fmax64:
 func_end14:
 	.size	fmax64, func_end14-fmax64
 
+	.globl	fma64
+	.type	fma64,@function
+fma64:
+	.param  	f64, f64, f64
+	.result 	f64
+	f64.call	$push0=, fma, $0, $1, $2
+	return  	$pop0
+func_end15:
+	.size	fma64, func_end15-fma64
+
 

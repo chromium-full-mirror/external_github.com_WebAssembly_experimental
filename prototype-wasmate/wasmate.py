@@ -411,6 +411,13 @@ class TextPassHandler(PassHandler):
                 # Strip the leading '$' and create a get_local.
                 args[i] = '(get_local ' + args[i][1:] + ')'
 
+        # LLVM is now emitting return-type prefixs on call instructions. We
+        # don't currently need this information, so we just discard it.
+        if command.endswith('call'):
+            command = 'call';
+        elif command.endswith('call_indirect'):
+            command = 'call_indirect';
+
         # Rewrite call to call_import.
         # TODO: Revisit this once
         # https://github.com/WebAssembly/design/issues/421

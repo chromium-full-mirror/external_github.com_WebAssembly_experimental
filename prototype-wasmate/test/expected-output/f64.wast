@@ -96,6 +96,12 @@
     (result f64)
     (return (f64.max (get_local 0) (f64.const 0x0p0)))
   )
+  (export "fma64" $fma64)
+  (func $fma64
+    (param f64) (param f64) (param f64)
+    (result f64)
+    (return (call $fma (get_local 0) (get_local 1) (get_local 2)))
+  )
   (memory 0 0
   )
 )

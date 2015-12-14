@@ -96,6 +96,12 @@
     (result f32)
     (return (f32.max (get_local 0) (f32.const 0x0p0)))
   )
+  (export "fma32" $fma32)
+  (func $fma32
+    (param f32) (param f32) (param f32)
+    (result f32)
+    (return (call $fmaf (get_local 0) (get_local 1) (get_local 2)))
+  )
   (memory 0 0
   )
 )

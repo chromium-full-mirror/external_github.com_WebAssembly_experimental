@@ -4,7 +4,7 @@
 	.type	call_i32_nullary,@function
 call_i32_nullary:
 	.result 	i32
-	call    	$push0=, i32_nullary
+	i32.call	$push0=, i32_nullary
 	return  	$pop0
 func_end0:
 	.size	call_i32_nullary, func_end0-call_i32_nullary
@@ -13,7 +13,7 @@ func_end0:
 	.type	call_i64_nullary,@function
 call_i64_nullary:
 	.result 	i64
-	call    	$push0=, i64_nullary
+	i64.call	$push0=, i64_nullary
 	return  	$pop0
 func_end1:
 	.size	call_i64_nullary, func_end1-call_i64_nullary
@@ -22,7 +22,7 @@ func_end1:
 	.type	call_float_nullary,@function
 call_float_nullary:
 	.result 	f32
-	call    	$push0=, float_nullary
+	f32.call	$push0=, float_nullary
 	return  	$pop0
 func_end2:
 	.size	call_float_nullary, func_end2-call_float_nullary
@@ -31,7 +31,7 @@ func_end2:
 	.type	call_double_nullary,@function
 call_double_nullary:
 	.result 	f64
-	call    	$push0=, double_nullary
+	f64.call	$push0=, double_nullary
 	return  	$pop0
 func_end3:
 	.size	call_double_nullary, func_end3-call_double_nullary
@@ -49,7 +49,7 @@ func_end4:
 call_i32_unary:
 	.param  	i32
 	.result 	i32
-	call    	$push0=, i32_unary, $0
+	i32.call	$push0=, i32_unary, $0
 	return  	$pop0
 func_end5:
 	.size	call_i32_unary, func_end5-call_i32_unary
@@ -59,7 +59,7 @@ func_end5:
 call_i32_binary:
 	.param  	i32, i32
 	.result 	i32
-	call    	$push0=, i32_binary, $0, $1
+	i32.call	$push0=, i32_binary, $0, $1
 	return  	$pop0
 func_end6:
 	.size	call_i32_binary, func_end6-call_i32_binary
@@ -78,7 +78,7 @@ func_end7:
 call_indirect_i32:
 	.param  	i32
 	.result 	i32
-	call_indirect	$push0=, $0
+	i32.call_indirect	$push0=, $0
 	return  	$pop0
 func_end8:
 	.size	call_indirect_i32, func_end8-call_indirect_i32
