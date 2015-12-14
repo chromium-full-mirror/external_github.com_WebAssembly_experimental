@@ -304,7 +304,7 @@ def LinkLLVMTorture():
       sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
     except subprocess.CalledProcessError as e:
       sys.stdout.write('FAILED %s\n%s\n' % (s, e.output))
-      failures = failures + 1
+      failures += 1
   # TODO(jfb) Failures are ignored for now, until wasmate is fixed.
   # if 0 != failures:
   #   StepFail()
