@@ -29,7 +29,7 @@ WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 LLVM_DIR = os.path.join(WORK_DIR, 'llvm')
 CLANG_DIR = os.path.join(LLVM_DIR, 'tools', 'clang')
 LLVM_KNOWN_TORTURE_FAILURES = os.path.join(
-  LLVM_DIR, 'lib', 'Target', 'WebAssembly', 'known_gcc_test_failures.txt')
+    LLVM_DIR, 'lib', 'Target', 'WebAssembly', 'known_gcc_test_failures.txt')
 
 LINKER = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate', 'wasmate.py')
 
@@ -62,7 +62,7 @@ SEXPR_GIT = (GIT_MIRROR_BASE + 'external/' +
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
 if LLVM_REVISION == 'None':
   LLVM_REVISION = 'origin/master'
-LLVM_SVN_REV = None # Found after the sync step, corresponds to LLVM_REVISION.
+LLVM_SVN_REV = None  # Found after the sync step, corresponds to LLVM_REVISION.
 
 # Pin the GCC revision so that new torture tests don't break the bot. This
 # should be manually updated when convenient.
@@ -80,7 +80,7 @@ def StepLink(label, url):
 
 
 def StepFail():
-  """Mark one step as failing, but keep going. Throwing would stop all steps."""
+  """Mark one step as failing, but keep going."""
   sys.stdout.write('\n@@@STEP_FAILURE@@@\n')
 
 
@@ -123,21 +123,23 @@ def Archive(name, tar):
   svn_gs = 'wasm-llvm/builds/svn/wasm-%s-r%s.tbz2' % (name, LLVM_SVN_REV)
   git_gs = 'wasm-llvm/builds/git/wasm-%s-%s.tbz2' % (name, LLVM_REVISION)
   subprocess.check_call(
-      ['gsutil', 'cp' , '-a',
+      ['gsutil', 'cp', '-a',
        'public-read', tar, 'gs://' + svn_gs])
   subprocess.check_call(
-      ['gsutil', 'cp' , '-a',
+      ['gsutil', 'cp', '-a',
        'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
   StepLink('download', 'https://storage.googleapis.com/%s' % svn_gs)
   StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
 def GitConfigRebaseMaster(cwd):
-  # The upstream repository is in Subversion, use git pull --rebase instead
-  # of git pull to avoid generating a non-linear history in the clone:
-  #   llvm.org/docs/GettingStarted.html#git-mirror
+  """Avoid generating a non-linear history in the clone
+
+  The upstream repository is in Subversion. Use `git pull --rebase` instead of
+  git pull: llvm.org/docs/GettingStarted.html#git-mirror
+  """
   subprocess.check_call(
-    ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
+      ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
 
 
 def FindPriorRev(path, goal):
@@ -279,9 +281,9 @@ def CompileLLVMTorture():
   Remove(TORTURE_OUT_DIR)
   Mkdir(TORTURE_OUT_DIR)
   unexpected_result_count = torture_test.run(
-    c=c, cxx=cxx, testsuite=GCC_TEST_DIR,
-    fails=LLVM_KNOWN_TORTURE_FAILURES,
-    out=TORTURE_OUT_DIR)
+      c=c, cxx=cxx, testsuite=GCC_TEST_DIR,
+      fails=LLVM_KNOWN_TORTURE_FAILURES,
+      out=TORTURE_OUT_DIR)
   if 0 != unexpected_result_count:
     StepFail()
     return 1
