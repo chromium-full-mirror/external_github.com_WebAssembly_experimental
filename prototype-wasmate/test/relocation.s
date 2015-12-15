@@ -7,7 +7,7 @@ main:                                   # @main
 	.local i32
 # BB#0:                                 # %entry
 	i32.const $push0=, a
-	i32.load $push1=, $pop0
+	i32.load $push1=, 0($pop0)
 	return $pop1
 func_end0:
 	.size	main, func_end0-main
