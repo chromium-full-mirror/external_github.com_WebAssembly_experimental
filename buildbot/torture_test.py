@@ -31,11 +31,14 @@ class Result:
     self.test = test
     self.success = success
     self.output = output
+
   def __str__(self):
     return '%s %s%s%s' % ('SUCCEEDED' if self.success else 'FAILED',
                           self.test, '\n' if self.output else '', self.output)
+
   def __nonzero__(self):
     return self.success
+
   def __lt__(self, other):
     """Sort by test name so that the output files can be compared easily."""
     return self.test < other.test
@@ -46,6 +49,7 @@ class Tester(object):
     self.c = c
     self.cxx = cxx
     self.out = out
+
   def __call__(self, test_file):
     """Test a single source file."""
     basename = os.path.basename(test_file)
@@ -56,8 +60,8 @@ class Tester(object):
     sys.stdout.flush()
     try:
       output = subprocess.check_output(
-        [self.c, test_file, '-o', outname] + CFLAGS,
-        stderr=subprocess.STDOUT, cwd=self.out)
+          [self.c, test_file, '-o', outname] + CFLAGS,
+          stderr=subprocess.STDOUT, cwd=self.out)
       assert os.path.isfile(outfile), 'Missing output file %s'
       return Result(test=basename, success=True, output=output)
     except subprocess.CalledProcessError as e:
@@ -113,15 +117,15 @@ def run(c, cxx, testsuite, fails, out):
     for f in r_unexpected_successes:
       sys.stdout.write('\t%s\n' % f.test)
   sys.stdout.write(
-    '\n'.join(['\n',
-               'Ran %s tests.' % len(results),
-               'Got %s successes.' % len(r_successes),
-               'Got %s failures.' % len(r_failures),
-               'Expected %s failures.' % len(expected_failures),
-               'Got %s expected failures.' % len(r_expected_failures),
-               'Got %s unexpected failures.' % len(r_unexpected_failures),
-               'Got %s unexpected successes.' % len(r_unexpected_successes),
-               '\n']))
+      '\n'.join(['\n',
+                 'Ran %s tests.' % len(results),
+                 'Got %s successes.' % len(r_successes),
+                 'Got %s failures.' % len(r_failures),
+                 'Expected %s failures.' % len(expected_failures),
+                 'Got %s expected failures.' % len(r_expected_failures),
+                 'Got %s unexpected failures.' % len(r_unexpected_failures),
+                 'Got %s unexpected successes.' % len(r_unexpected_successes),
+                 '\n']))
   return len(r_unexpected_failures) + len(r_unexpected_successes)
 
 
