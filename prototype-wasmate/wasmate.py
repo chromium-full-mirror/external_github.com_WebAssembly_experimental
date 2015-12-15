@@ -343,8 +343,9 @@ class DataPassHandler(PassHandler):
     def handle_dot_lcomm(self, args):
         name = args[0]
         size = int(args[1])
-        align = (1 << int(args[2]))
-        self.align_data_to(align)
+        # The alignment arg may be ommited.
+        if len(args) > 2:
+            self.align_data_to(1 << int(args[2]))
         self.handle_label(name)
         self.segment.append_zeros(size)
 
