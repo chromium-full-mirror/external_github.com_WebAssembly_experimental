@@ -58,7 +58,7 @@ class Tester(object):
       output = subprocess.check_output(
         [self.c, test_file, '-o', outname] + CFLAGS,
         stderr=subprocess.STDOUT, cwd=self.out)
-      assert os.path.exists(outfile), 'Missing output file %s'
+      assert os.path.isfile(outfile), 'Missing output file %s'
       return Result(test=basename, success=True, output=output)
     except subprocess.CalledProcessError as e:
       return Result(test=basename, success=False, output=e.output)

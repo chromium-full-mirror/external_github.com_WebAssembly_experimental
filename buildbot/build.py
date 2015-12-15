@@ -154,8 +154,8 @@ def FindPriorRev(path, goal):
 def SyncLLVMClang():
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
-  if os.path.exists(LLVM_DIR):
-    assert os.path.exists(CLANG_DIR), 'Assuming LLVM present implies Clang too'
+  if os.path.isdir(LLVM_DIR):
+    assert os.path.isdir(CLANG_DIR), 'Assuming LLVM present implies Clang too'
     print 'LLVM and Clang directories already exist'
   else:
     print 'Cloning LLVM and Clang'
@@ -179,7 +179,7 @@ def SyncLLVMClang():
 
 
 def SyncGCC():
-  if os.path.exists(GCC_DIR):
+  if os.path.isdir(GCC_DIR):
     print 'GCC directory already exists'
   else:
     print 'Cloning GCC'
@@ -191,7 +191,7 @@ def SyncGCC():
 
 
 def SyncPrebuiltClang():
-  if os.path.exists(PREBUILT_CLANG_TOOLS_CLANG):
+  if os.path.isdir(PREBUILT_CLANG_TOOLS_CLANG):
     print 'Prebuilt Chromium Clang directory already exists'
   else:
     print 'Cloning Prebuilt Chromium Clang directory'
@@ -208,7 +208,7 @@ def SyncPrebuiltClang():
 
 
 def SyncSexpr():
-  if os.path.exists(SEXPR_DIR):
+  if os.path.isdir(SEXPR_DIR):
     print 'Sexpr directory already exists'
   else:
     print 'Cloning Sexpr'
@@ -221,7 +221,7 @@ def SyncSexpr():
 def Clobber():
   if os.environ.get('BUILDBOT_CLOBBER'):
     BuildStep('Clobbering work dir')
-    if os.path.exists(WORK_DIR):
+    if os.path.isdir(WORK_DIR):
       print 'Removing %s' % WORK_DIR
       shutil.rmtree(WORK_DIR)
 
