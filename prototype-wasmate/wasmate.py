@@ -123,6 +123,15 @@ def error(message, line_number=None):
                      message + '\n')
     sys.exit(1)
 
+def resolve_data_label(arg):
+    parts = arg.split('+', 1)
+    base = parts[0]
+    offset = 0 if len(parts) == 1 else int(parts[1])
+    if base in data_labels:
+        return data_labels[base] + offset, True
+    else:
+        return 0, False
+
 def resolve_label(arg):
     # Labels can be of the form 'foo' or 'foo+47'. Split the offset out so that
     # we can resolve the base symbol and then re-add the offset to the result
@@ -135,11 +144,9 @@ def resolve_label(arg):
     #
     # Test for '(' so that we avoid revisiting sexprified stacked operands.
     if (arg[0] != '('):
-        parts = arg.split('+', 1)
-        base = parts[0]
-        offset = 0 if len(parts) == 1 else int(parts[1])
-        if data_labels.has_key(base):
-            return str(data_labels[base] + offset)
+        resolved, ok = resolve_data_label(arg)
+        if ok:
+            return str(resolved)
     if arg[0].isalpha() and arg != 'infinity' and arg != 'nan':
         return '$' + arg
     return arg
@@ -258,8 +265,9 @@ class DataPassHandler(PassHandler):
     def end_pass(self):
         # Fix up relocations.
         for pos, num_bytes, symbol, line_number in self.reloc:
-            if symbol in data_labels:
-                self.segment.fixup(pos, data_labels[symbol], num_bytes)
+            resolved, ok = resolve_data_label(symbol)
+            if ok:
+                self.segment.fixup(pos, resolved, num_bytes)
             else:
                 error("can't resolve symbol %r" % symbol, line_number)
 
