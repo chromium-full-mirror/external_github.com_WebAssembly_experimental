@@ -10,7 +10,7 @@
   (func $main
     (result i32)
     (local i32)
-    (return (i32.load (i32.const 4)))
+    (return (i32.load offset=0 (i32.const 4)))
   )
   (memory 8 8
     (segment 0
