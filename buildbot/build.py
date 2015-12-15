@@ -141,6 +141,11 @@ def GitConfigRebaseMaster(cwd):
   subprocess.check_call(
       ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
 
+def PrintCurrentGitRev(cwd):
+  out = subprocess.check_output(
+      ['git', 'rev-parse', 'HEAD'], cwd=cwd).strip()
+  sys.stdout.write(os.path.basename(cwd) + ' is at revision ' + out + '\n')
+
 
 def FindPriorRev(path, goal):
   revs = subprocess.check_output(
@@ -178,6 +183,8 @@ def SyncLLVMClang():
   prior_rev = FindPriorRev(CLANG_DIR, LLVM_SVN_REV)
   print 'Checking out Clang rev: %s' % prior_rev
   subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
+  PrintCurrentGitRev(LLVM_DIR)
+  PrintCurrentGitRev(CLANG_DIR)
 
 
 def SyncGCC():
@@ -190,6 +197,7 @@ def SyncGCC():
   print 'Syncing GCC'
   subprocess.check_call(['git', 'fetch'], cwd=GCC_DIR)
   subprocess.check_call(['git', 'checkout', GCC_REVISION], cwd=GCC_DIR)
+  PrintCurrentGitRev(GCC_DIR)
 
 
 def SyncPrebuiltClang():
@@ -207,6 +215,7 @@ def SyncPrebuiltClang():
   print 'Syncing Prebuilt Chromium Clang'
   subprocess.check_call(
       [os.path.join(PREBUILT_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
+  PrintCurrentGitRev(PREBUILT_CLANG_TOOLS_CLANG)
 
 
 def SyncSexpr():
@@ -218,6 +227,7 @@ def SyncSexpr():
     GitConfigRebaseMaster(SEXPR_DIR)
   print 'Syncing Sexpr'
   subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
+  PrintCurrentGitRev(SEXPR_DIR)
 
 
 def Clobber():
