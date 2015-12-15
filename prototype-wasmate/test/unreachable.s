@@ -26,5 +26,3 @@ func_end2:
 	.size	f3, func_end2-f3
 
 
-	.imports
-	.import abort "" abort

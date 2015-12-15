@@ -6,8 +6,6 @@
 ;;
 
 (module
-  (import $copysign "" "copysign" (param f64 f64) (result f64))
-  (import $copysignf "" "copysignf" (param f32 f32) (result f32))
   (export "fold_promote" $fold_promote)
   (func $fold_promote
     (param f64) (param f32)

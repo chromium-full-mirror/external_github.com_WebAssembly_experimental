@@ -6,13 +6,6 @@
 ;;
 
 (module
-  (import $printi "" "printi" (param i32) (result i32))
-  (import $printf "" "printf" (param f32) (result f32))
-  (import $printv "" "printv" )
-  (import $add2 "" "add2" (param i32 i32) (result i32))
-  (import $split_arg "" "split_arg" (param i64 i64))
-  (import $expanded_arg "" "expanded_arg" (param i32))
-  (import $lowered_result "" "lowered_result" (result i32))
   (export "f" $f)
   (func $f
     (param i32) (param f32) (param i64) (param i64) (param i32)
@@ -24,6 +17,12 @@
     (call_import $lowered_result)
     (return)
   )
+  (import $printv "misctest" "printv")
+  (import $split_arg "misctest" "split_arg" (param i64 i64))
+  (import $lowered_result "misctest" "lowered_result" (return i32))
+  (import $printf "misctest" "printf" (param f32) (return f32))
+  (import $printi "misctest" "printi" (param i32) (return i32))
+  (import $expanded_arg "misctest" "expanded_arg" (param i32))
   (memory 0 0
   )
 )

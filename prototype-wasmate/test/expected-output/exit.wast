@@ -6,13 +6,13 @@
 ;;
 
 (module
-  (import $exit "" "exit" (param i32))
   (export "main" $main)
   (func $main
     (result i32)
     (local i32)
     (call_import $exit (i32.const 0))
   )
+  (import $exit "misctest" "exit" (param i32))
   (memory 0 0
   )
 )

@@ -6,13 +6,6 @@
 ;;
 
 (module
-  (import $i32_nullary "" "i32_nullary" (result i32))
-  (import $i32_unary "" "i32_unary" (param i32) (result i32))
-  (import $i32_binary "" "i32_binary" (param i32 i32) (result i32))
-  (import $i64_nullary "" "i64_nullary" (result i64))
-  (import $float_nullary "" "float_nullary" (result f32))
-  (import $double_nullary "" "double_nullary" (result f64))
-  (import $void_nullary "" "void_nullary" )
   (export "call_i32_nullary" $call_i32_nullary)
   (func $call_i32_nullary
     (result i32)
@@ -77,6 +70,13 @@
     (call_import $void_nullary)
     (return)
   )
+  (import $void_nullary "misctest" "void_nullary")
+  (import $float_nullary "misctest" "float_nullary" (return f32))
+  (import $i32_unary "misctest" "i32_unary" (param i32) (return i32))
+  (import $i32_nullary "misctest" "i32_nullary" (return i32))
+  (import $double_nullary "misctest" "double_nullary" (return f64))
+  (import $i64_nullary "misctest" "i64_nullary" (return i64))
+  (import $i32_binary "misctest" "i32_binary" (param i32 i32) (return i32))
   (memory 0 0
   )
 )

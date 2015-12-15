@@ -10,8 +10,3 @@ main:                                   # @main
 	call exit, $pop0
 func_end0:
 	.size	main, func_end0-main
-
-
-	.imports
-	.import exit "" exit (param i32)
-

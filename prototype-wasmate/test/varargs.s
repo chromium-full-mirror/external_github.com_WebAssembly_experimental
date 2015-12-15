@@ -86,5 +86,3 @@ func_end5:
 	.size	caller_none, func_end5-caller_none
 
 
-	.imports
-	.import callee "" callee

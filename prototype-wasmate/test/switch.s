@@ -76,10 +76,3 @@ func_end1:
 	.size	bar64, func_end1-bar64
 
 
-	.imports
-	.import foo0 "" foo0
-	.import foo1 "" foo1
-	.import foo2 "" foo2
-	.import foo3 "" foo3
-	.import foo4 "" foo4
-	.import foo5 "" foo5

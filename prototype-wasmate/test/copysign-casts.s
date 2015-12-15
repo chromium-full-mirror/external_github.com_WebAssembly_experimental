@@ -23,6 +23,3 @@ func_end1:
 	.size	fold_demote, func_end1-fold_demote
 
 
-	.imports
-	.import copysign "" copysign (param f64 f64) (result f64)
-	.import copysignf "" copysignf (param f32 f32) (result f32)
