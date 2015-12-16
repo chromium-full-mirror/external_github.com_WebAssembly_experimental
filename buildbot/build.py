@@ -112,8 +112,10 @@ def Remove(path):
 def Tar(tar, directory):
   """Create a tar file from directory."""
   Remove(tar)
-  print 'Creating %s' % tar
-  subprocess.check_call(['tar', 'cjf', tar, '.'], cwd=directory)
+  assert os.path.isdir(directory), 'Must tar a directory to avoid tarbombs'
+  (up_directory, basename) = os.path.split(directory)
+  print 'Creating %s from %s/%s' % (tar, up_directory, basename)
+  subprocess.check_call(['tar', 'cjf', tar, basename], cwd=up_directory)
 
 
 def Archive(name, tar):
