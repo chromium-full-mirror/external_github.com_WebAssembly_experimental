@@ -417,7 +417,7 @@ class TextPassHandler(PassHandler):
         if 'load' in command or 'store' in command:
           m = re.match(r'(.+)\((.+)\)', args[1])
           if m:
-            command += ' offset=' + m.group(1)
+            command += ' offset=' + resolve_label(m.group(1))
             args[1] = m.group(2)
 
         # Replace uses of $pop with expressions from the stack. We iterate
