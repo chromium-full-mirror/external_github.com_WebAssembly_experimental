@@ -325,7 +325,7 @@ def LinkLLVMTorture():
     outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wast')
     try:
       output = subprocess.check_output(
-          [LINKER, s, '--output', outfile],
+          [LINKER, s, '--output', outfile, '-l' , 'misctest'],
           stderr=subprocess.STDOUT)
       sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
     except subprocess.CalledProcessError as e:
