@@ -47,7 +47,7 @@ SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
 LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
-SEXPR_OUT_DIR = os.path.join(WORK_DIR, 'sexpr-out')
+SEXPR_OUT_DIR = os.path.join(SEXPR_DIR, 'out')
 TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
 TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
@@ -280,9 +280,11 @@ def InstallLLVM():
 
 def BuildSexpr():
   BuildStep('Build Sexpr')
-  Mkdir(SEXPR_OUT_DIR)
-  subprocess.check_call(['make'], cwd=SEXPR_OUT_DIR)
-  sexpr = os.path.join(SEXPR_OUT_DIR, 'out', 'sexpr-wasm')
+  # sexpr-wasm builds in its own in-tree out/ folder. The build is fast, so
+  # always clobber.
+  subprocess.check_call(['make', 'clean'], cwd=SEXPR_DIR)
+  subprocess.check_call(['make'], cwd=SEXPR_DIR)
+  sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
   ibin = os.path.join(LLVM_INSTALL_DIR, 'bin')
   shutil.copy2(sexpr, ibin)
 
@@ -323,7 +325,33 @@ def LinkLLVMTorture():
     outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wast')
     try:
       output = subprocess.check_output(
-          [LINKER, '--output', outfile, s],
+          [LINKER, s, '--output', outfile],
+          stderr=subprocess.STDOUT)
+      sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
+    except subprocess.CalledProcessError as e:
+      sys.stdout.write('FAILED %s\n%s\n' % (s, e.output))
+      failures += 1
+  # TODO(jfb) Failures are ignored for now, until wasmate is fixed.
+  # if 0 != failures:
+  #   StepFail()
+  #   return 1
+  return 0
+
+
+# TODO(jfb) Fix the duplication with LinkLLVMTorture and torture_test.
+def AssembleLLVMTorture():
+  BuildStep('Assemble LLVM Torture')
+  sexpr = os.path.join(LLVM_INSTALL_DIR, 'bin', 'sexpr-wasm')
+  assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
+  sexpr_files = sorted(glob.glob(os.path.join(TORTURE_OUT_DIR, '*.wast')))
+  sys.stdout.write('Found %s sexpr files.\n' % len(sexpr_files))
+  failures = 0
+  for s in sexpr_files:
+    basename = os.path.basename(s)
+    outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wasm')
+    try:
+      output = subprocess.check_output(
+          [sexpr, s, '--output', outfile],
           stderr=subprocess.STDOUT)
       sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
     except subprocess.CalledProcessError as e:
@@ -358,6 +386,7 @@ def main():
   ArchiveLLVM()
   failed_steps += CompileLLVMTorture()
   failed_steps += LinkLLVMTorture()
+  failed_steps += AssembleLLVMTorture()
   ArchiveTorture()
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
