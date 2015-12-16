@@ -47,6 +47,7 @@ SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
 LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
+SEXPR_OUT_DIR = os.path.join(WORK_DIR, 'sexpr-out')
 TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
 TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
@@ -277,9 +278,20 @@ def InstallLLVM():
   Tar(tar=LLVM_INSTALL_TAR, directory=LLVM_INSTALL_DIR)
 
 
+def BuildSexpr():
+  BuildStep('Build Sexpr')
+  Mkdir(SEXPR_OUT_DIR)
+  subprocess.check_call(['make'], cwd=SEXPR_OUT_DIR)
+  sexpr = os.path.join(SEXPR_OUT_DIR, 'out', 'sexpr-wasm')
+  ibin = os.path.join(LLVM_INSTALL_DIR, 'bin')
+  shutil.copy2(sexpr, ibin)
+
+
 def ArchiveLLVM():
   if LLVM_REVISION == 'origin/master':
     return
+  sexpr = os.path.join(LLVM_INSTALL_DIR, 'bin', 'sexpr-wasm')
+  assert os.path.isfile(sexpr), 'Expected binary %s' % sexpr
   Archive('LLVM', LLVM_INSTALL_TAR)
 
 
@@ -342,6 +354,7 @@ def main():
   BuildLLVM()
   TestLLVM()
   InstallLLVM()
+  BuildSexpr()
   ArchiveLLVM()
   failed_steps += CompileLLVMTorture()
   failed_steps += LinkLLVMTorture()
