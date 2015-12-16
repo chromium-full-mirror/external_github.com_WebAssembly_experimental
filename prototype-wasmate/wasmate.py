@@ -159,6 +159,15 @@ class PassHandler(object):
         pass
 
     def handle_label(self, labelname):
+        if current_section == ".data":
+            self.handle_data_label(labelname)
+        else:
+            self.handle_text_label(labelname)
+
+    def handle_data_label(self, labelname):
+        pass
+
+    def handle_text_label(self, labelname):
         pass
 
     def handle_mnemonic(self, command, args):
@@ -274,9 +283,8 @@ class DataPassHandler(PassHandler):
     def align_data_to(self, align):
         self.segment.align_to(align)
 
-    def handle_label(self, labelname):
-        if current_section == ".data":
-            data_labels[labelname] = self.segment.end()
+    def handle_data_label(self, labelname):
+        data_labels[labelname] = self.segment.end()
 
     def handle_dot_intx(self, arg, num_bytes):
         try:
@@ -354,7 +362,7 @@ class DataPassHandler(PassHandler):
         # The alignment arg may be ommited.
         if len(args) > 2:
             self.align_data_to(1 << int(args[2]))
-        self.handle_label(name)
+        self.handle_data_label(name)
         self.segment.append_zeros(size)
 
 # Convert an instruction from mnemonic syntax to sexpr syntax.
@@ -383,25 +391,24 @@ class TextPassHandler(PassHandler):
         assert len(self.expr_stack) == 0, self.expr_stack
         assert self.current_function is None, self.current_function
 
-    def handle_label(self, labelname):
-        if current_section == ".text":
-            if self.current_function is not None:
-                # Label inside a function.
-                if labelname.startswith('func_end'):
-                    pass
-                else:
-                    if labelname in self.block_labels:
-                        for i in range(0, self.block_labels[labelname]):
-                            out.dedent()
-                            out.write_line(')')
-                    self.block_labels[labelname] = 0
-                    self.current_label = labelname
+    def handle_text_label(self, labelname):
+        if self.current_function is not None:
+            # Label inside a function.
+            if labelname.startswith('func_end'):
+                pass
             else:
-                # Label for a function.
-                assert self.current_function is None, self.current_function
-                self.current_function = labelname
-                out.write_line('(func $' + labelname)
-                out.indent()
+                if labelname in self.block_labels:
+                    for i in range(0, self.block_labels[labelname]):
+                        out.dedent()
+                        out.write_line(')')
+                self.block_labels[labelname] = 0
+                self.current_label = labelname
+        else:
+            # Label for a function.
+            assert self.current_function is None, self.current_function
+            self.current_function = labelname
+            out.write_line('(func $' + labelname)
+            out.indent()
 
     def handle_mnemonic(self, command, args):
         # Handle address arguments of stores which have offsets.
