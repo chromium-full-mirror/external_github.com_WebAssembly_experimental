@@ -163,3 +163,4 @@ func_end15:
 	.size	fma32, func_end15-fma32
 
 
+	.section	".note.GNU-stack","",@progbits

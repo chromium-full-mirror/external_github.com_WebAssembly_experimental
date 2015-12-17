@@ -10,3 +10,4 @@ func_end0:
 	.size	return_i32, func_end0-return_i32
 
 
+	.section	".note.GNU-stack","",@progbits

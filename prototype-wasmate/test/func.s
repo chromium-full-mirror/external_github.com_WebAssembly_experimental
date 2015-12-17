@@ -62,3 +62,4 @@ func_end5:
 	.size	f5, func_end5-f5
 
 
+	.section	".note.GNU-stack","",@progbits

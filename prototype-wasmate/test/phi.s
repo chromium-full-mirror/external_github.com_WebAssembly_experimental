@@ -40,3 +40,4 @@ func_end1:
 	.size	test1, func_end1-test1
 
 
+	.section	".note.GNU-stack","",@progbits

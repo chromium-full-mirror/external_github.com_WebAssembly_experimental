@@ -72,3 +72,4 @@ func_end4:
 	.size	stack_uses, func_end4-stack_uses
 
 
+	.section	".note.GNU-stack","",@progbits

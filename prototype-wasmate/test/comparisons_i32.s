@@ -101,3 +101,4 @@ func_end9:
 	.size	uge_i32, func_end9-uge_i32
 
 
+	.section	".note.GNU-stack","",@progbits

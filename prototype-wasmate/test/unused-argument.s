@@ -27,3 +27,4 @@ func_end2:
 	.size	call_something, func_end2-call_something
 
 
+	.section	".note.GNU-stack","",@progbits

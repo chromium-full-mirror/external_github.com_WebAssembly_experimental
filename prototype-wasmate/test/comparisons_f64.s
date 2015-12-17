@@ -169,3 +169,4 @@ func_end13:
 	.size	uge_f64, func_end13-uge_f64
 
 
+	.section	".note.GNU-stack","",@progbits

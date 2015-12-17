@@ -217,3 +217,4 @@ func_end23:
 	.size	neginf_f64, func_end23-neginf_f64
 
 
+	.section	".note.GNU-stack","",@progbits

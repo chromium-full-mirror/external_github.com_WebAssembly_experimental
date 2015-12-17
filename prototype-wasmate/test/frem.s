@@ -21,3 +21,4 @@ func_end1:
 	.size	frem64, func_end1-frem64
 
 
+	.section	".note.GNU-stack","",@progbits

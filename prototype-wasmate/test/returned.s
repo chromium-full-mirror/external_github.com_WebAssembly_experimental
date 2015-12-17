@@ -22,3 +22,4 @@ func_end1:
 	.size	_Z3barPvS_l, func_end1-_Z3barPvS_l
 
 
+	.section	".note.GNU-stack","",@progbits

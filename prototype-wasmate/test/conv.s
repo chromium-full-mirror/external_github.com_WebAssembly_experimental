@@ -263,3 +263,4 @@ func_end25:
 	.size	bitcast_double_to_i64, func_end25-bitcast_double_to_i64
 
 
+	.section	".note.GNU-stack","",@progbits

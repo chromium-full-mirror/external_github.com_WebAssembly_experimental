@@ -44,3 +44,6 @@ stoff:
 	return
 func_end4:
 	.size   stoff, func_end4-stoff
+
+
+	.section	".note.GNU-stack","",@progbits

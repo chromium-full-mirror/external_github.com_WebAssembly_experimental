@@ -138,3 +138,4 @@ ptr:
 	.size	ptr, 4
 
 
+	.section	".note.GNU-stack","",@progbits

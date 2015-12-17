@@ -93,3 +93,4 @@ func_end6:
 	.size	caller_some, func_end6-caller_some
 
 
+	.section	".note.GNU-stack","",@progbits

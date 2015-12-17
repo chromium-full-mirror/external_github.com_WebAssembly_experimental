@@ -49,3 +49,6 @@ ldoff:
 	return          $pop0
 func_end4:
 	.size	ldoff, func_end4-ldoff
+
+
+	.section	".note.GNU-stack","",@progbits

@@ -916,3 +916,4 @@ func_end5:
 	.size	bigshift, func_end5-bigshift
 
 
+	.section	".note.GNU-stack","",@progbits

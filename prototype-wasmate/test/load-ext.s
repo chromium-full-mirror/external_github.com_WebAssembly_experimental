@@ -101,3 +101,4 @@ func_end9:
 	.size	zext_i32_i64, func_end9-zext_i32_i64
 
 
+	.section	".note.GNU-stack","",@progbits
