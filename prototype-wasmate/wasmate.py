@@ -572,7 +572,7 @@ def handle_dot_directive(handler, command, args, rest):
             # can be non-executable, which in wasm it always is anyway.
             pass
         else:
-            error("unknown section: ." + args[0])
+            error("unknown section: " + args[0])
     elif command in ['file', 'type']:
         pass
     elif command == 'globl':
