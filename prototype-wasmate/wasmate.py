@@ -562,6 +562,17 @@ def handle_dot_directive(handler, command, args, rest):
     elif command == 'bss':
         # .bss is just like .data; it saves space in .o files, but we don't care
         current_section = ".data"
+    elif command == 'section':
+        if args[0].startswith('.rodata'):
+            # .rodata and .rodata.* are like .data but can be readonly or
+            # mergeable, but we don't care.
+            current_section = '.data'
+        elif args[0] == '".note.GNU-stack"':
+            # This is a magic section header which declares that the stack
+            # can be non-executable, which in wasm it always is anyway.
+            pass
+        else:
+            error("unknown section: ." + args[0])
     elif command in ['file', 'type']:
         pass
     elif command == 'globl':
