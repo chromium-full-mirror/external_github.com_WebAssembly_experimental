@@ -573,7 +573,7 @@ def handle_dot_directive(handler, command, args, rest):
             pass
         else:
             error("unknown section: " + args[0])
-    elif command in ['file', 'type']:
+    elif command in ['file', 'type', 'ident']:
         pass
     elif command == 'globl':
         handler.handle_dot_globl(args)
