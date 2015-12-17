@@ -574,6 +574,11 @@ def handle_dot_directive(handler, command, args, rest):
         else:
             error("unknown section: " + args[0])
     elif command in ['file', 'type', 'ident']:
+        # .file is for debug info, which we're not doing right now. .type is for
+        # symbol types, and in theory we could check that labels we think are
+        # for functions have type @function and so on, but wasmate.py isn't
+        # validating in general. .ident is just for embedding an uninterpreted
+        # comment in the output. So we ignore all these.
         pass
     elif command == 'globl':
         handler.handle_dot_globl(args)
