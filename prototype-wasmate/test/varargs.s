@@ -85,4 +85,11 @@ caller_none:
 func_end5:
 	.size	caller_none, func_end5-caller_none
 
+	.globl	caller_some
+	.type	caller_some,@function
+caller_some:
+	return
+func_end6:
+	.size	caller_some, func_end6-caller_some
+
 

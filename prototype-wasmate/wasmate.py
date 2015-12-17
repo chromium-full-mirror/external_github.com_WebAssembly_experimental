@@ -559,6 +559,9 @@ def handle_dot_directive(handler, command, args, rest):
         current_section = ".text"
     elif command == 'data':
         current_section = ".data"
+    elif command == 'bss':
+        # .bss is just like .data; it saves space in .o files, but we don't care
+        current_section = ".data"
     elif command in ['file', 'type']:
         pass
     elif command == 'globl':

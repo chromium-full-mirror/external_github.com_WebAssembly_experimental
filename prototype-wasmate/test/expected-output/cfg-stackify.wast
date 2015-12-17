@@ -415,6 +415,23 @@
       (br $BB21_1)
     )
   )
+  (export "test13" $test13)
+  (func $test13
+    (local i32)
+    (block $BB22_2
+      (br_if (i32.eq (i32.const 0) (i32.const 0)) $BB22_2)
+      (return)
+    )
+    (set_local 0 (i32.const 0))
+    (block $BB22_4
+      (br_if (get_local 0) $BB22_4)
+      (set_local 0 (i32.const 0))
+    )
+    (block $BB22_5
+      (br_if (i32.eq (i32.and (get_local 0) (i32.const 1)) (i32.const 0)) $BB22_5)
+    )
+    (unreachable)
+  )
   (import $a "misctest" "a" (param i32))
   (import $bar "misctest" "bar")
   (import $something "misctest" "something")

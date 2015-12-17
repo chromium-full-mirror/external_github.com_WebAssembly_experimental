@@ -617,4 +617,31 @@ BB21_8:
 func_end21:
 	.size	test12, func_end21-test12
 
+	.globl	test13
+	.type	test13,@function
+test13:
+	.local  	i32
+	i32.const	$push0=, 0
+	block   	BB22_2
+	i32.const	$push3=, 0
+	i32.eq  	$push4=, $pop0, $pop3
+	br_if   	$pop4, BB22_2
+	return
+BB22_2:
+	i32.const	$0=, 0
+	block   	BB22_4
+	br_if   	$0, BB22_4
+	i32.const	$0=, 0
+BB22_4:
+	i32.const	$push1=, 1
+	i32.and 	$push2=, $0, $pop1
+	block   	BB22_5
+	i32.const	$push5=, 0
+	i32.eq  	$push6=, $pop2, $pop5
+	br_if   	$pop6, BB22_5
+BB22_5:
+	unreachable
+func_end22:
+	.size	test13, func_end22-test13
+
 

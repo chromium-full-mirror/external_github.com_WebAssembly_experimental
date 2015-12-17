@@ -17,7 +17,7 @@ func_end0:
 bar:
 	.param  	i32, i32
 	#APP
-	# $1 = bbb($0)
+	# 0($1) = bbb(0($0))
 	#NO_APP
 	return
 func_end1:
@@ -72,5 +72,31 @@ X_ptr:
 	return
 func_end5:
 	.size	X_ptr, func_end5-X_ptr
+
+	.globl	funcname
+	.type	funcname,@function
+funcname:
+	#APP
+	foo funcname
+	#NO_APP
+	return
+func_end6:
+	.size	funcname, func_end6-funcname
+
+	.globl	varname
+	.type	varname,@function
+varname:
+	#APP
+	foo gv+37
+	#NO_APP
+	return
+func_end7:
+	.size	varname, func_end7-varname
+
+	.type	gv,@object
+	.bss
+	.globl	gv
+gv:
+	.size	gv, 0
 
 

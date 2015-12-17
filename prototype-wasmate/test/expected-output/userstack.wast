@@ -8,7 +8,7 @@
 (module
   (export "alloca32" $alloca32)
   (func $alloca32
-    (local i32 i32 i32)
+    (local i32 i32 i32 i32)
     (set_local 0 (i32.const __stack_pointer))
     (set_local 0 (i32.load offset=0 (get_local 0)))
     (set_local 1 (i32.const 16))
@@ -24,7 +24,7 @@
   )
   (export "alloca3264" $alloca3264)
   (func $alloca3264
-    (local i32 i32 i32)
+    (local i32 i32 i32 i32)
     (set_local 0 (i32.const __stack_pointer))
     (set_local 0 (i32.load offset=0 (get_local 0)))
     (set_local 1 (i32.const 16))
@@ -41,7 +41,7 @@
   )
   (export "allocarray" $allocarray)
   (func $allocarray
-    (local i32 i32 i32 i32 i32)
+    (local i32 i32 i32 i32 i32 i32)
     (set_local 1 (i32.const __stack_pointer))
     (set_local 1 (i32.load offset=0 (get_local 1)))
     (set_local 2 (i32.const 32))
@@ -56,6 +56,11 @@
     (set_local 5 (i32.add (get_local 5) (get_local 3)))
     (set_local 3 (i32.const __stack_pointer))
     (set_local 5 (i32.store offset=0 (get_local 3) (get_local 5)))
+    (return)
+  )
+  (export "dynamic_alloca" $dynamic_alloca)
+  (func $dynamic_alloca
+    (param i32)
     (return)
   )
   (memory 0 0

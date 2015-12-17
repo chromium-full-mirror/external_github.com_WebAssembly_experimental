@@ -37,7 +37,7 @@ func_end3:
 	.size	test3, func_end3-test3
 
 	.type	y,@object
-	.data
+	.bss
 	.globl	y
 	.align	4
 y:

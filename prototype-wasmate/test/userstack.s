@@ -3,7 +3,7 @@
 	.globl	alloca32
 	.type	alloca32,@function
 alloca32:
-	.local  	i32, i32, i32
+	.local  	i32, i32, i32, i32
 	i32.const	$0=, __stack_pointer
 	i32.load	$0=, 0($0)
 	i32.const	$1=, 16
@@ -23,7 +23,7 @@ func_end0:
 	.globl	alloca3264
 	.type	alloca3264,@function
 alloca3264:
-	.local  	i32, i32, i32
+	.local  	i32, i32, i32, i32
 	i32.const	$0=, __stack_pointer
 	i32.load	$0=, 0($0)
 	i32.const	$1=, 16
@@ -45,7 +45,7 @@ func_end1:
 	.globl	allocarray
 	.type	allocarray,@function
 allocarray:
-	.local  	i32, i32, i32, i32, i32
+	.local  	i32, i32, i32, i32, i32, i32
 	i32.const	$1=, __stack_pointer
 	i32.load	$1=, 0($1)
 	i32.const	$2=, 32
@@ -66,5 +66,13 @@ allocarray:
 	return
 func_end2:
 	.size	allocarray, func_end2-allocarray
+
+	.globl	dynamic_alloca
+	.type	dynamic_alloca,@function
+dynamic_alloca:
+	.param  	i32
+	return
+func_end3:
+	.size	dynamic_alloca, func_end3-dynamic_alloca
 
 

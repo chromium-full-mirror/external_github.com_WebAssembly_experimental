@@ -4,8 +4,8 @@
 	.type	foo,@function
 foo:
 	.result 	i32
-	i32.const	$push0=, answer
-	i32.load	$push1=, 0($pop0)
+	i32.const	$push0=, 0
+	i32.load	$push1=, answer($pop0)
 	return  	$pop1
 func_end0:
 	.size	foo, func_end0-foo
@@ -120,5 +120,21 @@ f64nz:
 f64two:
 	.int64	4611686018427387904
 	.size	f64two, 8
+
+	.type	arr,@object
+	.bss
+	.globl	arr
+	.align	4
+arr:
+	.zero	512
+	.size	arr, 512
+
+	.type	ptr,@object
+	.data
+	.globl	ptr
+	.align	2
+ptr:
+	.int32	arr+80
+	.size	ptr, 4
 
 

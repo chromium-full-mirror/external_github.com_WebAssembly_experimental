@@ -45,6 +45,16 @@
     (i32.store offset=0 (get_local 0) (get_local 1))
     (return)
   )
+  (export "funcname" $funcname)
+  (func $funcname
+    (foo $funcname)
+    (return)
+  )
+  (export "varname" $varname)
+  (func $varname
+    (foo 37)
+    (return)
+  )
   (memory 0 0
   )
 )
