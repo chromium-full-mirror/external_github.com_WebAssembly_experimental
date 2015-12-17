@@ -19,3 +19,4 @@ func_end1:
 	.size	grow_memory, func_end1-grow_memory
 
 
+	.section	".note.GNU-stack","",@progbits

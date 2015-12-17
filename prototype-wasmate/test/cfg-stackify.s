@@ -645,3 +645,4 @@ func_end22:
 	.size	test13, func_end22-test13
 
 
+	.section	".note.GNU-stack","",@progbits

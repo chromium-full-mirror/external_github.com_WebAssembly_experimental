@@ -121,3 +121,4 @@ func_end11:
 	.size	select_f64_ne, func_end11-select_f64_ne
 
 
+	.section	".note.GNU-stack","",@progbits

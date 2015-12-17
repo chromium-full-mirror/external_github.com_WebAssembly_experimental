@@ -76,3 +76,4 @@ func_end1:
 	.size	bar64, func_end1-bar64
 
 
+	.section	".note.GNU-stack","",@progbits

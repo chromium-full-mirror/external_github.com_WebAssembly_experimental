@@ -333,3 +333,4 @@ gv:
 	.size	gv, 4
 
 
+	.section	".note.GNU-stack","",@progbits

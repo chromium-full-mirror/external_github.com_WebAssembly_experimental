@@ -53,3 +53,4 @@ func_end3:
 	.size	s2z_call, func_end3-s2z_call
 
 
+	.section	".note.GNU-stack","",@progbits

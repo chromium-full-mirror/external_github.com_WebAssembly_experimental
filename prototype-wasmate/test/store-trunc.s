@@ -53,3 +53,6 @@ trunc_i8_i32_off:
 	return
 func_end5:
 	.size   trunc_i8_i32_off, func_end5-trunc_i8_i32_off
+
+
+	.section	".note.GNU-stack","",@progbits

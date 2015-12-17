@@ -11,3 +11,4 @@ func_end0:
 	.size	f, func_end0-f
 
 
+	.section	".note.GNU-stack","",@progbits

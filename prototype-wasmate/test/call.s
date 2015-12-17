@@ -108,3 +108,4 @@ func_end11:
 	.size	coldcc_tail_call_void_nullary, func_end11-coldcc_tail_call_void_nullary
 
 
+	.section	".note.GNU-stack","",@progbits

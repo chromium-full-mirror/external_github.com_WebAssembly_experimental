@@ -58,3 +58,4 @@ pos:
 	.size	pos, 12
 
 
+	.section	".note.GNU-stack","",@progbits

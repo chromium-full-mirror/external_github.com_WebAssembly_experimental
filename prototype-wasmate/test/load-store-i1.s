@@ -71,3 +71,4 @@ func_end5:
 	.size	store_i64_i1, func_end5-store_i64_i1
 
 
+	.section	".note.GNU-stack","",@progbits

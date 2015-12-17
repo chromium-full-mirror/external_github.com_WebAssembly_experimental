@@ -137,4 +137,13 @@ ptr:
 	.int32	arr+80
 	.size	ptr, 4
 
+	.type	rom,@object
+	.section	.rodata,"a",@progbits
+	.globl	rom
+	.align	4
+rom:
+	.zero	512
+	.size	rom, 512
 
+
+	.section	".note.GNU-stack","",@progbits

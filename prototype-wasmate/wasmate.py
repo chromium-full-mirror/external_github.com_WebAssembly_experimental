@@ -562,7 +562,23 @@ def handle_dot_directive(handler, command, args, rest):
     elif command == 'bss':
         # .bss is just like .data; it saves space in .o files, but we don't care
         current_section = ".data"
-    elif command in ['file', 'type']:
+    elif command == 'section':
+        if args[0].startswith('.rodata'):
+            # .rodata and .rodata.* are like .data but can be readonly or
+            # mergeable, but we don't care.
+            current_section = '.data'
+        elif args[0] == '".note.GNU-stack"':
+            # This is a magic section header which declares that the stack
+            # can be non-executable, which in wasm it always is anyway.
+            pass
+        else:
+            error("unknown section: " + args[0])
+    elif command in ['file', 'type', 'ident']:
+        # .file is for debug info, which we're not doing right now. .type is for
+        # symbol types, and in theory we could check that labels we think are
+        # for functions have type @function and so on, but wasmate.py isn't
+        # validating in general. .ident is just for embedding an uninterpreted
+        # comment in the output. So we ignore all these.
         pass
     elif command == 'globl':
         handler.handle_dot_globl(args)

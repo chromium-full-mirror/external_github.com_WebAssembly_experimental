@@ -19,3 +19,4 @@ func_end1:
 	.size	immediate_f64, func_end1-immediate_f64
 
 
+	.section	".note.GNU-stack","",@progbits

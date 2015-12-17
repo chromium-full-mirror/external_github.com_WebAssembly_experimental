@@ -181,3 +181,4 @@ func_end17:
 	.size	popcnt64, func_end17-popcnt64
 
 
+	.section	".note.GNU-stack","",@progbits

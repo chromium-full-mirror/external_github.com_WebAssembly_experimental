@@ -45,3 +45,4 @@ y:
 	.size	y, 200
 
 
+	.section	".note.GNU-stack","",@progbits

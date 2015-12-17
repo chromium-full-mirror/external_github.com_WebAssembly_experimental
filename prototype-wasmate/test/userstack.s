@@ -76,3 +76,4 @@ func_end3:
 	.size	dynamic_alloca, func_end3-dynamic_alloca
 
 
+	.section	".note.GNU-stack","",@progbits

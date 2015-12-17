@@ -23,3 +23,4 @@ func_end1:
 	.size	fold_demote, func_end1-fold_demote
 
 
+	.section	".note.GNU-stack","",@progbits
