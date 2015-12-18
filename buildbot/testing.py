@@ -44,12 +44,12 @@ class Result:
 class Tester(object):
   """Test runner."""
 
-  def __init__(self, command_ctor, outdir, extra_params):
+  def __init__(self, command_ctor, outdir, extras):
     """Command-line constructor accepting input and output file names."""
     assert os.path.isdir(outdir)
     self.command_ctor = command_ctor
     self.outdir = outdir
-    self.extra_params = extra_params
+    self.extras = extras
 
   def __call__(self, test_file):
     """Execute a single test."""
@@ -61,7 +61,7 @@ class Tester(object):
     sys.stdout.flush()
     try:
       output = subprocess.check_output(
-          self.command_ctor(test_file, outname, self.extra_params),
+          self.command_ctor(test_file, outname, self.extras),
           stderr=subprocess.STDOUT, cwd=self.outdir)
       assert os.path.isfile(outfile), 'Missing output file %s'
       return Result(test=basename, success=True, output=output)

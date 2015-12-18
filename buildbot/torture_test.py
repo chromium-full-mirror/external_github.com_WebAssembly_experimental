@@ -43,7 +43,8 @@ def run(c, cxx, testsuite, fails, out):
   assert os.path.isdir(out)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   return testing.execute(
-    tester=testing.Tester(c_compile, out, { 'c': c }),
+    tester=testing.Tester(command_ctor=c_compile, outdir=out,
+                          extras={ 'c': c }),
     inputs=c_test_files,
     fails=fails)
 
