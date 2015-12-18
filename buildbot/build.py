@@ -19,7 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
-import torture_test
+import compile_torture_tests
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -305,7 +305,7 @@ def CompileLLVMTorture():
   cxx = os.path.join(LLVM_OUT_DIR, 'bin', 'clang++')
   Remove(TORTURE_OUT_DIR)
   Mkdir(TORTURE_OUT_DIR)
-  unexpected_result_count = torture_test.run(
+  unexpected_result_count = compile_torture_tests.run(
       c=c, cxx=cxx, testsuite=GCC_TEST_DIR,
       fails=LLVM_KNOWN_TORTURE_FAILURES,
       out=TORTURE_OUT_DIR)
