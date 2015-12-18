@@ -563,9 +563,11 @@ def handle_dot_directive(handler, command, args, rest):
         # .bss is just like .data; it saves space in .o files, but we don't care
         current_section = ".data"
     elif command == 'section':
-        if args[0].startswith('.rodata'):
-            # .rodata and .rodata.* are like .data but can be readonly or
-            # mergeable, but we don't care.
+        if (args[0].startswith('.rodata') or
+            args[0] == '.data.rel.ro' or
+            args[0] == '.data.rel.ro.local'):
+            # .rodata, .rodata.*, .data.rel.ro, and .data.rel.ro.local are like
+            # .data but can be readonly or mergeable, but we don't care.
             current_section = '.data'
         elif args[0] == '".note.GNU-stack"':
             # This is a magic section header which declares that the stack
