@@ -19,6 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
+
 import compile_torture_tests
 
 
@@ -142,6 +143,7 @@ def GitConfigRebaseMaster(cwd):
   """
   subprocess.check_call(
       ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
+
 
 def PrintCurrentGitRev(cwd):
   out = subprocess.check_output(
@@ -326,7 +328,7 @@ def LinkLLVMTorture():
     outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wast')
     try:
       output = subprocess.check_output(
-          [LINKER, s, '--output', outfile, '-l' , 'misctest'],
+          [LINKER, s, '--output', outfile, '-l', 'misctest'],
           stderr=subprocess.STDOUT)
       sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
     except subprocess.CalledProcessError as e:
