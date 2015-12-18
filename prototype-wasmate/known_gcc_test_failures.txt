@@ -1,9 +1,15 @@
 # Expected failures from running wasmate on the GCC torture test output files.
 
-# can't resolve symbol
+# Address-taken labels in test cause "can't resolve symbol".
 20071220-1.c.s
 20071220-2.c.s
+
+# Code contains `extern int abort();` and it's address-taken. .s file doesn't
+# declare `abort`. Once it does it'll hit the next bug.
 921110-1.c.s
+
+# Code defines function and stores its address. wasmate doesn't know about
+# function addresses (should generate addressof).
 930608-1.c.s
 bcp-1.c.s
 pr34456.c.s
