@@ -44,24 +44,24 @@ class Result:
 class Tester(object):
   """Test runner."""
 
-  def __init__(self, command_ctor, outdir, extras):
+  def __init__(self, command_ctor, outname_ctor, outdir, extras):
     """Command-line constructor accepting input and output file names."""
     assert os.path.isdir(outdir)
     self.command_ctor = command_ctor
+    self.outname_ctor = outname_ctor
     self.outdir = outdir
     self.extras = extras
 
   def __call__(self, test_file):
     """Execute a single test."""
     basename = os.path.basename(test_file)
-    outname = basename + '.s'
-    outfile = os.path.join(self.outdir, outname)
+    outfile = self.outname_ctor(self.outdir, test_file)
     # Print something simple so buildbots don't think the script is dead.
     sys.stdout.write('.')
     sys.stdout.flush()
     try:
       output = subprocess.check_output(
-          self.command_ctor(test_file, outname, self.extras),
+          self.command_ctor(test_file, outfile, self.extras),
           stderr=subprocess.STDOUT, cwd=self.outdir)
       assert os.path.isfile(outfile), 'Missing output file %s'
       return Result(test=basename, success=True, output=output)

@@ -26,6 +26,13 @@ CFLAGS = ['--std=gnu89', '--target=wasm32-unknown-unknown', '-S', '-O2',
           '-Wno-implicit-function-declaration', '-Wno-implicit-int']
 
 
+def create_outname(outdir, infile):
+  """Create the output file's name."""
+  basename = os.path.basename(infile)
+  outname = basename + '.s'
+  return os.path.join(outdir, outname)
+
+
 def c_compile(infile, outfile, extras):
   """Create the command-line for a C compiler invocation."""
   return [extras['c'], infile, '-o', outfile] + CFLAGS
@@ -43,8 +50,11 @@ def run(c, cxx, testsuite, fails, out):
   assert os.path.isdir(out)
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   return testing.execute(
-      tester=testing.Tester(command_ctor=c_compile, outdir=out,
-                            extras={'c': c}),
+      tester=testing.Tester(
+          command_ctor=c_compile,
+          outname_ctor=create_outname,
+          outdir=out,
+          extras={'c': c}),
       inputs=c_test_files,
       fails=fails)
 

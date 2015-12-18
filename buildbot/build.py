@@ -21,6 +21,7 @@ import subprocess
 import sys
 
 import compile_torture_tests
+import link_torture_tests
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,7 +32,10 @@ CLANG_DIR = os.path.join(LLVM_DIR, 'tools', 'clang')
 LLVM_KNOWN_TORTURE_FAILURES = os.path.join(
     LLVM_DIR, 'lib', 'Target', 'WebAssembly', 'known_gcc_test_failures.txt')
 
-LINKER = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate', 'wasmate.py')
+WASMATE_DIR = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate')
+LINKER = os.path.join(WASMATE_DIR, 'wasmate.py')
+WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(WASMATE_DIR,
+                                              'known_gcc_test_failures.txt')
 
 GCC_DIR = os.path.join(WORK_DIR, 'gcc')
 GCC_TEST_DIR = os.path.join(GCC_DIR, 'gcc', 'testsuite')
@@ -320,24 +324,15 @@ def CompileLLVMTorture():
 def LinkLLVMTorture():
   BuildStep('Link LLVM Torture')
   assert os.path.isfile(LINKER), 'Cannot find linker at %s' % LINKER
-  assembly_files = sorted(glob.glob(os.path.join(TORTURE_OUT_DIR, '*.s')))
+  assembly_files = os.path.join(TORTURE_OUT_DIR, '*.s')
   sys.stdout.write('Found %s assembly files.\n' % len(assembly_files))
-  failures = 0
-  for s in assembly_files:
-    basename = os.path.basename(s)
-    outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wast')
-    try:
-      output = subprocess.check_output(
-          [LINKER, s, '--output', outfile, '-l', 'misctest'],
-          stderr=subprocess.STDOUT)
-      sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
-    except subprocess.CalledProcessError as e:
-      sys.stdout.write('FAILED %s\n%s\n' % (s, e.output))
-      failures += 1
-  # TODO(jfb) Failures are ignored for now, until wasmate is fixed.
-  # if 0 != failures:
-  #   StepFail()
-  #   return 1
+  unexpected_result_count = link_torture_tests.run(
+      wasmate=LINKER, files=assembly_files,
+      fails=WASMATE_KNOWN_TORTURE_FAILURES,
+      out=TORTURE_OUT_DIR)
+  if 0 != unexpected_result_count:
+    StepFail()
+    return 1
   return 0
 
 
