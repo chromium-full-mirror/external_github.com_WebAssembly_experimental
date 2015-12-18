@@ -66,6 +66,14 @@ misctest_environment = {
     '_Znwm': ('_Znwm', 'misctest', 'i32', 'i32'),
 }
 
+# Environment for the GCC torture tests.
+torture_environment = {
+    'abort': ('abort', 'torturetest', 'i32', ''),
+    'f': ('f', 'torturetest', 'f64', 'f64'),
+    'bad0': ('bad0', 'torturetest', 'i32', ''),
+    'bad_compare': ('bad_compare', 'torturetest', 'i32', 'i32'),
+}
+
 # Default to using the spectest environment for now.
 import_environment = spectest_environment
 
@@ -703,6 +711,8 @@ def Main():
           import_environment = spectest_environment
       if cmd_args.library == 'misctest':
           import_environment = misctest_environment
+      if cmd_args.library == 'torturetest':
+          import_environment = torture_environment
       else:
           error("Unrecognized import environment name: " + cmd_args.library)
 

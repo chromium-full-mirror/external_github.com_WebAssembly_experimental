@@ -31,7 +31,7 @@ def create_outname(outdir, infile):
 
 def link(infile, outfile, extras):
   """Create the command-line for a wasmate invocation."""
-  return [extras['wasmate'], '-o', outfile, '-l', 'misctest', infile]
+  return [extras['wasmate'], '-o', outfile, '-l', 'torturetest', infile]
 
 
 def run(wasmate, files, fails, out):
