@@ -1,0 +1,15 @@
+# Expected failures from running wasmate on the GCC torture test output files.
+
+# can't resolve symbol
+20071220-1.c.s
+20071220-2.c.s
+921110-1.c.s
+930608-1.c.s
+bcp-1.c.s
+pr34456.c.s
+
+# IndexError: pop from empty list
+930930-1.c.s
+
+# TODO: implement .align for functions
+align-3.c.s
