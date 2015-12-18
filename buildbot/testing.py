@@ -16,6 +16,7 @@
 
 import os
 import os.path
+import multiprocessing
 import subprocess
 import sys
 
@@ -66,3 +67,55 @@ class Tester(object):
       return Result(test=basename, success=True, output=output)
     except subprocess.CalledProcessError as e:
       return Result(test=basename, success=False, output=e.output)
+
+
+def get_expected_failures(fails):
+  """One failure per line, some whitespace, Python-style comments."""
+  assert os.path.isfile(fails), 'Cannot find known failures at %s' % fails
+  res = []
+  with open(fails, 'r') as fails_file:
+    res = fails_file.readlines()
+  return sorted([r for r in [r.split('#')[0].strip() for r in res] if len(r)])
+
+
+def execute(tester, inputs, fails):
+  """Execute tests in parallel, output results, return failure count."""
+  expected_failures = get_expected_failures(fails)
+  pool = multiprocessing.Pool()
+  sys.stdout.write('Executing tests.')
+  results = sorted(pool.map(tester, inputs))
+  sys.stdout.write('\nDone.')
+  r_successes = [r for r in results if r]
+  r_failures = [r for r in results if not r]
+  r_expected_failures = [t for t in r_failures
+                         if t.test in expected_failures]
+  r_unexpected_failures = [t for t in r_failures
+                           if t.test not in expected_failures]
+  r_unexpected_successes = [t for t in r_successes
+                            if t.test in expected_failures]
+  sys.stdout.write('Results:\n')
+  for result in results:
+    sys.stdout.write(str(result) + '\n\n')
+  if r_expected_failures:
+    sys.stdout.write('Expected failures:\n')
+    for f in r_expected_failures:
+      sys.stdout.write('\t%s\n' % f.test)
+  if r_unexpected_failures:
+    sys.stdout.write('Unexpected failures:\n')
+    for f in r_unexpected_failures:
+      sys.stdout.write('\t%s\n' % f.test)
+  if r_unexpected_successes:
+    sys.stdout.write('Unexpected successes:\n')
+    for f in r_unexpected_successes:
+      sys.stdout.write('\t%s\n' % f.test)
+  sys.stdout.write(
+      '\n'.join(['\n',
+                 'Ran %s tests.' % len(results),
+                 'Got %s successes.' % len(r_successes),
+                 'Got %s failures.' % len(r_failures),
+                 'Expected %s failures.' % len(expected_failures),
+                 'Got %s expected failures.' % len(r_expected_failures),
+                 'Got %s unexpected failures.' % len(r_unexpected_failures),
+                 'Got %s unexpected successes.' % len(r_unexpected_successes),
+                 '\n']))
+  return len(r_unexpected_failures) + len(r_unexpected_successes)
