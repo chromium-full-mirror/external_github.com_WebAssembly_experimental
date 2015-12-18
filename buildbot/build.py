@@ -325,7 +325,6 @@ def LinkLLVMTorture():
   BuildStep('Link LLVM Torture')
   assert os.path.isfile(LINKER), 'Cannot find linker at %s' % LINKER
   assembly_files = os.path.join(TORTURE_OUT_DIR, '*.s')
-  sys.stdout.write('Found %s assembly files.\n' % len(assembly_files))
   unexpected_result_count = link_assembly_files.run(
       wasmate=LINKER, files=assembly_files,
       fails=WASMATE_KNOWN_TORTURE_FAILURES,
