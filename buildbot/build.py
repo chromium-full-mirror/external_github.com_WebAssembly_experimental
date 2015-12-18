@@ -21,7 +21,7 @@ import subprocess
 import sys
 
 import compile_torture_tests
-import link_torture_tests
+import link_assembly_files
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -326,7 +326,7 @@ def LinkLLVMTorture():
   assert os.path.isfile(LINKER), 'Cannot find linker at %s' % LINKER
   assembly_files = os.path.join(TORTURE_OUT_DIR, '*.s')
   sys.stdout.write('Found %s assembly files.\n' % len(assembly_files))
-  unexpected_result_count = link_torture_tests.run(
+  unexpected_result_count = link_assembly_files.run(
       wasmate=LINKER, files=assembly_files,
       fails=WASMATE_KNOWN_TORTURE_FAILURES,
       out=TORTURE_OUT_DIR)
