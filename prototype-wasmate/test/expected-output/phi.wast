@@ -7,6 +7,7 @@
 
 (module
   (export "test0" $test0)
+  (export "test1" $test1)
   (func $test0
     (param i32)
     (result i32)
@@ -16,7 +17,6 @@
     )
     (return (get_local 0))
   )
-  (export "test1" $test1)
   (func $test1
     (param i32)
     (result i32)

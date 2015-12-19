@@ -7,11 +7,14 @@
 
 (module
   (export "foo" $foo)
+  (export "call_memcpy" $call_memcpy)
+  (export "arr" $arr)
+  (export "ptr" $ptr)
+  (export "rom" $rom)
   (func $foo
     (result i32)
     (return (i32.load offset=20 (i32.const 0)))
   )
-  (export "call_memcpy" $call_memcpy)
   (func $call_memcpy
     (param i32) (param i32) (param i32)
     (result i32)

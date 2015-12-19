@@ -7,6 +7,7 @@
 
 (module
   (export "bar32" $bar32)
+  (export "bar64" $bar64)
   (func $bar32
     (param i32)
     (block $BB0_8
@@ -38,7 +39,6 @@
     )
     (return)
   )
-  (export "bar64" $bar64)
   (func $bar64
     (param i64)
     (block $BB1_8

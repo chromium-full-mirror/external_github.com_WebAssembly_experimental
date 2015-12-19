@@ -7,17 +7,21 @@
 
 (module
   (export "end" $end)
+  (export "copy" $copy)
+  (export "arg_i8" $arg_i8)
+  (export "arg_i32" $arg_i32)
+  (export "arg_i128" $arg_i128)
+  (export "caller_none" $caller_none)
+  (export "caller_some" $caller_some)
   (func $end
     (param i32)
     (return)
   )
-  (export "copy" $copy)
   (func $copy
     (param i32) (param i32)
     (i32.store offset=0 (get_local 0) (i32.load offset=0 (get_local 1)))
     (return)
   )
-  (export "arg_i8" $arg_i8)
   (func $arg_i8
     (param i32)
     (result i32)
@@ -26,7 +30,6 @@
     (i32.store offset=0 (get_local 0) (i32.add (get_local 1) (i32.const 4)))
     (return (i32.load offset=0 (get_local 1)))
   )
-  (export "arg_i32" $arg_i32)
   (func $arg_i32
     (param i32)
     (result i32)
@@ -35,7 +38,6 @@
     (i32.store offset=0 (get_local 0) (i32.add (get_local 1) (i32.const 4)))
     (return (i32.load offset=0 (get_local 1)))
   )
-  (export "arg_i128" $arg_i128)
   (func $arg_i128
     (param i32) (param i32)
     (local i32 i32 i32 i64)
@@ -48,12 +50,10 @@
     (i64.store offset=0 (get_local 0) (get_local 5))
     (return)
   )
-  (export "caller_none" $caller_none)
   (func $caller_none
     (call_import $callee)
     (return)
   )
-  (export "caller_some" $caller_some)
   (func $caller_some
     (return)
   )

@@ -7,11 +7,11 @@
 
 (module
   (export "_Z3foov" $_Z3foov)
+  (export "_Z3barPvS_l" $_Z3barPvS_l)
   (func $_Z3foov
     (result i32)
     (return (call_import _ZN5AppleC1Ev (call_import _Znwm (i32.const 1))))
   )
-  (export "_Z3barPvS_l" $_Z3barPvS_l)
   (func $_Z3barPvS_l
     (param i32) (param i32) (param i32)
     (result i32)

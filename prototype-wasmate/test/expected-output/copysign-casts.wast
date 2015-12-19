@@ -7,12 +7,12 @@
 
 (module
   (export "fold_promote" $fold_promote)
+  (export "fold_demote" $fold_demote)
   (func $fold_promote
     (param f64) (param f32)
     (result f64)
     (return (f64.copysign (get_local 0) (f64.promote/f32 (get_local 1))))
   )
-  (export "fold_demote" $fold_demote)
   (func $fold_demote
     (param f32) (param f64)
     (result f32)

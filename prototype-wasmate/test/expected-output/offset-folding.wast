@@ -7,21 +7,22 @@
 
 (module
   (export "test0" $test0)
+  (export "test1" $test1)
+  (export "test2" $test2)
+  (export "test3" $test3)
+  (export "y" $y)
   (func $test0
     (result i32)
     (return (i32.const $x+188))
   )
-  (export "test1" $test1)
   (func $test1
     (result i32)
     (return (i32.const 188))
   )
-  (export "test2" $test2)
   (func $test2
     (result i32)
     (return (i32.const $x))
   )
-  (export "test3" $test3)
   (func $test3
     (result i32)
     (return (i32.const 0))

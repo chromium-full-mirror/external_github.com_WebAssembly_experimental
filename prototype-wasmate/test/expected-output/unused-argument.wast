@@ -7,18 +7,18 @@
 
 (module
   (export "unused_first" $unused_first)
+  (export "unused_second" $unused_second)
+  (export "call_something" $call_something)
   (func $unused_first
     (param i32) (param i32)
     (result i32)
     (return (get_local 1))
   )
-  (export "unused_second" $unused_second)
   (func $unused_second
     (param i32) (param i32)
     (result i32)
     (return (get_local 0))
   )
-  (export "call_something" $call_something)
   (func $call_something
     (call_import $return_something)
     (return)
