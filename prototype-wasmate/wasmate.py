@@ -127,7 +127,10 @@ out = OutputWriter()
 current_line_number = 0
 current_section = ".text"
 current_function_number = 0
+types = {}
 data_labels = {}
+function_labels = {}
+current_function_table_index = 0
 import_funs = set([])
 
 def error(message, line_number=None):
@@ -145,6 +148,32 @@ def resolve_data_label(arg):
         return data_labels[base] + offset, True
     else:
         return 0, False
+
+def register_function(name):
+    """Keep track of all function labels, for when they're address-taken."""
+    assert name not in function_labels.keys(), 'Adding function %s twice' % name
+    function_labels[name] = None
+
+def resolve_function_address(name):
+    """Mark a function as address-taken, giving it an index."""
+    if name not in function_labels.keys():
+        return None, False
+    if function_labels[name] == None:
+      # First time this function is address-taken. Give it an index.
+      global current_function_table_index
+      function_labels[name] = current_function_table_index
+      current_function_table_index += 1
+    return function_labels[name], True
+
+def dump_function_table():
+    """Output all the address-taken functions in their index order."""
+    table = ''
+    for idx in range(0, current_function_table_index):
+        for f, f_idx in function_labels.iteritems():
+            if f_idx == idx:
+                table += ' $' + f
+    if table:
+        out.write_line('(table' + table + ')')
 
 def resolve_label(arg):
     # Labels can be of the form 'foo' or 'foo+47'. Split the offset out so that
@@ -188,6 +217,9 @@ class PassHandler(object):
         pass
 
     def handle_dot_globl(self, args):
+        pass
+
+    def handle_dot_type(self, args):
         pass
 
     def handle_dot_param(self, args):
@@ -290,15 +322,41 @@ class DataPassHandler(PassHandler):
         for pos, num_bytes, symbol, line_number in self.reloc:
             resolved, ok = resolve_data_label(symbol)
             if ok:
-                self.segment.fixup(pos, resolved, num_bytes)
+                # Validate that `.type symbol,@object` was seen.
+                s = symbol.split('+', 1)[0]
+                if types[s] != '@object':
+                  error('Data %s without .type, got %s' % (s, types[s]))
             else:
+                # If it's not a data label then it must be a function label.
+                resolved, ok = resolve_function_address(symbol)
+                if ok and types[symbol] != '@function':
+                  # Validate that `.type symbol,@function` was seen.
+                  error('Function %s without .type, got %s' % (
+                      symbol, types[symbol]))
+            if not ok:
                 error("can't resolve symbol %r" % symbol, line_number)
+            self.segment.fixup(pos, resolved, num_bytes)
+        dump_function_table()
 
     def align_data_to(self, align):
         self.segment.align_to(align)
 
     def handle_data_label(self, labelname):
         data_labels[labelname] = self.segment.end()
+
+    def handle_dot_globl(self, args):
+        """.globl labels declare a name for global variables and functions."""
+        if args[0] not in data_labels:
+            register_function(args[0])
+            out.write_line('(export "' + args[0] + '" $' + args[0] + ')')
+
+    def handle_dot_type(self, args):
+        """.type is used for extra validation."""
+        # Validation cannot occur here because .type can appear before .globl.
+        assert len(args) == 2, 'Expected (label,type), got %s' % args
+        label, ltype = args
+        assert label not in types.keys(), 'Duplicate label %s' % label
+        types[label] = ltype
 
     def handle_dot_intx(self, arg, num_bytes):
         try:
@@ -490,13 +548,6 @@ class TextPassHandler(PassHandler):
         else:
             out.write_line(line)
 
-    def handle_dot_globl(self, args):
-        # .globl statement could be declaring a name for either a global
-        # variable or a function. We only want to export functions, so
-        # filter out global variables.
-        if args[0] not in data_labels:
-            out.write_line('(export "' + args[0] + '" $' + args[0] + ')')
-
     def handle_dot_param(self, args):
         out.write_line(' '.join(['(param ' + x + ')' for x in args]))
 
@@ -589,15 +640,15 @@ def handle_dot_directive(handler, command, args, rest):
             pass
         else:
             error("unknown section: " + args[0])
-    elif command in ['file', 'type', 'ident']:
-        # .file is for debug info, which we're not doing right now. .type is for
-        # symbol types, and in theory we could check that labels we think are
-        # for functions have type @function and so on, but wasmate.py isn't
-        # validating in general. .ident is just for embedding an uninterpreted
-        # comment in the output. So we ignore all these.
+    elif command in ['file', 'ident']:
+        # .file is for debug info, which we're not doing right now. .ident is
+        # just for embedding an uninterpreted comment in the output. So we
+        # ignore all these.
         pass
     elif command == 'globl':
         handler.handle_dot_globl(args)
+    elif command == 'type':
+        handler.handle_dot_type(args)
     elif command == 'param':
         handler.handle_dot_param(args)
     elif command == 'result':
