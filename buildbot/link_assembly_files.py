@@ -36,7 +36,7 @@ def link(infile, outfile, extras):
 
 def run(wasmate, files, fails, out):
   """Link all files."""
-  assert os.path.isfile(wasmate), 'Cannot find linker compiler at %s' % wasmate
+  assert os.path.isfile(wasmate), 'Cannot find linker at %s' % wasmate
   assert os.path.isdir(out)
   assembly_files = glob.glob(files)
   assert len(assembly_files), 'No files found by %s' % files
