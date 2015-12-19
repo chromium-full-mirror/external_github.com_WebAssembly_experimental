@@ -302,7 +302,9 @@ def BuildSexpr():
 def ArchiveLLVM():
   if LLVM_REVISION == 'origin/master':
     return
-  sexpr = os.path.join(LLVM_INSTALL_DIR, 'bin', 'sexpr-wasm')
+  ibin = os.path.join(LLVM_INSTALL_DIR, 'bin')
+  shutil.copy2(LINKER, ibin)
+  sexpr = os.path.join(ibin, 'sexpr-wasm')
   assert os.path.isfile(sexpr), 'Expected binary %s' % sexpr
   Archive('LLVM', LLVM_INSTALL_TAR)
 
