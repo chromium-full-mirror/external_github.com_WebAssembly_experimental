@@ -20,6 +20,7 @@ import shutil
 import subprocess
 import sys
 
+import assemble_files
 import compile_torture_tests
 import link_assembly_files
 
@@ -47,6 +48,8 @@ PREBUILT_CLANG_BIN = os.path.join(
     PREBUILT_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
 
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
+SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_DIR,
+                                            'known_gcc_test_failures.txt')
 
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
@@ -335,29 +338,18 @@ def LinkLLVMTorture():
   return 0
 
 
-# TODO(jfb) Fix the duplication with LinkLLVMTorture and torture_test.
 def AssembleLLVMTorture():
   BuildStep('Assemble LLVM Torture')
   sexpr = os.path.join(LLVM_INSTALL_DIR, 'bin', 'sexpr-wasm')
   assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
-  sexpr_files = sorted(glob.glob(os.path.join(TORTURE_OUT_DIR, '*.wast')))
-  sys.stdout.write('Found %s sexpr files.\n' % len(sexpr_files))
-  failures = 0
-  for s in sexpr_files:
-    basename = os.path.basename(s)
-    outfile = os.path.join(TORTURE_OUT_DIR, basename + '.wasm')
-    try:
-      output = subprocess.check_output(
-          [sexpr, s, '--output', outfile],
-          stderr=subprocess.STDOUT)
-      sys.stdout.write('SUCCEEDED %s\n%s\n' % (s, output))
-    except subprocess.CalledProcessError as e:
-      sys.stdout.write('FAILED %s\n%s\n' % (s, e.output))
-      failures += 1
-  # TODO(jfb) Failures are ignored for now, until wasmate is fixed.
-  # if 0 != failures:
-  #   StepFail()
-  #   return 1
+  sexpr_files = os.path.join(TORTURE_OUT_DIR, '*.wast')
+  unexpected_result_count = assemble_files.run(
+      sexpr=sexpr, files=sexpr_files,
+      fails=SEXPR_KNOWN_TORTURE_FAILURES,
+      out=TORTURE_OUT_DIR)
+  if 0 != unexpected_result_count:
+    StepFail()
+    return 1
   return 0
 
 
