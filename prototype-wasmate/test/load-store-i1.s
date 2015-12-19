@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/load-store-i1.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/load-store-i1.ll"
 	.globl	load_u_i1_i32
 	.type	load_u_i1_i32,@function
-load_u_i1_i32:
+load_u_i1_i32:                          # @load_u_i1_i32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.load8_u	$push0=, 0($0)
 	return  	$pop0
 func_end0:
@@ -12,10 +13,11 @@ func_end0:
 
 	.globl	load_s_i1_i32
 	.type	load_s_i1_i32,@function
-load_s_i1_i32:
+load_s_i1_i32:                          # @load_s_i1_i32
 	.param  	i32
 	.result 	i32
 	.local  	i32
+# BB#0:
 	i32.const	$1=, 31
 	i32.load8_u	$push0=, 0($0)
 	i32.shl 	$push1=, $pop0, $1
@@ -26,9 +28,10 @@ func_end1:
 
 	.globl	load_u_i1_i64
 	.type	load_u_i1_i64,@function
-load_u_i1_i64:
+load_u_i1_i64:                          # @load_u_i1_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load8_u	$push0=, 0($0)
 	return  	$pop0
 func_end2:
@@ -36,10 +39,11 @@ func_end2:
 
 	.globl	load_s_i1_i64
 	.type	load_s_i1_i64,@function
-load_s_i1_i64:
+load_s_i1_i64:                          # @load_s_i1_i64
 	.param  	i32
 	.result 	i64
 	.local  	i64
+# BB#0:
 	i64.const	$1=, 63
 	i64.load8_u	$push0=, 0($0)
 	i64.shl 	$push1=, $pop0, $1
@@ -50,8 +54,9 @@ func_end3:
 
 	.globl	store_i32_i1
 	.type	store_i32_i1,@function
-store_i32_i1:
+store_i32_i1:                           # @store_i32_i1
 	.param  	i32, i32
+# BB#0:
 	i32.const	$push0=, 1
 	i32.and 	$push1=, $1, $pop0
 	i32.store8	$discard=, 0($0), $pop1
@@ -61,8 +66,9 @@ func_end4:
 
 	.globl	store_i64_i1
 	.type	store_i64_i1,@function
-store_i64_i1:
+store_i64_i1:                           # @store_i64_i1
 	.param  	i32, i64
+# BB#0:
 	i64.const	$push0=, 1
 	i64.and 	$push1=, $1, $pop0
 	i64.store8	$discard=, 0($0), $pop1

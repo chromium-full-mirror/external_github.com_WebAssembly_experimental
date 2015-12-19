@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/f64.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/f64.ll"
 	.globl	fadd64
 	.type	fadd64,@function
-fadd64:
+fadd64:                                 # @fadd64
 	.param  	f64, f64
 	.result 	f64
+# BB#0:
 	f64.add 	$push0=, $0, $1
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	fsub64
 	.type	fsub64,@function
-fsub64:
+fsub64:                                 # @fsub64
 	.param  	f64, f64
 	.result 	f64
+# BB#0:
 	f64.sub 	$push0=, $0, $1
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	fmul64
 	.type	fmul64,@function
-fmul64:
+fmul64:                                 # @fmul64
 	.param  	f64, f64
 	.result 	f64
+# BB#0:
 	f64.mul 	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	fdiv64
 	.type	fdiv64,@function
-fdiv64:
+fdiv64:                                 # @fdiv64
 	.param  	f64, f64
 	.result 	f64
+# BB#0:
 	f64.div 	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	fabs64
 	.type	fabs64,@function
-fabs64:
+fabs64:                                 # @fabs64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.abs 	$push0=, $0
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	fneg64
 	.type	fneg64,@function
-fneg64:
+fneg64:                                 # @fneg64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.neg 	$push0=, $0
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	copysign64
 	.type	copysign64,@function
-copysign64:
+copysign64:                             # @copysign64
 	.param  	f64, f64
 	.result 	f64
+# BB#0:
 	f64.copysign	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	sqrt64
 	.type	sqrt64,@function
-sqrt64:
+sqrt64:                                 # @sqrt64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.sqrt	$push0=, $0
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	ceil64
 	.type	ceil64,@function
-ceil64:
+ceil64:                                 # @ceil64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.ceil	$push0=, $0
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	floor64
 	.type	floor64,@function
-floor64:
+floor64:                                # @floor64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.floor	$push0=, $0
 	return  	$pop0
 func_end9:
@@ -102,9 +112,10 @@ func_end9:
 
 	.globl	trunc64
 	.type	trunc64,@function
-trunc64:
+trunc64:                                # @trunc64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.trunc	$push0=, $0
 	return  	$pop0
 func_end10:
@@ -112,9 +123,10 @@ func_end10:
 
 	.globl	nearest64
 	.type	nearest64,@function
-nearest64:
+nearest64:                              # @nearest64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.nearest	$push0=, $0
 	return  	$pop0
 func_end11:
@@ -122,9 +134,10 @@ func_end11:
 
 	.globl	nearest64_via_rint
 	.type	nearest64_via_rint,@function
-nearest64_via_rint:
+nearest64_via_rint:                     # @nearest64_via_rint
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.nearest	$push0=, $0
 	return  	$pop0
 func_end12:
@@ -132,9 +145,10 @@ func_end12:
 
 	.globl	fmin64
 	.type	fmin64,@function
-fmin64:
+fmin64:                                 # @fmin64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.const	$push0=, 0x0p0
 	f64.min 	$push1=, $0, $pop0
 	return  	$pop1
@@ -143,9 +157,10 @@ func_end13:
 
 	.globl	fmax64
 	.type	fmax64,@function
-fmax64:
+fmax64:                                 # @fmax64
 	.param  	f64
 	.result 	f64
+# BB#0:
 	f64.const	$push0=, 0x0p0
 	f64.max 	$push1=, $0, $pop0
 	return  	$pop1
@@ -154,9 +169,10 @@ func_end14:
 
 	.globl	fma64
 	.type	fma64,@function
-fma64:
+fma64:                                  # @fma64
 	.param  	f64, f64, f64
 	.result 	f64
+# BB#0:
 	f64.call	$push0=, fma, $0, $1, $2
 	return  	$pop0
 func_end15:

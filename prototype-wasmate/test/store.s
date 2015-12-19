@@ -1,9 +1,10 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/store.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/store.ll"
 	.globl	sti32
 	.type	sti32,@function
-sti32:
+sti32:                                  # @sti32
 	.param  	i32, i32
+# BB#0:
 	i32.store	$discard=, 0($0), $1
 	return
 func_end0:
@@ -11,8 +12,9 @@ func_end0:
 
 	.globl	sti64
 	.type	sti64,@function
-sti64:
+sti64:                                  # @sti64
 	.param  	i32, i64
+# BB#0:
 	i64.store	$discard=, 0($0), $1
 	return
 func_end1:
@@ -20,8 +22,9 @@ func_end1:
 
 	.globl	stf32
 	.type	stf32,@function
-stf32:
+stf32:                                  # @stf32
 	.param  	i32, f32
+# BB#0:
 	f32.store	$discard=, 0($0), $1
 	return
 func_end2:
@@ -29,21 +32,13 @@ func_end2:
 
 	.globl	stf64
 	.type	stf64,@function
-stf64:
+stf64:                                  # @stf64
 	.param  	i32, f64
+# BB#0:
 	f64.store	$discard=, 0($0), $1
 	return
 func_end3:
 	.size	stf64, func_end3-stf64
-
-	.globl  stoff
-	.type   stoff,@function
-stoff:
-	.param          i32, i32
-	i32.store       $discard=, 1($0), $1
-	return
-func_end4:
-	.size   stoff, func_end4-stoff
 
 
 	.section	".note.GNU-stack","",@progbits

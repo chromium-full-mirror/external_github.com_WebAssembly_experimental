@@ -1,9 +1,10 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/unreachable.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/unreachable.ll"
 	.globl	f1
 	.type	f1,@function
-f1:
+f1:                                     # @f1
 	.result 	i32
+# BB#0:
 	call    	abort
 	unreachable
 func_end0:
@@ -11,7 +12,8 @@ func_end0:
 
 	.globl	f2
 	.type	f2,@function
-f2:
+f2:                                     # @f2
+# BB#0:
 	unreachable
 	return
 func_end1:
@@ -19,7 +21,8 @@ func_end1:
 
 	.globl	f3
 	.type	f3,@function
-f3:
+f3:                                     # @f3
+# BB#0:
 	unreachable
 	return
 func_end2:

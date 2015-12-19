@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/frem.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/frem.ll"
 	.globl	frem32
 	.type	frem32,@function
-frem32:
+frem32:                                 # @frem32
 	.param  	f32, f32
 	.result 	f32
+# BB#0:
 	f32.call	$push0=, fmodf, $0, $1
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	frem64
 	.type	frem64,@function
-frem64:
+frem64:                                 # @frem64
 	.param  	f64, f64
 	.result 	f64
+# BB#0:
 	f64.call	$push0=, fmod, $0, $1
 	return  	$pop0
 func_end1:

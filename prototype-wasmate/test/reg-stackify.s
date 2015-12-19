@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/reg-stackify.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/reg-stackify.ll"
 	.globl	no0
 	.type	no0,@function
-no0:
+no0:                                    # @no0
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.load	$1=, 0($1)
 	i32.const	$push0=, 0
 	i32.store	$discard=, 0($0), $pop0
@@ -14,9 +15,10 @@ func_end0:
 
 	.globl	no1
 	.type	no1,@function
-no1:
+no1:                                    # @no1
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.load	$1=, 0($1)
 	i32.const	$push0=, 0
 	i32.store	$discard=, 0($0), $pop0
@@ -26,9 +28,10 @@ func_end1:
 
 	.globl	yes0
 	.type	yes0,@function
-yes0:
+yes0:                                   # @yes0
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.const	$push1=, 0
 	i32.store	$discard=, 0($0), $pop1
 	i32.load	$push0=, 0($1)
@@ -38,9 +41,10 @@ func_end2:
 
 	.globl	yes1
 	.type	yes1,@function
-yes1:
+yes1:                                   # @yes1
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.load	$push0=, 0($0)
 	return  	$pop0
 func_end3:
@@ -48,10 +52,11 @@ func_end3:
 
 	.globl	stack_uses
 	.type	stack_uses,@function
-stack_uses:
+stack_uses:                             # @stack_uses
 	.param  	i32, i32, i32, i32
 	.result 	i32
 	.local  	i32, i32
+# BB#0:                                 # %entry
 	i32.const	$4=, 1
 	i32.const	$5=, 2
 	i32.lt_s	$push0=, $0, $4
@@ -64,9 +69,10 @@ stack_uses:
 	i32.ne  	$push7=, $pop6, $4
 	block   	BB4_2
 	br_if   	$pop7, BB4_2
+# BB#1:                                 # %true
 	i32.const	$push8=, 0
 	return  	$pop8
-BB4_2:
+BB4_2:                                  # %false
 	return  	$4
 func_end4:
 	.size	stack_uses, func_end4-stack_uses

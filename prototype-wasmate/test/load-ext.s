@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/load-ext.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/load-ext.ll"
 	.globl	sext_i8_i32
 	.type	sext_i8_i32,@function
-sext_i8_i32:
+sext_i8_i32:                            # @sext_i8_i32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.load8_s	$push0=, 0($0)
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	zext_i8_i32
 	.type	zext_i8_i32,@function
-zext_i8_i32:
+zext_i8_i32:                            # @zext_i8_i32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.load8_u	$push0=, 0($0)
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	sext_i16_i32
 	.type	sext_i16_i32,@function
-sext_i16_i32:
+sext_i16_i32:                           # @sext_i16_i32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.load16_s	$push0=, 0($0)
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	zext_i16_i32
 	.type	zext_i16_i32,@function
-zext_i16_i32:
+zext_i16_i32:                           # @zext_i16_i32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.load16_u	$push0=, 0($0)
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	sext_i8_i64
 	.type	sext_i8_i64,@function
-sext_i8_i64:
+sext_i8_i64:                            # @sext_i8_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load8_s	$push0=, 0($0)
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	zext_i8_i64
 	.type	zext_i8_i64,@function
-zext_i8_i64:
+zext_i8_i64:                            # @zext_i8_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load8_u	$push0=, 0($0)
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	sext_i16_i64
 	.type	sext_i16_i64,@function
-sext_i16_i64:
+sext_i16_i64:                           # @sext_i16_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load16_s	$push0=, 0($0)
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	zext_i16_i64
 	.type	zext_i16_i64,@function
-zext_i16_i64:
+zext_i16_i64:                           # @zext_i16_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load16_u	$push0=, 0($0)
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	sext_i32_i64
 	.type	sext_i32_i64,@function
-sext_i32_i64:
+sext_i32_i64:                           # @sext_i32_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load32_s	$push0=, 0($0)
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	zext_i32_i64
 	.type	zext_i32_i64,@function
-zext_i32_i64:
+zext_i32_i64:                           # @zext_i32_i64
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.load32_u	$push0=, 0($0)
 	return  	$pop0
 func_end9:

@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/select.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/select.ll"
 	.globl	select_i32_bool
 	.type	select_i32_bool,@function
-select_i32_bool:
+select_i32_bool:                        # @select_i32_bool
 	.param  	i32, i32, i32
 	.result 	i32
+# BB#0:
 	i32.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	select_i32_eq
 	.type	select_i32_eq,@function
-select_i32_eq:
+select_i32_eq:                          # @select_i32_eq
 	.param  	i32, i32, i32
 	.result 	i32
+# BB#0:
 	i32.select	$push0=, $0, $2, $1
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	select_i32_ne
 	.type	select_i32_ne,@function
-select_i32_ne:
+select_i32_ne:                          # @select_i32_ne
 	.param  	i32, i32, i32
 	.result 	i32
+# BB#0:
 	i32.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	select_i64_bool
 	.type	select_i64_bool,@function
-select_i64_bool:
+select_i64_bool:                        # @select_i64_bool
 	.param  	i32, i64, i64
 	.result 	i64
+# BB#0:
 	i64.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	select_i64_eq
 	.type	select_i64_eq,@function
-select_i64_eq:
+select_i64_eq:                          # @select_i64_eq
 	.param  	i32, i64, i64
 	.result 	i64
+# BB#0:
 	i64.select	$push0=, $0, $2, $1
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	select_i64_ne
 	.type	select_i64_ne,@function
-select_i64_ne:
+select_i64_ne:                          # @select_i64_ne
 	.param  	i32, i64, i64
 	.result 	i64
+# BB#0:
 	i64.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	select_f32_bool
 	.type	select_f32_bool,@function
-select_f32_bool:
+select_f32_bool:                        # @select_f32_bool
 	.param  	i32, f32, f32
 	.result 	f32
+# BB#0:
 	f32.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	select_f32_eq
 	.type	select_f32_eq,@function
-select_f32_eq:
+select_f32_eq:                          # @select_f32_eq
 	.param  	i32, f32, f32
 	.result 	f32
+# BB#0:
 	f32.select	$push0=, $0, $2, $1
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	select_f32_ne
 	.type	select_f32_ne,@function
-select_f32_ne:
+select_f32_ne:                          # @select_f32_ne
 	.param  	i32, f32, f32
 	.result 	f32
+# BB#0:
 	f32.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	select_f64_bool
 	.type	select_f64_bool,@function
-select_f64_bool:
+select_f64_bool:                        # @select_f64_bool
 	.param  	i32, f64, f64
 	.result 	f64
+# BB#0:
 	f64.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end9:
@@ -102,9 +112,10 @@ func_end9:
 
 	.globl	select_f64_eq
 	.type	select_f64_eq,@function
-select_f64_eq:
+select_f64_eq:                          # @select_f64_eq
 	.param  	i32, f64, f64
 	.result 	f64
+# BB#0:
 	f64.select	$push0=, $0, $2, $1
 	return  	$pop0
 func_end10:
@@ -112,9 +123,10 @@ func_end10:
 
 	.globl	select_f64_ne
 	.type	select_f64_ne,@function
-select_f64_ne:
+select_f64_ne:                          # @select_f64_ne
 	.param  	i32, f64, f64
 	.result 	f64
+# BB#0:
 	f64.select	$push0=, $0, $1, $2
 	return  	$pop0
 func_end11:

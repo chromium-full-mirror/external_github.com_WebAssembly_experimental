@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/i32.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/i32.ll"
 	.globl	add32
 	.type	add32,@function
-add32:
+add32:                                  # @add32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.add 	$push0=, $0, $1
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	sub32
 	.type	sub32,@function
-sub32:
+sub32:                                  # @sub32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.sub 	$push0=, $0, $1
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	mul32
 	.type	mul32,@function
-mul32:
+mul32:                                  # @mul32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.mul 	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	sdiv32
 	.type	sdiv32,@function
-sdiv32:
+sdiv32:                                 # @sdiv32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.div_s	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	udiv32
 	.type	udiv32,@function
-udiv32:
+udiv32:                                 # @udiv32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.div_u	$push0=, $0, $1
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	srem32
 	.type	srem32,@function
-srem32:
+srem32:                                 # @srem32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.rem_s	$push0=, $0, $1
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	urem32
 	.type	urem32,@function
-urem32:
+urem32:                                 # @urem32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.rem_u	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	and32
 	.type	and32,@function
-and32:
+and32:                                  # @and32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.and 	$push0=, $0, $1
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	or32
 	.type	or32,@function
-or32:
+or32:                                   # @or32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.or  	$push0=, $0, $1
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	xor32
 	.type	xor32,@function
-xor32:
+xor32:                                  # @xor32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.xor 	$push0=, $0, $1
 	return  	$pop0
 func_end9:
@@ -102,9 +112,10 @@ func_end9:
 
 	.globl	shl32
 	.type	shl32,@function
-shl32:
+shl32:                                  # @shl32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.shl 	$push0=, $0, $1
 	return  	$pop0
 func_end10:
@@ -112,9 +123,10 @@ func_end10:
 
 	.globl	shr32
 	.type	shr32,@function
-shr32:
+shr32:                                  # @shr32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.shr_u	$push0=, $0, $1
 	return  	$pop0
 func_end11:
@@ -122,9 +134,10 @@ func_end11:
 
 	.globl	sar32
 	.type	sar32,@function
-sar32:
+sar32:                                  # @sar32
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.shr_s	$push0=, $0, $1
 	return  	$pop0
 func_end12:
@@ -132,9 +145,10 @@ func_end12:
 
 	.globl	clz32
 	.type	clz32,@function
-clz32:
+clz32:                                  # @clz32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.clz 	$push0=, $0
 	return  	$pop0
 func_end13:
@@ -142,9 +156,10 @@ func_end13:
 
 	.globl	clz32_zero_undef
 	.type	clz32_zero_undef,@function
-clz32_zero_undef:
+clz32_zero_undef:                       # @clz32_zero_undef
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.clz 	$push0=, $0
 	return  	$pop0
 func_end14:
@@ -152,9 +167,10 @@ func_end14:
 
 	.globl	ctz32
 	.type	ctz32,@function
-ctz32:
+ctz32:                                  # @ctz32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.ctz 	$push0=, $0
 	return  	$pop0
 func_end15:
@@ -162,9 +178,10 @@ func_end15:
 
 	.globl	ctz32_zero_undef
 	.type	ctz32_zero_undef,@function
-ctz32_zero_undef:
+ctz32_zero_undef:                       # @ctz32_zero_undef
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.ctz 	$push0=, $0
 	return  	$pop0
 func_end16:
@@ -172,9 +189,10 @@ func_end16:
 
 	.globl	popcnt32
 	.type	popcnt32,@function
-popcnt32:
+popcnt32:                               # @popcnt32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.popcnt	$push0=, $0
 	return  	$pop0
 func_end17:

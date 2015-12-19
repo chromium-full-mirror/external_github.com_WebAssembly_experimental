@@ -1,9 +1,10 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/memory-addr32.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/memory-addr32.ll"
 	.globl	memory_size
 	.type	memory_size,@function
-memory_size:
+memory_size:                            # @memory_size
 	.result 	i32
+# BB#0:
 	memory_size	$push0=
 	return  	$pop0
 func_end0:
@@ -11,8 +12,9 @@ func_end0:
 
 	.globl	grow_memory
 	.type	grow_memory,@function
-grow_memory:
+grow_memory:                            # @grow_memory
 	.param  	i32
+# BB#0:
 	grow_memory	$0
 	return
 func_end1:

@@ -1,11 +1,12 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/signext-zeroext.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/signext-zeroext.ll"
 	.globl	z2s_func
 	.type	z2s_func,@function
-z2s_func:
+z2s_func:                               # @z2s_func
 	.param  	i32
 	.result 	i32
 	.local  	i32
+# BB#0:
 	i32.const	$1=, 24
 	i32.shl 	$push0=, $0, $1
 	i32.shr_s	$push1=, $pop0, $1
@@ -15,9 +16,10 @@ func_end0:
 
 	.globl	s2z_func
 	.type	s2z_func,@function
-s2z_func:
+s2z_func:                               # @s2z_func
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.const	$push0=, 255
 	i32.and 	$push1=, $0, $pop0
 	return  	$pop1
@@ -26,9 +28,10 @@ func_end1:
 
 	.globl	z2s_call
 	.type	z2s_call,@function
-z2s_call:
+z2s_call:                               # @z2s_call
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.const	$push0=, 255
 	i32.and 	$push1=, $0, $pop0
 	i32.call	$push2=, z2s_func, $pop1
@@ -38,10 +41,11 @@ func_end2:
 
 	.globl	s2z_call
 	.type	s2z_call,@function
-s2z_call:
+s2z_call:                               # @s2z_call
 	.param  	i32
 	.result 	i32
 	.local  	i32
+# BB#0:
 	i32.const	$1=, 24
 	i32.shl 	$push0=, $0, $1
 	i32.shr_s	$push1=, $pop0, $1
