@@ -7,36 +7,36 @@
 
 (module
   (export "trunc_i8_i32" $trunc_i8_i32)
+  (export "trunc_i16_i32" $trunc_i16_i32)
+  (export "trunc_i8_i64" $trunc_i8_i64)
+  (export "trunc_i16_i64" $trunc_i16_i64)
+  (export "trunc_i32_i64" $trunc_i32_i64)
+  (export "trunc_i8_i32_off" $trunc_i8_i32_off)
   (func $trunc_i8_i32
     (param i32) (param i32)
     (i32.store8 offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "trunc_i16_i32" $trunc_i16_i32)
   (func $trunc_i16_i32
     (param i32) (param i32)
     (i32.store16 offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "trunc_i8_i64" $trunc_i8_i64)
   (func $trunc_i8_i64
     (param i32) (param i64)
     (i64.store8 offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "trunc_i16_i64" $trunc_i16_i64)
   (func $trunc_i16_i64
     (param i32) (param i64)
     (i64.store16 offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "trunc_i32_i64" $trunc_i32_i64)
   (func $trunc_i32_i64
     (param i32) (param i64)
     (i64.store32 offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "trunc_i8_i32_off" $trunc_i8_i32_off)
   (func $trunc_i8_i32_off
     (param i32) (param i32)
     (i32.store8 offset=1234 (get_local 0) (get_local 1))

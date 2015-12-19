@@ -7,30 +7,30 @@
 
 (module
   (export "sti32" $sti32)
+  (export "sti64" $sti64)
+  (export "stf32" $stf32)
+  (export "stf64" $stf64)
+  (export "stoff" $stoff)
   (func $sti32
     (param i32) (param i32)
     (i32.store offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "sti64" $sti64)
   (func $sti64
     (param i32) (param i64)
     (i64.store offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "stf32" $stf32)
   (func $stf32
     (param i32) (param f32)
     (f32.store offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "stf64" $stf64)
   (func $stf64
     (param i32) (param f64)
     (f64.store offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "stoff" $stoff)
   (func $stoff
     (param i32) (param i32)
     (i32.store offset=1 (get_local 0) (get_local 1))

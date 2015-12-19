@@ -7,29 +7,33 @@
 
 (module
   (export "foo" $foo)
+  (export "bar" $bar)
+  (export "imm" $imm)
+  (export "foo_i64" $foo_i64)
+  (export "X_i16" $X_i16)
+  (export "X_ptr" $X_ptr)
+  (export "funcname" $funcname)
+  (export "varname" $varname)
+  (export "gv" $gv)
   (func $foo
     (param i32)
     (result i32)
     (return (get_local 0))
   )
-  (export "bar" $bar)
   (func $bar
     (param i32) (param i32)
     (return)
   )
-  (export "imm" $imm)
   (func $imm
     (result i32)
     (local i32)
     (return (get_local 0))
   )
-  (export "foo_i64" $foo_i64)
   (func $foo_i64
     (param i64)
     (result i64)
     (return (get_local 0))
   )
-  (export "X_i16" $X_i16)
   (func $X_i16
     (param i32)
     (local i32)
@@ -37,7 +41,6 @@
     (i32.store16 offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "X_ptr" $X_ptr)
   (func $X_ptr
     (param i32)
     (local i32)
@@ -45,12 +48,10 @@
     (i32.store offset=0 (get_local 0) (get_local 1))
     (return)
   )
-  (export "funcname" $funcname)
   (func $funcname
     (foo $funcname)
     (return)
   )
-  (export "varname" $varname)
   (func $varname
     (foo 37)
     (return)

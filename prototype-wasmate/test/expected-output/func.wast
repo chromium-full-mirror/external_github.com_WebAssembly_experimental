@@ -7,26 +7,27 @@
 
 (module
   (export "f0" $f0)
+  (export "f1" $f1)
+  (export "f2" $f2)
+  (export "f3" $f3)
+  (export "f4" $f4)
+  (export "f5" $f5)
   (func $f0
     (return)
   )
-  (export "f1" $f1)
   (func $f1
     (result i32)
     (return (i32.const 0))
   )
-  (export "f2" $f2)
   (func $f2
     (param i32) (param f32)
     (result i32)
     (return (i32.const 0))
   )
-  (export "f3" $f3)
   (func $f3
     (param i32) (param f32)
     (return)
   )
-  (export "f4" $f4)
   (func $f4
     (param i32)
     (result i32)
@@ -38,7 +39,6 @@
     )
     (return (get_local 1))
   )
-  (export "f5" $f5)
   (func $f5
     (result f32)
     (unreachable)

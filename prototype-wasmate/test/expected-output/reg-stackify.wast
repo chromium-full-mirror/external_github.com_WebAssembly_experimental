@@ -7,6 +7,10 @@
 
 (module
   (export "no0" $no0)
+  (export "no1" $no1)
+  (export "yes0" $yes0)
+  (export "yes1" $yes1)
+  (export "stack_uses" $stack_uses)
   (func $no0
     (param i32) (param i32)
     (result i32)
@@ -14,7 +18,6 @@
     (i32.store offset=0 (get_local 0) (i32.const 0))
     (return (get_local 1))
   )
-  (export "no1" $no1)
   (func $no1
     (param i32) (param i32)
     (result i32)
@@ -22,20 +25,17 @@
     (i32.store offset=0 (get_local 0) (i32.const 0))
     (return (get_local 1))
   )
-  (export "yes0" $yes0)
   (func $yes0
     (param i32) (param i32)
     (result i32)
     (i32.store offset=0 (get_local 0) (i32.const 0))
     (return (i32.load offset=0 (get_local 1)))
   )
-  (export "yes1" $yes1)
   (func $yes1
     (param i32)
     (result i32)
     (return (i32.load offset=0 (get_local 0)))
   )
-  (export "stack_uses" $stack_uses)
   (func $stack_uses
     (param i32) (param i32) (param i32) (param i32)
     (result i32)

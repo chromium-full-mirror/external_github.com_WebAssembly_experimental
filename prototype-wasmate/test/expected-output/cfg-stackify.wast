@@ -7,6 +7,28 @@
 
 (module
   (export "test0" $test0)
+  (export "test1" $test1)
+  (export "test2" $test2)
+  (export "doublediamond" $doublediamond)
+  (export "triangle" $triangle)
+  (export "diamond" $diamond)
+  (export "single_block" $single_block)
+  (export "minimal_loop" $minimal_loop)
+  (export "simple_loop" $simple_loop)
+  (export "doubletriangle" $doubletriangle)
+  (export "ifelse_earlyexits" $ifelse_earlyexits)
+  (export "doublediamond_in_a_loop" $doublediamond_in_a_loop)
+  (export "test3" $test3)
+  (export "test4" $test4)
+  (export "test5" $test5)
+  (export "test6" $test6)
+  (export "test7" $test7)
+  (export "test8" $test8)
+  (export "test9" $test9)
+  (export "test10" $test10)
+  (export "test11" $test11)
+  (export "test12" $test12)
+  (export "test13" $test13)
   (func $test0
     (param i32)
     (local i32)
@@ -19,7 +41,6 @@
     )
     (return)
   )
-  (export "test1" $test1)
   (func $test1
     (param i32)
     (local i32)
@@ -32,7 +53,6 @@
     )
     (return)
   )
-  (export "test2" $test2)
   (func $test2
     (param i32) (param i32)
     (block $BB2_2
@@ -46,7 +66,6 @@
     )
     (return)
   )
-  (export "doublediamond" $doublediamond)
   (func $doublediamond
     (param i32) (param i32) (param i32)
     (result i32)
@@ -69,7 +88,6 @@
     (i32.store offset=0 (get_local 2) (i32.const 5))
     (return (get_local 3))
   )
-  (export "triangle" $triangle)
   (func $triangle
     (param i32) (param i32)
     (result i32)
@@ -82,7 +100,6 @@
     (i32.store offset=0 (get_local 0) (i32.const 2))
     (return (get_local 2))
   )
-  (export "diamond" $diamond)
   (func $diamond
     (param i32) (param i32)
     (result i32)
@@ -99,13 +116,11 @@
     (i32.store offset=0 (get_local 0) (i32.const 3))
     (return (get_local 2))
   )
-  (export "single_block" $single_block)
   (func $single_block
     (param i32)
     (result i32)
     (return (i32.store offset=0 (get_local 0) (i32.const 0)))
   )
-  (export "minimal_loop" $minimal_loop)
   (func $minimal_loop
     (param i32)
     (result i32)
@@ -115,7 +130,6 @@
       (br $BB7_1)
     )
   )
-  (export "simple_loop" $simple_loop)
   (func $simple_loop
     (param i32) (param i32)
     (result i32)
@@ -128,7 +142,6 @@
     (i32.store offset=0 (get_local 0) (i32.const 2))
     (return (get_local 2))
   )
-  (export "doubletriangle" $doubletriangle)
   (func $doubletriangle
     (param i32) (param i32) (param i32)
     (result i32)
@@ -146,7 +159,6 @@
     (i32.store offset=0 (get_local 2) (i32.const 5))
     (return (get_local 3))
   )
-  (export "ifelse_earlyexits" $ifelse_earlyexits)
   (func $ifelse_earlyexits
     (param i32) (param i32) (param i32)
     (result i32)
@@ -165,7 +177,6 @@
     (i32.store offset=0 (get_local 2) (i32.const 4))
     (return (get_local 3))
   )
-  (export "doublediamond_in_a_loop" $doublediamond_in_a_loop)
   (func $doublediamond_in_a_loop
     (param i32) (param i32) (param i32)
     (result i32)
@@ -189,7 +200,6 @@
       (br $BB11_1)
     )
   )
-  (export "test3" $test3)
   (func $test3
     (param i32)
     (block $BB12_5
@@ -206,7 +216,6 @@
     )
     (return)
   )
-  (export "test4" $test4)
   (func $test4
     (param i32)
     (block $BB13_8
@@ -227,7 +236,6 @@
     )
     (return)
   )
-  (export "test5" $test5)
   (func $test5
     (param i32) (param i32)
     (local i32 i32)
@@ -245,7 +253,6 @@
     (i32.store offset=0 (get_local 3) (i32.const 2))
     (return)
   )
-  (export "test6" $test6)
   (func $test6
     (param i32) (param i32)
     (local i32 i32 i32)
@@ -270,7 +277,6 @@
     (i32.store offset=0 (get_local 2) (i32.const 4))
     (return)
   )
-  (export "test7" $test7)
   (func $test7
     (param i32) (param i32)
     (local i32 i32)
@@ -291,7 +297,6 @@
     (i32.store offset=0 (get_local 2) (i32.const 5))
     (unreachable)
   )
-  (export "test8" $test8)
   (func $test8
     (result i32)
     (local i32)
@@ -307,7 +312,6 @@
       )
     )
   )
-  (export "test9" $test9)
   (func $test9
     (local i32 i32)
     (set_local 1 (i32.const 0))
@@ -331,7 +335,6 @@
     (i32.store offset=0 (get_local 0) (i32.const 5))
     (return)
   )
-  (export "test10" $test10)
   (func $test10
     (local i32 i32 i32 i32 i32)
     (set_local 0 (i32.const 2))
@@ -359,7 +362,6 @@
       (br $BB19_1)
     )
   )
-  (export "test11" $test11)
   (func $test11
     (local i32)
     (set_local 0 (i32.const 0))
@@ -392,7 +394,6 @@
     (i32.store offset=0 (get_local 0) (i32.const 8))
     (return)
   )
-  (export "test12" $test12)
   (func $test12
     (param i32)
     (local i32)
@@ -415,7 +416,6 @@
       (br $BB21_1)
     )
   )
-  (export "test13" $test13)
   (func $test13
     (local i32)
     (block $BB22_2

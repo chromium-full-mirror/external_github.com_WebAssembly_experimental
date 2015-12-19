@@ -6,6 +6,7 @@
 ;;
 
 (module
+  (export "c" $c)
   (memory 12 12
     (segment 8
       "\04\00\00\00"

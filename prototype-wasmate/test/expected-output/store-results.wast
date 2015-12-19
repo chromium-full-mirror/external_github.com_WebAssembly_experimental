@@ -7,12 +7,14 @@
 
 (module
   (export "single_block" $single_block)
+  (export "foo" $foo)
+  (export "bar" $bar)
+  (export "pos" $pos)
   (func $single_block
     (param i32)
     (result i32)
     (return (i32.store offset=0 (get_local 0) (i32.const 0)))
   )
-  (export "foo" $foo)
   (func $foo
     (local i32 i32)
     (set_local 0 (i32.const 0))
@@ -24,7 +26,6 @@
     )
     (return)
   )
-  (export "bar" $bar)
   (func $bar
     (local i32 f32)
     (set_local 1 (f32.const 0x0p0))

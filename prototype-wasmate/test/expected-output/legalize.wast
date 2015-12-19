@@ -7,18 +7,21 @@
 
 (module
   (export "shl_i3" $shl_i3)
+  (export "shl_i53" $shl_i53)
+  (export "sext_in_reg_i32_i64" $sext_in_reg_i32_i64)
+  (export "fpext_f32_f64" $fpext_f32_f64)
+  (export "fpconv_f64_f32" $fpconv_f64_f32)
+  (export "bigshift" $bigshift)
   (func $shl_i3
     (param i32) (param i32) (param i32)
     (result i32)
     (return (i32.shl (get_local 0) (i32.and (get_local 1) (i32.const 7))))
   )
-  (export "shl_i53" $shl_i53)
   (func $shl_i53
     (param i64) (param i64) (param i32)
     (result i64)
     (return (i64.shl (get_local 0) (i64.and (get_local 1) (i64.const 9007199254740991))))
   )
-  (export "sext_in_reg_i32_i64" $sext_in_reg_i32_i64)
   (func $sext_in_reg_i32_i64
     (param i64)
     (result i64)
@@ -26,19 +29,16 @@
     (set_local 1 (i64.const 32))
     (return (i64.shr_s (i64.shl (get_local 0) (get_local 1)) (get_local 1)))
   )
-  (export "fpext_f32_f64" $fpext_f32_f64)
   (func $fpext_f32_f64
     (param i32)
     (result f64)
     (return (f64.promote/f32 (f32.load offset=0 (get_local 0))))
   )
-  (export "fpconv_f64_f32" $fpconv_f64_f32)
   (func $fpconv_f64_f32
     (param i32)
     (result f32)
     (return (f32.demote/f64 (f64.load offset=0 (get_local 0))))
   )
-  (export "bigshift" $bigshift)
   (func $bigshift
     (param i32) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64) (param i64)
     (local i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i32 i64 i32 i32 i32 i32 i32 i32 i64 i64 i64 i32 i32 i64 i64 i64 i32 i32 i64 i32 i32 i64 i32 i32 i32 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i32 i64 i64 i64 i32 i64 i64 i32 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i32 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i32 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i64 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)

@@ -7,12 +7,12 @@
 
 (module
   (export "frem32" $frem32)
+  (export "frem64" $frem64)
   (func $frem32
     (param f32) (param f32)
     (result f32)
     (return (call $fmodf (get_local 0) (get_local 1)))
   )
-  (export "frem64" $frem64)
   (func $frem64
     (param f64) (param f64)
     (result f64)

@@ -7,17 +7,17 @@
 
 (module
   (export "f1" $f1)
+  (export "f2" $f2)
+  (export "f3" $f3)
   (func $f1
     (result i32)
     (call_import $abort)
     (unreachable)
   )
-  (export "f2" $f2)
   (func $f2
     (unreachable)
     (return)
   )
-  (export "f3" $f3)
   (func $f3
     (unreachable)
     (return)
