@@ -131,6 +131,7 @@ types = {}
 data_labels = {}
 function_labels = {}
 current_function_table_index = 0
+weak = []
 import_funs = set([])
 
 def error(message, line_number=None):
@@ -217,6 +218,9 @@ class PassHandler(object):
         pass
 
     def handle_dot_globl(self, args):
+        pass
+
+    def handle_dot_weak(self, args):
         pass
 
     def handle_dot_type(self, args):
@@ -349,6 +353,16 @@ class DataPassHandler(PassHandler):
         if args[0] not in data_labels:
             register_function(args[0])
             out.write_line('(export "' + args[0] + '" $' + args[0] + ')')
+
+    def handle_dot_weak(self, args):
+        """.weak labels declare a name for global variables and functions which
+        can be overriden later."""
+        # TODO: For now, treat this the same as .globl because we don't support
+        #       linking of multiple files.
+        assert args[0] not in weak, ('Unimplemented: multiple .weak for %s' %
+                                     args[0])
+        weak.append(args[0])
+        self.handle_dot_globl(args)
 
     def handle_dot_type(self, args):
         """.type is used for extra validation."""
@@ -641,12 +655,13 @@ def handle_dot_directive(handler, command, args, rest):
         else:
             error("unknown section: " + args[0])
     elif command in ['file', 'ident']:
-        # .file is for debug info, which we're not doing right now. .ident is
-        # just for embedding an uninterpreted comment in the output. So we
-        # ignore all these.
+        # .file is for debug info, which we're not doing right now.
+        # .ident is for embedding an uninterpreted comment in the output.
         pass
     elif command == 'globl':
         handler.handle_dot_globl(args)
+    elif command == 'weak':
+        handler.handle_dot_weak(args)
     elif command == 'type':
         handler.handle_dot_type(args)
     elif command == 'param':
