@@ -258,7 +258,8 @@ class PassHandler(object):
 
     def handle_dot_align(self, args):
         if current_section == '.text':
-            error("TODO: implement .align for functions")
+            # Ignore function alignment.
+            pass
 
     def handle_dot_lcomm(self, args):
         pass

@@ -10,6 +10,3 @@
 
 # IndexError: pop from empty list
 930930-1.c.s
-
-# TODO: implement .align for functions
-align-3.c.s
