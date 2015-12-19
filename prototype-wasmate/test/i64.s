@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/i64.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/i64.ll"
 	.globl	add64
 	.type	add64,@function
-add64:
+add64:                                  # @add64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.add 	$push0=, $0, $1
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	sub64
 	.type	sub64,@function
-sub64:
+sub64:                                  # @sub64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.sub 	$push0=, $0, $1
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	mul64
 	.type	mul64,@function
-mul64:
+mul64:                                  # @mul64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.mul 	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	sdiv64
 	.type	sdiv64,@function
-sdiv64:
+sdiv64:                                 # @sdiv64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.div_s	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	udiv64
 	.type	udiv64,@function
-udiv64:
+udiv64:                                 # @udiv64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.div_u	$push0=, $0, $1
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	srem64
 	.type	srem64,@function
-srem64:
+srem64:                                 # @srem64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.rem_s	$push0=, $0, $1
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	urem64
 	.type	urem64,@function
-urem64:
+urem64:                                 # @urem64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.rem_u	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	and64
 	.type	and64,@function
-and64:
+and64:                                  # @and64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.and 	$push0=, $0, $1
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	or64
 	.type	or64,@function
-or64:
+or64:                                   # @or64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.or  	$push0=, $0, $1
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	xor64
 	.type	xor64,@function
-xor64:
+xor64:                                  # @xor64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.xor 	$push0=, $0, $1
 	return  	$pop0
 func_end9:
@@ -102,9 +112,10 @@ func_end9:
 
 	.globl	shl64
 	.type	shl64,@function
-shl64:
+shl64:                                  # @shl64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.shl 	$push0=, $0, $1
 	return  	$pop0
 func_end10:
@@ -112,9 +123,10 @@ func_end10:
 
 	.globl	shr64
 	.type	shr64,@function
-shr64:
+shr64:                                  # @shr64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.shr_u	$push0=, $0, $1
 	return  	$pop0
 func_end11:
@@ -122,9 +134,10 @@ func_end11:
 
 	.globl	sar64
 	.type	sar64,@function
-sar64:
+sar64:                                  # @sar64
 	.param  	i64, i64
 	.result 	i64
+# BB#0:
 	i64.shr_s	$push0=, $0, $1
 	return  	$pop0
 func_end12:
@@ -132,9 +145,10 @@ func_end12:
 
 	.globl	clz64
 	.type	clz64,@function
-clz64:
+clz64:                                  # @clz64
 	.param  	i64
 	.result 	i64
+# BB#0:
 	i64.clz 	$push0=, $0
 	return  	$pop0
 func_end13:
@@ -142,9 +156,10 @@ func_end13:
 
 	.globl	clz64_zero_undef
 	.type	clz64_zero_undef,@function
-clz64_zero_undef:
+clz64_zero_undef:                       # @clz64_zero_undef
 	.param  	i64
 	.result 	i64
+# BB#0:
 	i64.clz 	$push0=, $0
 	return  	$pop0
 func_end14:
@@ -152,9 +167,10 @@ func_end14:
 
 	.globl	ctz64
 	.type	ctz64,@function
-ctz64:
+ctz64:                                  # @ctz64
 	.param  	i64
 	.result 	i64
+# BB#0:
 	i64.ctz 	$push0=, $0
 	return  	$pop0
 func_end15:
@@ -162,9 +178,10 @@ func_end15:
 
 	.globl	ctz64_zero_undef
 	.type	ctz64_zero_undef,@function
-ctz64_zero_undef:
+ctz64_zero_undef:                       # @ctz64_zero_undef
 	.param  	i64
 	.result 	i64
+# BB#0:
 	i64.ctz 	$push0=, $0
 	return  	$pop0
 func_end16:
@@ -172,9 +189,10 @@ func_end16:
 
 	.globl	popcnt64
 	.type	popcnt64,@function
-popcnt64:
+popcnt64:                               # @popcnt64
 	.param  	i64
 	.result 	i64
+# BB#0:
 	i64.popcnt	$push0=, $0
 	return  	$pop0
 func_end17:

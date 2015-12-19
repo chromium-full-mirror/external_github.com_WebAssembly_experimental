@@ -1,9 +1,10 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/call.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/call.ll"
 	.globl	call_i32_nullary
 	.type	call_i32_nullary,@function
-call_i32_nullary:
+call_i32_nullary:                       # @call_i32_nullary
 	.result 	i32
+# BB#0:
 	i32.call	$push0=, i32_nullary
 	return  	$pop0
 func_end0:
@@ -11,8 +12,9 @@ func_end0:
 
 	.globl	call_i64_nullary
 	.type	call_i64_nullary,@function
-call_i64_nullary:
+call_i64_nullary:                       # @call_i64_nullary
 	.result 	i64
+# BB#0:
 	i64.call	$push0=, i64_nullary
 	return  	$pop0
 func_end1:
@@ -20,8 +22,9 @@ func_end1:
 
 	.globl	call_float_nullary
 	.type	call_float_nullary,@function
-call_float_nullary:
+call_float_nullary:                     # @call_float_nullary
 	.result 	f32
+# BB#0:
 	f32.call	$push0=, float_nullary
 	return  	$pop0
 func_end2:
@@ -29,8 +32,9 @@ func_end2:
 
 	.globl	call_double_nullary
 	.type	call_double_nullary,@function
-call_double_nullary:
+call_double_nullary:                    # @call_double_nullary
 	.result 	f64
+# BB#0:
 	f64.call	$push0=, double_nullary
 	return  	$pop0
 func_end3:
@@ -38,7 +42,8 @@ func_end3:
 
 	.globl	call_void_nullary
 	.type	call_void_nullary,@function
-call_void_nullary:
+call_void_nullary:                      # @call_void_nullary
+# BB#0:
 	call    	void_nullary
 	return
 func_end4:
@@ -46,9 +51,10 @@ func_end4:
 
 	.globl	call_i32_unary
 	.type	call_i32_unary,@function
-call_i32_unary:
+call_i32_unary:                         # @call_i32_unary
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.call	$push0=, i32_unary, $0
 	return  	$pop0
 func_end5:
@@ -56,9 +62,10 @@ func_end5:
 
 	.globl	call_i32_binary
 	.type	call_i32_binary,@function
-call_i32_binary:
+call_i32_binary:                        # @call_i32_binary
 	.param  	i32, i32
 	.result 	i32
+# BB#0:
 	i32.call	$push0=, i32_binary, $0, $1
 	return  	$pop0
 func_end6:
@@ -66,8 +73,9 @@ func_end6:
 
 	.globl	call_indirect_void
 	.type	call_indirect_void,@function
-call_indirect_void:
+call_indirect_void:                     # @call_indirect_void
 	.param  	i32
+# BB#0:
 	call_indirect	$0
 	return
 func_end7:
@@ -75,9 +83,10 @@ func_end7:
 
 	.globl	call_indirect_i32
 	.type	call_indirect_i32,@function
-call_indirect_i32:
+call_indirect_i32:                      # @call_indirect_i32
 	.param  	i32
 	.result 	i32
+# BB#0:
 	i32.call_indirect	$push0=, $0
 	return  	$pop0
 func_end8:
@@ -85,7 +94,8 @@ func_end8:
 
 	.globl	tail_call_void_nullary
 	.type	tail_call_void_nullary,@function
-tail_call_void_nullary:
+tail_call_void_nullary:                 # @tail_call_void_nullary
+# BB#0:
 	call    	void_nullary
 	return
 func_end9:
@@ -93,7 +103,8 @@ func_end9:
 
 	.globl	fastcc_tail_call_void_nullary
 	.type	fastcc_tail_call_void_nullary,@function
-fastcc_tail_call_void_nullary:
+fastcc_tail_call_void_nullary:          # @fastcc_tail_call_void_nullary
+# BB#0:
 	call    	void_nullary
 	return
 func_end10:
@@ -101,7 +112,8 @@ func_end10:
 
 	.globl	coldcc_tail_call_void_nullary
 	.type	coldcc_tail_call_void_nullary,@function
-coldcc_tail_call_void_nullary:
+coldcc_tail_call_void_nullary:          # @coldcc_tail_call_void_nullary
+# BB#0:
 	call    	void_nullary
 	return
 func_end11:

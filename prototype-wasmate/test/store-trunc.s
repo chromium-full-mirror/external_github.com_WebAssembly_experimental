@@ -1,9 +1,10 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/store-trunc.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/store-trunc.ll"
 	.globl	trunc_i8_i32
 	.type	trunc_i8_i32,@function
-trunc_i8_i32:
+trunc_i8_i32:                           # @trunc_i8_i32
 	.param  	i32, i32
+# BB#0:
 	i32.store8	$discard=, 0($0), $1
 	return
 func_end0:
@@ -11,8 +12,9 @@ func_end0:
 
 	.globl	trunc_i16_i32
 	.type	trunc_i16_i32,@function
-trunc_i16_i32:
+trunc_i16_i32:                          # @trunc_i16_i32
 	.param  	i32, i32
+# BB#0:
 	i32.store16	$discard=, 0($0), $1
 	return
 func_end1:
@@ -20,8 +22,9 @@ func_end1:
 
 	.globl	trunc_i8_i64
 	.type	trunc_i8_i64,@function
-trunc_i8_i64:
+trunc_i8_i64:                           # @trunc_i8_i64
 	.param  	i32, i64
+# BB#0:
 	i64.store8	$discard=, 0($0), $1
 	return
 func_end2:
@@ -29,8 +32,9 @@ func_end2:
 
 	.globl	trunc_i16_i64
 	.type	trunc_i16_i64,@function
-trunc_i16_i64:
+trunc_i16_i64:                          # @trunc_i16_i64
 	.param  	i32, i64
+# BB#0:
 	i64.store16	$discard=, 0($0), $1
 	return
 func_end3:
@@ -38,21 +42,13 @@ func_end3:
 
 	.globl	trunc_i32_i64
 	.type	trunc_i32_i64,@function
-trunc_i32_i64:
+trunc_i32_i64:                          # @trunc_i32_i64
 	.param  	i32, i64
+# BB#0:
 	i64.store32	$discard=, 0($0), $1
 	return
 func_end4:
 	.size	trunc_i32_i64, func_end4-trunc_i32_i64
-
-	.globl  trunc_i8_i32_off
-	.type   trunc_i8_i32_off,@function
-trunc_i8_i32_off:
-	.param          i32, i32
-	i32.store8      $discard=, 1234($0), $1
-	return
-func_end5:
-	.size   trunc_i8_i32_off, func_end5-trunc_i8_i32_off
 
 
 	.section	".note.GNU-stack","",@progbits

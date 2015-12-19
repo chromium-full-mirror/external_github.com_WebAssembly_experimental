@@ -1,17 +1,19 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/varargs.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/varargs.ll"
 	.globl	end
 	.type	end,@function
-end:
+end:                                    # @end
 	.param  	i32
+# BB#0:                                 # %entry
 	return
 func_end0:
 	.size	end, func_end0-end
 
 	.globl	copy
 	.type	copy,@function
-copy:
+copy:                                   # @copy
 	.param  	i32, i32
+# BB#0:                                 # %entry
 	i32.load	$push0=, 0($1)
 	i32.store	$discard=, 0($0), $pop0
 	return
@@ -20,10 +22,11 @@ func_end1:
 
 	.globl	arg_i8
 	.type	arg_i8,@function
-arg_i8:
+arg_i8:                                 # @arg_i8
 	.param  	i32
 	.result 	i32
 	.local  	i32
+# BB#0:                                 # %entry
 	i32.load	$1=, 0($0)
 	i32.const	$push0=, 4
 	i32.add 	$push1=, $1, $pop0
@@ -35,10 +38,11 @@ func_end2:
 
 	.globl	arg_i32
 	.type	arg_i32,@function
-arg_i32:
+arg_i32:                                # @arg_i32
 	.param  	i32
 	.result 	i32
 	.local  	i32
+# BB#0:                                 # %entry
 	i32.load	$push0=, 0($0)
 	i32.const	$push1=, 3
 	i32.add 	$push2=, $pop0, $pop1
@@ -54,9 +58,10 @@ func_end3:
 
 	.globl	arg_i128
 	.type	arg_i128,@function
-arg_i128:
+arg_i128:                               # @arg_i128
 	.param  	i32, i32
 	.local  	i32, i32, i32, i64
+# BB#0:                                 # %entry
 	i32.load	$push0=, 0($1)
 	i32.const	$push1=, 7
 	i32.add 	$push2=, $pop0, $pop1
@@ -79,7 +84,8 @@ func_end4:
 
 	.globl	caller_none
 	.type	caller_none,@function
-caller_none:
+caller_none:                            # @caller_none
+# BB#0:
 	call    	callee
 	return
 func_end5:
@@ -87,7 +93,8 @@ func_end5:
 
 	.globl	caller_some
 	.type	caller_some,@function
-caller_some:
+caller_some:                            # @caller_some
+# BB#0:
 	return
 func_end6:
 	.size	caller_some, func_end6-caller_some

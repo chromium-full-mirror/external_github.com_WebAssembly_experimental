@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/f32.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/f32.ll"
 	.globl	fadd32
 	.type	fadd32,@function
-fadd32:
+fadd32:                                 # @fadd32
 	.param  	f32, f32
 	.result 	f32
+# BB#0:
 	f32.add 	$push0=, $0, $1
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	fsub32
 	.type	fsub32,@function
-fsub32:
+fsub32:                                 # @fsub32
 	.param  	f32, f32
 	.result 	f32
+# BB#0:
 	f32.sub 	$push0=, $0, $1
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	fmul32
 	.type	fmul32,@function
-fmul32:
+fmul32:                                 # @fmul32
 	.param  	f32, f32
 	.result 	f32
+# BB#0:
 	f32.mul 	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	fdiv32
 	.type	fdiv32,@function
-fdiv32:
+fdiv32:                                 # @fdiv32
 	.param  	f32, f32
 	.result 	f32
+# BB#0:
 	f32.div 	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	fabs32
 	.type	fabs32,@function
-fabs32:
+fabs32:                                 # @fabs32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.abs 	$push0=, $0
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	fneg32
 	.type	fneg32,@function
-fneg32:
+fneg32:                                 # @fneg32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.neg 	$push0=, $0
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	copysign32
 	.type	copysign32,@function
-copysign32:
+copysign32:                             # @copysign32
 	.param  	f32, f32
 	.result 	f32
+# BB#0:
 	f32.copysign	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	sqrt32
 	.type	sqrt32,@function
-sqrt32:
+sqrt32:                                 # @sqrt32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.sqrt	$push0=, $0
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	ceil32
 	.type	ceil32,@function
-ceil32:
+ceil32:                                 # @ceil32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.ceil	$push0=, $0
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	floor32
 	.type	floor32,@function
-floor32:
+floor32:                                # @floor32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.floor	$push0=, $0
 	return  	$pop0
 func_end9:
@@ -102,9 +112,10 @@ func_end9:
 
 	.globl	trunc32
 	.type	trunc32,@function
-trunc32:
+trunc32:                                # @trunc32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.trunc	$push0=, $0
 	return  	$pop0
 func_end10:
@@ -112,9 +123,10 @@ func_end10:
 
 	.globl	nearest32
 	.type	nearest32,@function
-nearest32:
+nearest32:                              # @nearest32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.nearest	$push0=, $0
 	return  	$pop0
 func_end11:
@@ -122,9 +134,10 @@ func_end11:
 
 	.globl	nearest32_via_rint
 	.type	nearest32_via_rint,@function
-nearest32_via_rint:
+nearest32_via_rint:                     # @nearest32_via_rint
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.nearest	$push0=, $0
 	return  	$pop0
 func_end12:
@@ -132,9 +145,10 @@ func_end12:
 
 	.globl	fmin32
 	.type	fmin32,@function
-fmin32:
+fmin32:                                 # @fmin32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.const	$push0=, 0x0p0
 	f32.min 	$push1=, $0, $pop0
 	return  	$pop1
@@ -143,9 +157,10 @@ func_end13:
 
 	.globl	fmax32
 	.type	fmax32,@function
-fmax32:
+fmax32:                                 # @fmax32
 	.param  	f32
 	.result 	f32
+# BB#0:
 	f32.const	$push0=, 0x0p0
 	f32.max 	$push1=, $0, $pop0
 	return  	$pop1
@@ -154,9 +169,10 @@ func_end14:
 
 	.globl	fma32
 	.type	fma32,@function
-fma32:
+fma32:                                  # @fma32
 	.param  	f32, f32, f32
 	.result 	f32
+# BB#0:
 	f32.call	$push0=, fmaf, $0, $1, $2
 	return  	$pop0
 func_end15:

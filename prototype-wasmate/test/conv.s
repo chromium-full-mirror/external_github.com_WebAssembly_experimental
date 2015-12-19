@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/conv.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/conv.ll"
 	.globl	i32_wrap_i64
 	.type	i32_wrap_i64,@function
-i32_wrap_i64:
+i32_wrap_i64:                           # @i32_wrap_i64
 	.param  	i64
 	.result 	i32
+# BB#0:
 	i32.wrap/i64	$push0=, $0
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	i64_extend_s_i32
 	.type	i64_extend_s_i32,@function
-i64_extend_s_i32:
+i64_extend_s_i32:                       # @i64_extend_s_i32
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.extend_s/i32	$push0=, $0
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	i64_extend_u_i32
 	.type	i64_extend_u_i32,@function
-i64_extend_u_i32:
+i64_extend_u_i32:                       # @i64_extend_u_i32
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.extend_u/i32	$push0=, $0
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	i32_trunc_s_f32
 	.type	i32_trunc_s_f32,@function
-i32_trunc_s_f32:
+i32_trunc_s_f32:                        # @i32_trunc_s_f32
 	.param  	f32
 	.result 	i32
+# BB#0:
 	i32.trunc_s/f32	$push0=, $0
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	i32_trunc_u_f32
 	.type	i32_trunc_u_f32,@function
-i32_trunc_u_f32:
+i32_trunc_u_f32:                        # @i32_trunc_u_f32
 	.param  	f32
 	.result 	i32
+# BB#0:
 	i32.trunc_u/f32	$push0=, $0
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	i32_trunc_s_f64
 	.type	i32_trunc_s_f64,@function
-i32_trunc_s_f64:
+i32_trunc_s_f64:                        # @i32_trunc_s_f64
 	.param  	f64
 	.result 	i32
+# BB#0:
 	i32.trunc_s/f64	$push0=, $0
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	i32_trunc_u_f64
 	.type	i32_trunc_u_f64,@function
-i32_trunc_u_f64:
+i32_trunc_u_f64:                        # @i32_trunc_u_f64
 	.param  	f64
 	.result 	i32
+# BB#0:
 	i32.trunc_u/f64	$push0=, $0
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	i64_trunc_s_f32
 	.type	i64_trunc_s_f32,@function
-i64_trunc_s_f32:
+i64_trunc_s_f32:                        # @i64_trunc_s_f32
 	.param  	f32
 	.result 	i64
+# BB#0:
 	i64.trunc_s/f32	$push0=, $0
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	i64_trunc_u_f32
 	.type	i64_trunc_u_f32,@function
-i64_trunc_u_f32:
+i64_trunc_u_f32:                        # @i64_trunc_u_f32
 	.param  	f32
 	.result 	i64
+# BB#0:
 	i64.trunc_u/f32	$push0=, $0
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	i64_trunc_s_f64
 	.type	i64_trunc_s_f64,@function
-i64_trunc_s_f64:
+i64_trunc_s_f64:                        # @i64_trunc_s_f64
 	.param  	f64
 	.result 	i64
+# BB#0:
 	i64.trunc_s/f64	$push0=, $0
 	return  	$pop0
 func_end9:
@@ -102,9 +112,10 @@ func_end9:
 
 	.globl	i64_trunc_u_f64
 	.type	i64_trunc_u_f64,@function
-i64_trunc_u_f64:
+i64_trunc_u_f64:                        # @i64_trunc_u_f64
 	.param  	f64
 	.result 	i64
+# BB#0:
 	i64.trunc_u/f64	$push0=, $0
 	return  	$pop0
 func_end10:
@@ -112,9 +123,10 @@ func_end10:
 
 	.globl	f32_convert_s_i32
 	.type	f32_convert_s_i32,@function
-f32_convert_s_i32:
+f32_convert_s_i32:                      # @f32_convert_s_i32
 	.param  	i32
 	.result 	f32
+# BB#0:
 	f32.convert_s/i32	$push0=, $0
 	return  	$pop0
 func_end11:
@@ -122,9 +134,10 @@ func_end11:
 
 	.globl	f32_convert_u_i32
 	.type	f32_convert_u_i32,@function
-f32_convert_u_i32:
+f32_convert_u_i32:                      # @f32_convert_u_i32
 	.param  	i32
 	.result 	f32
+# BB#0:
 	f32.convert_u/i32	$push0=, $0
 	return  	$pop0
 func_end12:
@@ -132,9 +145,10 @@ func_end12:
 
 	.globl	f64_convert_s_i32
 	.type	f64_convert_s_i32,@function
-f64_convert_s_i32:
+f64_convert_s_i32:                      # @f64_convert_s_i32
 	.param  	i32
 	.result 	f64
+# BB#0:
 	f64.convert_s/i32	$push0=, $0
 	return  	$pop0
 func_end13:
@@ -142,9 +156,10 @@ func_end13:
 
 	.globl	f64_convert_u_i32
 	.type	f64_convert_u_i32,@function
-f64_convert_u_i32:
+f64_convert_u_i32:                      # @f64_convert_u_i32
 	.param  	i32
 	.result 	f64
+# BB#0:
 	f64.convert_u/i32	$push0=, $0
 	return  	$pop0
 func_end14:
@@ -152,9 +167,10 @@ func_end14:
 
 	.globl	f32_convert_s_i64
 	.type	f32_convert_s_i64,@function
-f32_convert_s_i64:
+f32_convert_s_i64:                      # @f32_convert_s_i64
 	.param  	i64
 	.result 	f32
+# BB#0:
 	f32.convert_s/i64	$push0=, $0
 	return  	$pop0
 func_end15:
@@ -162,9 +178,10 @@ func_end15:
 
 	.globl	f32_convert_u_i64
 	.type	f32_convert_u_i64,@function
-f32_convert_u_i64:
+f32_convert_u_i64:                      # @f32_convert_u_i64
 	.param  	i64
 	.result 	f32
+# BB#0:
 	f32.convert_u/i64	$push0=, $0
 	return  	$pop0
 func_end16:
@@ -172,9 +189,10 @@ func_end16:
 
 	.globl	f64_convert_s_i64
 	.type	f64_convert_s_i64,@function
-f64_convert_s_i64:
+f64_convert_s_i64:                      # @f64_convert_s_i64
 	.param  	i64
 	.result 	f64
+# BB#0:
 	f64.convert_s/i64	$push0=, $0
 	return  	$pop0
 func_end17:
@@ -182,9 +200,10 @@ func_end17:
 
 	.globl	f64_convert_u_i64
 	.type	f64_convert_u_i64,@function
-f64_convert_u_i64:
+f64_convert_u_i64:                      # @f64_convert_u_i64
 	.param  	i64
 	.result 	f64
+# BB#0:
 	f64.convert_u/i64	$push0=, $0
 	return  	$pop0
 func_end18:
@@ -192,9 +211,10 @@ func_end18:
 
 	.globl	f64_promote_f32
 	.type	f64_promote_f32,@function
-f64_promote_f32:
+f64_promote_f32:                        # @f64_promote_f32
 	.param  	f32
 	.result 	f64
+# BB#0:
 	f64.promote/f32	$push0=, $0
 	return  	$pop0
 func_end19:
@@ -202,9 +222,10 @@ func_end19:
 
 	.globl	f32_demote_f64
 	.type	f32_demote_f64,@function
-f32_demote_f64:
+f32_demote_f64:                         # @f32_demote_f64
 	.param  	f64
 	.result 	f32
+# BB#0:
 	f32.demote/f64	$push0=, $0
 	return  	$pop0
 func_end20:
@@ -212,9 +233,10 @@ func_end20:
 
 	.globl	anyext
 	.type	anyext,@function
-anyext:
+anyext:                                 # @anyext
 	.param  	i32
 	.result 	i64
+# BB#0:
 	i64.extend_u/i32	$push0=, $0
 	i64.const	$push1=, 32
 	i64.shl 	$push2=, $pop0, $pop1
@@ -224,9 +246,10 @@ func_end21:
 
 	.globl	bitcast_i32_to_float
 	.type	bitcast_i32_to_float,@function
-bitcast_i32_to_float:
+bitcast_i32_to_float:                   # @bitcast_i32_to_float
 	.param  	i32
 	.result 	f32
+# BB#0:
 	f32.reinterpret/i32	$push0=, $0
 	return  	$pop0
 func_end22:
@@ -234,9 +257,10 @@ func_end22:
 
 	.globl	bitcast_float_to_i32
 	.type	bitcast_float_to_i32,@function
-bitcast_float_to_i32:
+bitcast_float_to_i32:                   # @bitcast_float_to_i32
 	.param  	f32
 	.result 	i32
+# BB#0:
 	i32.reinterpret/f32	$push0=, $0
 	return  	$pop0
 func_end23:
@@ -244,9 +268,10 @@ func_end23:
 
 	.globl	bitcast_i64_to_double
 	.type	bitcast_i64_to_double,@function
-bitcast_i64_to_double:
+bitcast_i64_to_double:                  # @bitcast_i64_to_double
 	.param  	i64
 	.result 	f64
+# BB#0:
 	f64.reinterpret/i64	$push0=, $0
 	return  	$pop0
 func_end24:
@@ -254,9 +279,10 @@ func_end24:
 
 	.globl	bitcast_double_to_i64
 	.type	bitcast_double_to_i64,@function
-bitcast_double_to_i64:
+bitcast_double_to_i64:                  # @bitcast_double_to_i64
 	.param  	f64
 	.result 	i64
+# BB#0:
 	i64.reinterpret/f64	$push0=, $0
 	return  	$pop0
 func_end25:

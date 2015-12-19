@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/comparisons_f64.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/comparisons_f64.ll"
 	.globl	ord_f64
 	.type	ord_f64,@function
-ord_f64:
+ord_f64:                                # @ord_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.eq  	$push1=, $0, $0
 	f64.eq  	$push0=, $1, $1
 	i32.and 	$push2=, $pop1, $pop0
@@ -14,9 +15,10 @@ func_end0:
 
 	.globl	uno_f64
 	.type	uno_f64,@function
-uno_f64:
+uno_f64:                                # @uno_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.ne  	$push1=, $0, $0
 	f64.ne  	$push0=, $1, $1
 	i32.or  	$push2=, $pop1, $pop0
@@ -26,9 +28,10 @@ func_end1:
 
 	.globl	oeq_f64
 	.type	oeq_f64,@function
-oeq_f64:
+oeq_f64:                                # @oeq_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.eq  	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -36,9 +39,10 @@ func_end2:
 
 	.globl	une_f64
 	.type	une_f64,@function
-une_f64:
+une_f64:                                # @une_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.ne  	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -46,9 +50,10 @@ func_end3:
 
 	.globl	olt_f64
 	.type	olt_f64,@function
-olt_f64:
+olt_f64:                                # @olt_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.lt  	$push0=, $0, $1
 	return  	$pop0
 func_end4:
@@ -56,9 +61,10 @@ func_end4:
 
 	.globl	ole_f64
 	.type	ole_f64,@function
-ole_f64:
+ole_f64:                                # @ole_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.le  	$push0=, $0, $1
 	return  	$pop0
 func_end5:
@@ -66,9 +72,10 @@ func_end5:
 
 	.globl	ogt_f64
 	.type	ogt_f64,@function
-ogt_f64:
+ogt_f64:                                # @ogt_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.gt  	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -76,9 +83,10 @@ func_end6:
 
 	.globl	oge_f64
 	.type	oge_f64,@function
-oge_f64:
+oge_f64:                                # @oge_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.ge  	$push0=, $0, $1
 	return  	$pop0
 func_end7:
@@ -86,9 +94,10 @@ func_end7:
 
 	.globl	ueq_f64
 	.type	ueq_f64,@function
-ueq_f64:
+ueq_f64:                                # @ueq_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.eq  	$push0=, $0, $1
 	f64.ne  	$push2=, $0, $0
 	f64.ne  	$push1=, $1, $1
@@ -100,9 +109,10 @@ func_end8:
 
 	.globl	one_f64
 	.type	one_f64,@function
-one_f64:
+one_f64:                                # @one_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.ne  	$push0=, $0, $1
 	f64.eq  	$push2=, $0, $0
 	f64.eq  	$push1=, $1, $1
@@ -114,9 +124,10 @@ func_end9:
 
 	.globl	ult_f64
 	.type	ult_f64,@function
-ult_f64:
+ult_f64:                                # @ult_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.lt  	$push0=, $0, $1
 	f64.ne  	$push2=, $0, $0
 	f64.ne  	$push1=, $1, $1
@@ -128,9 +139,10 @@ func_end10:
 
 	.globl	ule_f64
 	.type	ule_f64,@function
-ule_f64:
+ule_f64:                                # @ule_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.le  	$push0=, $0, $1
 	f64.ne  	$push2=, $0, $0
 	f64.ne  	$push1=, $1, $1
@@ -142,9 +154,10 @@ func_end11:
 
 	.globl	ugt_f64
 	.type	ugt_f64,@function
-ugt_f64:
+ugt_f64:                                # @ugt_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.gt  	$push0=, $0, $1
 	f64.ne  	$push2=, $0, $0
 	f64.ne  	$push1=, $1, $1
@@ -156,9 +169,10 @@ func_end12:
 
 	.globl	uge_f64
 	.type	uge_f64,@function
-uge_f64:
+uge_f64:                                # @uge_f64
 	.param  	f64, f64
 	.result 	i32
+# BB#0:
 	f64.ge  	$push0=, $0, $1
 	f64.ne  	$push2=, $0, $0
 	f64.ne  	$push1=, $1, $1

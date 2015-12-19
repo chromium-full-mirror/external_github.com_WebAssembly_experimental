@@ -18,12 +18,12 @@
             (block $BB0_4
               (block $BB0_3
                 (block $BB0_2
-                  (tableswitch (get_local 0) $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_4 $BB0_4 $BB0_4 $BB0_4 $BB0_4 $BB0_4 $BB0_5 $BB0_6 $BB0_7)
+                  (tableswitch (get_local 0) $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_3 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_2 $BB0_4 $BB0_4 $BB0_4 $BB0_4 $BB0_4 $BB0_4 $BB0_5 $BB0_6 $BB0_7)
                 )
-                (call_import $foo0)
+                (call_import $foo1)
                 (br $BB0_8)
               )
-              (call_import $foo1)
+              (call_import $foo0)
               (br $BB0_8)
             )
             (call_import $foo2)
@@ -49,12 +49,12 @@
             (block $BB1_4
               (block $BB1_3
                 (block $BB1_2
-                  (tableswitch (i32.wrap/i64 (get_local 0)) $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_4 $BB1_4 $BB1_4 $BB1_4 $BB1_4 $BB1_4 $BB1_5 $BB1_6 $BB1_7)
+                  (tableswitch (i32.wrap/i64 (get_local 0)) $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_3 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_2 $BB1_4 $BB1_4 $BB1_4 $BB1_4 $BB1_4 $BB1_4 $BB1_5 $BB1_6 $BB1_7)
                 )
-                (call_import $foo0)
+                (call_import $foo1)
                 (br $BB1_8)
               )
-              (call_import $foo1)
+              (call_import $foo0)
               (br $BB1_8)
             )
             (call_import $foo2)

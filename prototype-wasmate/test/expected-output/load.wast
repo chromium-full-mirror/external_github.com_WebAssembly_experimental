@@ -10,7 +10,6 @@
   (export "ldi64" $ldi64)
   (export "ldf32" $ldf32)
   (export "ldf64" $ldf64)
-  (export "ldoff" $ldoff)
   (func $ldi32
     (param i32)
     (result i32)
@@ -30,11 +29,6 @@
     (param i32)
     (result f64)
     (return (f64.load offset=0 (get_local 0)))
-  )
-  (func $ldoff
-    (param i32)
-    (result i32)
-    (return (i32.load offset=0 (get_local 0)))
   )
   (memory 0 0
   )

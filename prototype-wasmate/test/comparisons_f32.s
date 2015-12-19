@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/comparisons_f32.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/comparisons_f32.ll"
 	.globl	ord_f32
 	.type	ord_f32,@function
-ord_f32:
+ord_f32:                                # @ord_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.eq  	$push1=, $0, $0
 	f32.eq  	$push0=, $1, $1
 	i32.and 	$push2=, $pop1, $pop0
@@ -14,9 +15,10 @@ func_end0:
 
 	.globl	uno_f32
 	.type	uno_f32,@function
-uno_f32:
+uno_f32:                                # @uno_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.ne  	$push1=, $0, $0
 	f32.ne  	$push0=, $1, $1
 	i32.or  	$push2=, $pop1, $pop0
@@ -26,9 +28,10 @@ func_end1:
 
 	.globl	oeq_f32
 	.type	oeq_f32,@function
-oeq_f32:
+oeq_f32:                                # @oeq_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.eq  	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -36,9 +39,10 @@ func_end2:
 
 	.globl	une_f32
 	.type	une_f32,@function
-une_f32:
+une_f32:                                # @une_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.ne  	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -46,9 +50,10 @@ func_end3:
 
 	.globl	olt_f32
 	.type	olt_f32,@function
-olt_f32:
+olt_f32:                                # @olt_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.lt  	$push0=, $0, $1
 	return  	$pop0
 func_end4:
@@ -56,9 +61,10 @@ func_end4:
 
 	.globl	ole_f32
 	.type	ole_f32,@function
-ole_f32:
+ole_f32:                                # @ole_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.le  	$push0=, $0, $1
 	return  	$pop0
 func_end5:
@@ -66,9 +72,10 @@ func_end5:
 
 	.globl	ogt_f32
 	.type	ogt_f32,@function
-ogt_f32:
+ogt_f32:                                # @ogt_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.gt  	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -76,9 +83,10 @@ func_end6:
 
 	.globl	oge_f32
 	.type	oge_f32,@function
-oge_f32:
+oge_f32:                                # @oge_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.ge  	$push0=, $0, $1
 	return  	$pop0
 func_end7:
@@ -86,9 +94,10 @@ func_end7:
 
 	.globl	ueq_f32
 	.type	ueq_f32,@function
-ueq_f32:
+ueq_f32:                                # @ueq_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.eq  	$push0=, $0, $1
 	f32.ne  	$push2=, $0, $0
 	f32.ne  	$push1=, $1, $1
@@ -100,9 +109,10 @@ func_end8:
 
 	.globl	one_f32
 	.type	one_f32,@function
-one_f32:
+one_f32:                                # @one_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.ne  	$push0=, $0, $1
 	f32.eq  	$push2=, $0, $0
 	f32.eq  	$push1=, $1, $1
@@ -114,9 +124,10 @@ func_end9:
 
 	.globl	ult_f32
 	.type	ult_f32,@function
-ult_f32:
+ult_f32:                                # @ult_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.lt  	$push0=, $0, $1
 	f32.ne  	$push2=, $0, $0
 	f32.ne  	$push1=, $1, $1
@@ -128,9 +139,10 @@ func_end10:
 
 	.globl	ule_f32
 	.type	ule_f32,@function
-ule_f32:
+ule_f32:                                # @ule_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.le  	$push0=, $0, $1
 	f32.ne  	$push2=, $0, $0
 	f32.ne  	$push1=, $1, $1
@@ -142,9 +154,10 @@ func_end11:
 
 	.globl	ugt_f32
 	.type	ugt_f32,@function
-ugt_f32:
+ugt_f32:                                # @ugt_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.gt  	$push0=, $0, $1
 	f32.ne  	$push2=, $0, $0
 	f32.ne  	$push1=, $1, $1
@@ -156,9 +169,10 @@ func_end12:
 
 	.globl	uge_f32
 	.type	uge_f32,@function
-uge_f32:
+uge_f32:                                # @uge_f32
 	.param  	f32, f32
 	.result 	i32
+# BB#0:
 	f32.ge  	$push0=, $0, $1
 	f32.ne  	$push2=, $0, $0
 	f32.ne  	$push1=, $1, $1

@@ -1,8 +1,9 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/globl.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/globl.ll"
 	.globl	foo
 	.type	foo,@function
-foo:
+foo:                                    # @foo
+# BB#0:
 	return
 func_end0:
 	.size	foo, func_end0-foo

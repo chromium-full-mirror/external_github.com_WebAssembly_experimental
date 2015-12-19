@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/inline-asm.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/inline-asm.ll"
 	.globl	foo
 	.type	foo,@function
-foo:
+foo:                                    # @foo
 	.param  	i32
 	.result 	i32
+# BB#0:                                 # %entry
 	#APP
 	# $0 = aaa($0)
 	#NO_APP
@@ -14,8 +15,9 @@ func_end0:
 
 	.globl	bar
 	.type	bar,@function
-bar:
+bar:                                    # @bar
 	.param  	i32, i32
+# BB#0:                                 # %entry
 	#APP
 	# 0($1) = bbb(0($0))
 	#NO_APP
@@ -25,9 +27,10 @@ func_end1:
 
 	.globl	imm
 	.type	imm,@function
-imm:
+imm:                                    # @imm
 	.result 	i32
 	.local  	i32
+# BB#0:                                 # %entry
 	#APP
 	# $0 = ccc(42)
 	#NO_APP
@@ -37,9 +40,10 @@ func_end2:
 
 	.globl	foo_i64
 	.type	foo_i64,@function
-foo_i64:
+foo_i64:                                # @foo_i64
 	.param  	i64
 	.result 	i64
+# BB#0:                                 # %entry
 	#APP
 	# $0 = aaa($0)
 	#NO_APP
@@ -49,9 +53,10 @@ func_end3:
 
 	.globl	X_i16
 	.type	X_i16,@function
-X_i16:
+X_i16:                                  # @X_i16
 	.param  	i32
 	.local  	i32
+# BB#0:
 	#APP
 	foo $1
 	#NO_APP
@@ -62,9 +67,10 @@ func_end4:
 
 	.globl	X_ptr
 	.type	X_ptr,@function
-X_ptr:
+X_ptr:                                  # @X_ptr
 	.param  	i32
 	.local  	i32
+# BB#0:
 	#APP
 	foo $1
 	#NO_APP
@@ -75,7 +81,8 @@ func_end5:
 
 	.globl	funcname
 	.type	funcname,@function
-funcname:
+funcname:                               # @funcname
+# BB#0:
 	#APP
 	foo funcname
 	#NO_APP
@@ -85,7 +92,8 @@ func_end6:
 
 	.globl	varname
 	.type	varname,@function
-varname:
+varname:                                # @varname
+# BB#0:
 	#APP
 	foo gv+37
 	#NO_APP
@@ -93,7 +101,7 @@ varname:
 func_end7:
 	.size	varname, func_end7-varname
 
-	.type	gv,@object
+	.type	gv,@object              # @gv
 	.bss
 	.globl	gv
 gv:

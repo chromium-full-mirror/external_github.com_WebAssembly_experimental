@@ -1,10 +1,11 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/comparisons_i64.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/comparisons_i64.ll"
 	.globl	eq_i64
 	.type	eq_i64,@function
-eq_i64:
+eq_i64:                                 # @eq_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.eq  	$push0=, $0, $1
 	return  	$pop0
 func_end0:
@@ -12,9 +13,10 @@ func_end0:
 
 	.globl	ne_i64
 	.type	ne_i64,@function
-ne_i64:
+ne_i64:                                 # @ne_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.ne  	$push0=, $0, $1
 	return  	$pop0
 func_end1:
@@ -22,9 +24,10 @@ func_end1:
 
 	.globl	slt_i64
 	.type	slt_i64,@function
-slt_i64:
+slt_i64:                                # @slt_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.lt_s	$push0=, $0, $1
 	return  	$pop0
 func_end2:
@@ -32,9 +35,10 @@ func_end2:
 
 	.globl	sle_i64
 	.type	sle_i64,@function
-sle_i64:
+sle_i64:                                # @sle_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.le_s	$push0=, $0, $1
 	return  	$pop0
 func_end3:
@@ -42,9 +46,10 @@ func_end3:
 
 	.globl	ult_i64
 	.type	ult_i64,@function
-ult_i64:
+ult_i64:                                # @ult_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.lt_u	$push0=, $0, $1
 	return  	$pop0
 func_end4:
@@ -52,9 +57,10 @@ func_end4:
 
 	.globl	ule_i64
 	.type	ule_i64,@function
-ule_i64:
+ule_i64:                                # @ule_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.le_u	$push0=, $0, $1
 	return  	$pop0
 func_end5:
@@ -62,9 +68,10 @@ func_end5:
 
 	.globl	sgt_i64
 	.type	sgt_i64,@function
-sgt_i64:
+sgt_i64:                                # @sgt_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.gt_s	$push0=, $0, $1
 	return  	$pop0
 func_end6:
@@ -72,9 +79,10 @@ func_end6:
 
 	.globl	sge_i64
 	.type	sge_i64,@function
-sge_i64:
+sge_i64:                                # @sge_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.ge_s	$push0=, $0, $1
 	return  	$pop0
 func_end7:
@@ -82,9 +90,10 @@ func_end7:
 
 	.globl	ugt_i64
 	.type	ugt_i64,@function
-ugt_i64:
+ugt_i64:                                # @ugt_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.gt_u	$push0=, $0, $1
 	return  	$pop0
 func_end8:
@@ -92,9 +101,10 @@ func_end8:
 
 	.globl	uge_i64
 	.type	uge_i64,@function
-uge_i64:
+uge_i64:                                # @uge_i64
 	.param  	i64, i64
 	.result 	i32
+# BB#0:
 	i64.ge_u	$push0=, $0, $1
 	return  	$pop0
 func_end9:

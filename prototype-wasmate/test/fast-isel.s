@@ -1,9 +1,10 @@
 	.text
-	.file	"/usr/local/google/home/binji/dev/github/wasm-experimental/prototype-wasmate/third_party/llvm/test/CodeGen/WebAssembly/fast-isel.ll"
+	.file	"/s/llvm/llvm/test/CodeGen/WebAssembly/fast-isel.ll"
 	.globl	immediate_f32
 	.type	immediate_f32,@function
-immediate_f32:
+immediate_f32:                          # @immediate_f32
 	.result 	f32
+# BB#0:
 	f32.const	$push0=, 0x1.4p1
 	return  	$pop0
 func_end0:
@@ -11,8 +12,9 @@ func_end0:
 
 	.globl	immediate_f64
 	.type	immediate_f64,@function
-immediate_f64:
+immediate_f64:                          # @immediate_f64
 	.result 	f64
+# BB#0:
 	f64.const	$push0=, 0x1.4p1
 	return  	$pop0
 func_end1:
