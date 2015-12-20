@@ -263,6 +263,7 @@ def Clobber():
 
 def SyncRepos():
   BuildStep('Sync Repos')
+  PrintCurrentGitRev(SCRIPT_DIR)
   SyncLLVMClang()
   SyncGCC()
   SyncPrebuiltClang()
