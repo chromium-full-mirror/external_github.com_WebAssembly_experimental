@@ -323,8 +323,7 @@ def BuildSpec():
     shutil.copy2(wasm, wasm_dest)
   except:
     # TODO(jfb) Is the right version of ocaml available on the bots?
-    e = sys.exc_info()[0]
-    print 'Got exception: %s' % e
+    print 'Got exception: %s' % sys.exc_info()
 
 
 def ArchiveLLVM():
