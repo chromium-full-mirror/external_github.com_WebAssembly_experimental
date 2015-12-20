@@ -51,6 +51,8 @@ SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_DIR,
                                             'known_gcc_test_failures.txt')
 
+SPEC_DIR = os.path.join(WORK_DIR, 'spec')
+
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
 LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
@@ -59,14 +61,15 @@ TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
 TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
 GIT_MIRROR_BASE = 'https://chromium.googlesource.com/'
+WASM_GIT_BASE = GIT_MIRROR_BASE + 'external/github.com/WebAssembly/'
 LLVM_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/llvm'
 CLANG_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/clang'
 PREBUILT_CLANG_GIT = GIT_MIRROR_BASE + 'chromium/src/tools/clang'
 GCC_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/gcc'
-SEXPR_GIT = (GIT_MIRROR_BASE + 'external/' +
-             'github.com/WebAssembly/sexpr-wasm-prototype.git')
+SEXPR_GIT = WASM_GIT_BASE + 'sexpr-wasm-prototype.git'
+SPEC_GIT = WASM_GIT_BASE + 'spec.git'
 
-# Try to use the llvm revision provided by buildbot.
+# Try to use the LLVM revision provided by buildbot.
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
 if LLVM_REVISION == 'None':
   LLVM_REVISION = 'origin/master'
@@ -204,7 +207,6 @@ def SyncGCC():
   else:
     print 'Cloning GCC'
     subprocess.check_call(['git', 'clone', GCC_GIT, GCC_DIR])
-    GitConfigRebaseMaster(GCC_DIR)
   print 'Syncing GCC'
   subprocess.check_call(['git', 'fetch'], cwd=GCC_DIR)
   subprocess.check_call(['git', 'checkout', GCC_REVISION], cwd=GCC_DIR)
@@ -220,7 +222,6 @@ def SyncPrebuiltClang():
     Mkdir(PREBUILT_CLANG_TOOLS)
     subprocess.check_call(
         ['git', 'clone', PREBUILT_CLANG_GIT, PREBUILT_CLANG_TOOLS_CLANG])
-    GitConfigRebaseMaster(PREBUILT_CLANG_TOOLS_CLANG)
   print 'Syncing Prebuilt Chromium Clang scripts'
   subprocess.check_call(['git', 'fetch'], cwd=PREBUILT_CLANG_TOOLS_CLANG)
   print 'Syncing Prebuilt Chromium Clang'
@@ -235,10 +236,20 @@ def SyncSexpr():
   else:
     print 'Cloning Sexpr'
     subprocess.check_call(['git', 'clone', SEXPR_GIT, SEXPR_DIR])
-    GitConfigRebaseMaster(SEXPR_DIR)
   print 'Syncing Sexpr'
   subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
   PrintCurrentGitRev(SEXPR_DIR)
+
+
+def SyncSpec():
+  if os.path.isdir(SPEC_DIR):
+    print 'spec directory already exists'
+  else:
+    print 'Cloning spec'
+    subprocess.check_call(['git', 'clone', SPEC_GIT, SPEC_DIR])
+  print 'Syncing spec'
+  subprocess.check_call(['git', 'pull'], cwd=SPEC_DIR)
+  PrintCurrentGitRev(SPEC_DIR)
 
 
 def Clobber():
@@ -255,6 +266,7 @@ def SyncRepos():
   SyncGCC()
   SyncPrebuiltClang()
   SyncSexpr()
+  SyncSpec()
 
 
 def BuildLLVM():
