@@ -176,8 +176,6 @@ def FindPriorRev(path, goal):
 
 
 def SyncLLVMClang():
-  Chdir(SCRIPT_DIR)
-  Mkdir(WORK_DIR)
   if os.path.isdir(LLVM_DIR):
     assert os.path.isdir(CLANG_DIR), 'Assuming LLVM present implies Clang too'
     print 'LLVM and Clang directories already exist'
@@ -399,6 +397,8 @@ def Summary(failed_steps):
 def main():
   failed_steps = 0
   Clobber()
+  Chdir(SCRIPT_DIR)
+  Mkdir(WORK_DIR)
   SyncRepos()
   BuildLLVM()
   TestLLVM()
