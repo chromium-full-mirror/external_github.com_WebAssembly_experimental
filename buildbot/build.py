@@ -52,6 +52,7 @@ SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_DIR,
                                             'known_gcc_test_failures.txt')
 
 SPEC_DIR = os.path.join(WORK_DIR, 'spec')
+ML_DIR = os.path.join(SPEC_DIR, 'ml-proto')
 
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
@@ -311,6 +312,21 @@ def BuildSexpr():
   shutil.copy2(sexpr, ibin)
 
 
+def BuildSpec():
+  BuildStep('Build spec')
+  # Spec builds in-tree. Always clobber and run the tests.
+  try:
+    subprocess.check_call(['make', 'clean'], cwd=ML_DIR)
+    subprocess.check_call(['make', 'all'], cwd=ML_DIR)
+    wasm = os.path.join(ML_DIR, 'wasm.opt')
+    wasm_dest = os.path.join(LLVM_INSTALL_DIR, 'bin', 'wasm')
+    shutil.copy2(wasm, wasm_dest)
+  except:
+    # TODO(jfb) Is the right version of ocaml available on the bots?
+    e = sys.exc_info()[0]
+    print 'Got exception: %s' % e
+
+
 def ArchiveLLVM():
   if LLVM_REVISION == 'origin/master':
     return
@@ -386,6 +402,7 @@ def main():
   TestLLVM()
   InstallLLVM()
   BuildSexpr()
+  BuildSpec()
   ArchiveLLVM()
   failed_steps += CompileLLVMTorture()
   failed_steps += LinkLLVMTorture()
