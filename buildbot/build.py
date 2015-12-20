@@ -157,9 +157,11 @@ def GitConfigRebaseMaster(cwd):
 
 
 def PrintCurrentGitRev(cwd):
-  out = subprocess.check_output(
-      ['git', 'rev-parse', 'HEAD'], cwd=cwd).strip()
-  sys.stdout.write(os.path.basename(cwd) + ' is at revision ' + out + '\n')
+  log = subprocess.check_output(
+      ['git', 'log', '--oneline', '-n1'], cwd=cwd).strip()
+  remote = subprocess.check_output(
+      ['git', 'config', '--get', 'remote.origin.url'], cwd=cwd).strip()
+  sys.stdout.write('%s from remote %s is at revision %s\n' % (cwd, remote, log))
 
 
 def FindPriorRev(path, goal):
