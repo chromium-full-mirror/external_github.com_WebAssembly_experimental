@@ -6,9 +6,6 @@
 ;;
 
 (module
-  (export "pad" $pad)
-  (export "arr" $arr)
-  (export "ptr" $ptr)
   (memory 420 420
     (segment 416
       "`\00\00\00"

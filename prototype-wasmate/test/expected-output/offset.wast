@@ -21,7 +21,6 @@
   (export "load_i8_s_with_folded_offset" $load_i8_s_with_folded_offset)
   (export "load_i8_u_with_folded_offset" $load_i8_u_with_folded_offset)
   (export "store_i8_with_folded_offset" $store_i8_with_folded_offset)
-  (export "gv" $gv)
   (func $load_i32_with_folded_offset
     (param i32)
     (result i32)

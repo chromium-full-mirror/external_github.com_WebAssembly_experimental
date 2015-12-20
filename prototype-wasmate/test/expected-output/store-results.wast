@@ -9,7 +9,6 @@
   (export "single_block" $single_block)
   (export "foo" $foo)
   (export "bar" $bar)
-  (export "pos" $pos)
   (func $single_block
     (param i32)
     (result i32)

@@ -10,7 +10,6 @@
   (export "test1" $test1)
   (export "test2" $test2)
   (export "test3" $test3)
-  (export "y" $y)
   (func $test0
     (result i32)
     (return (i32.const $x+188))

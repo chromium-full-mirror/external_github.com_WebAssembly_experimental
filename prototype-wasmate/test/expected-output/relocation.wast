@@ -7,8 +7,6 @@
 
 (module
   (export "main" $main)
-  (export "b" $b)
-  (export "a" $a)
   (func $main
     (result i32)
     (local i32)

@@ -128,6 +128,7 @@ current_line_number = 0
 current_section = ".text"
 current_function_number = 0
 types = {}
+globl = []
 data_labels = {}
 function_labels = {}
 current_function_table_index = 0
@@ -175,6 +176,14 @@ def dump_function_table():
                 table += ' $' + f
     if table:
         out.write_line('(table' + table + ')')
+
+def dump_function_exports():
+  """Export all .globl functions."""
+  for g in globl:
+    if g not in data_labels:
+      register_function(g)
+      out.write_line('(export "' + g + '" $' + g + ')')
+
 
 def resolve_label(arg):
     # Labels can be of the form 'foo' or 'foo+47'. Split the offset out so that
@@ -324,6 +333,7 @@ class DataPassHandler(PassHandler):
 
     def end_pass(self):
         # Fix up relocations.
+        dump_function_exports()
         for pos, num_bytes, symbol, line_number in self.reloc:
             resolved, ok = resolve_data_label(symbol)
             if ok:
@@ -351,9 +361,7 @@ class DataPassHandler(PassHandler):
 
     def handle_dot_globl(self, args):
         """.globl labels declare a name for global variables and functions."""
-        if args[0] not in data_labels:
-            register_function(args[0])
-            out.write_line('(export "' + args[0] + '" $' + args[0] + ')')
+        globl.append(args[0])
 
     def handle_dot_weak(self, args):
         """.weak labels declare a name for global variables and functions which

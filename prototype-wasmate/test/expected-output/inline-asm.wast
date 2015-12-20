@@ -14,7 +14,6 @@
   (export "X_ptr" $X_ptr)
   (export "funcname" $funcname)
   (export "varname" $varname)
-  (export "gv" $gv)
   (func $foo
     (param i32)
     (result i32)
