@@ -30,18 +30,27 @@ import link_assembly_files
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 
-LLVM_DIR = os.path.join(WORK_DIR, 'llvm')
-CLANG_DIR = os.path.join(LLVM_DIR, 'tools', 'clang')
-LLVM_KNOWN_TORTURE_FAILURES = os.path.join(
-    LLVM_DIR, 'lib', 'Target', 'WebAssembly', 'known_gcc_test_failures.txt')
+LLVM_SRC_DIR = os.path.join(WORK_DIR, 'llvm')
+CLANG_SRC_DIR = os.path.join(LLVM_SRC_DIR, 'tools', 'clang')
+LLVM_KNOWN_TORTURE_FAILURES = os.path.join(LLVM_SRC_DIR, 'lib', 'Target',
+                                           'WebAssembly',
+                                           'known_gcc_test_failures.txt')
 
 WASMATE_DIR = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate')
 LINKER = os.path.join(WASMATE_DIR, 'wasmate.py')
 WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(WASMATE_DIR,
                                               'known_gcc_test_failures.txt')
 
-GCC_DIR = os.path.join(WORK_DIR, 'gcc')
-GCC_TEST_DIR = os.path.join(GCC_DIR, 'gcc', 'testsuite')
+GCC_SRC_DIR = os.path.join(WORK_DIR, 'gcc')
+GCC_TEST_DIR = os.path.join(GCC_SRC_DIR, 'gcc', 'testsuite')
+
+SEXPR_SRC_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
+SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR,
+                                            'known_gcc_test_failures.txt')
+
+SPEC_SRC_DIR = os.path.join(WORK_DIR, 'spec')
+ML_DIR = os.path.join(SPEC_SRC_DIR, 'ml-proto')
+BINARYEN_SRC_DIR = os.path.join(WORK_DIR, 'binaryen')
 
 PREBUILT_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
 PREBUILT_CLANG_TOOLS = os.path.join(PREBUILT_CLANG, 'tools')
@@ -51,18 +60,13 @@ PREBUILT_CLANG_BIN = os.path.join(
 CC = os.path.join(PREBUILT_CLANG_BIN, 'clang')
 CXX = os.path.join(PREBUILT_CLANG_BIN, 'clang++')
 
-SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
-SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_DIR,
-                                            'known_gcc_test_failures.txt')
-
-SPEC_DIR = os.path.join(WORK_DIR, 'spec')
-ML_DIR = os.path.join(SPEC_DIR, 'ml-proto')
-BINARYEN_DIR = os.path.join(WORK_DIR, 'binaryen')
-
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
+LLVM_INSTALL_BIN = os.path.join(LLVM_INSTALL_DIR, 'bin')
 LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
-SEXPR_OUT_DIR = os.path.join(SEXPR_DIR, 'out')
+SEXPR_OUT_DIR = os.path.join(SEXPR_SRC_DIR, 'out')
+BINARYEN_OUT_DIR = os.path.join(WORK_DIR, 'binaryen-out')
+BINARYEN_BIN_DIR = os.path.join(BINARYEN_OUT_DIR, 'bin')
 TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
 TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
@@ -244,30 +248,30 @@ def FindPriorRev(path, goal):
 
 
 def SyncLLVMClang():
-  if os.path.isdir(LLVM_DIR):
-    assert os.path.isdir(CLANG_DIR), 'Assuming LLVM present implies Clang too'
+  if os.path.isdir(LLVM_SRC_DIR):
+    assert os.path.isdir(CLANG_SRC_DIR), 'Assuming LLVM implies Clang'
     print 'LLVM and Clang directories already exist'
   else:
     print 'Cloning LLVM and Clang'
-    subprocess.check_call(['git', 'clone', LLVM_GIT, LLVM_DIR])
-    GitConfigRebaseMaster(LLVM_DIR)
-    subprocess.check_call(['git', 'clone', CLANG_GIT, CLANG_DIR])
-    GitConfigRebaseMaster(CLANG_DIR)
+    subprocess.check_call(['git', 'clone', LLVM_GIT, LLVM_SRC_DIR])
+    GitConfigRebaseMaster(LLVM_SRC_DIR)
+    subprocess.check_call(['git', 'clone', CLANG_GIT, CLANG_SRC_DIR])
+    GitConfigRebaseMaster(CLANG_SRC_DIR)
   print 'Syncing LLVM'
-  subprocess.check_call(['git', 'fetch'], cwd=LLVM_DIR)
-  subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_DIR)
+  subprocess.check_call(['git', 'fetch'], cwd=LLVM_SRC_DIR)
+  subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_SRC_DIR)
   print 'Getting SVN rev'
   global LLVM_SVN_REV
   LLVM_SVN_REV = int(subprocess.check_output(
-      ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_DIR).strip())
+      ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_SRC_DIR).strip())
   print 'SVN REV: %d' % LLVM_SVN_REV
   print 'Finding prior Clang rev'
-  subprocess.check_call(['git', 'fetch'], cwd=CLANG_DIR)
-  prior_rev = FindPriorRev(CLANG_DIR, LLVM_SVN_REV)
+  subprocess.check_call(['git', 'fetch'], cwd=CLANG_SRC_DIR)
+  prior_rev = FindPriorRev(CLANG_SRC_DIR, LLVM_SVN_REV)
   print 'Checking out Clang rev: %s' % prior_rev
-  subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_DIR)
-  PrintCurrentGitRev(LLVM_DIR)
-  PrintCurrentGitRev(CLANG_DIR)
+  subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_SRC_DIR)
+  PrintCurrentGitRev(LLVM_SRC_DIR)
+  PrintCurrentGitRev(CLANG_SRC_DIR)
 
 
 def SyncPrebuiltClang():
@@ -316,14 +320,17 @@ def SyncRepos():
   BuildStep('Sync Repos')
   PrintCurrentGitRev(SCRIPT_DIR)
   SyncLLVMClang()
-  GitCloneFetchCheckout(name='GCC', work_dir=GCC_DIR, git_repo=GCC_GIT,
+  GitCloneFetchCheckout(name='GCC', work_dir=GCC_SRC_DIR, git_repo=GCC_GIT,
                         checkout=GCC_REVISION)
   SyncPrebuiltClang()
-  GitCloneFetchCheckout(name='sexpr', work_dir=SEXPR_DIR, git_repo=SEXPR_GIT)
+  GitCloneFetchCheckout(name='sexpr', work_dir=SEXPR_SRC_DIR,
+                        git_repo=SEXPR_GIT)
   SyncOCaml()
-  GitCloneFetchCheckout(name='spec', work_dir=SPEC_DIR, git_repo=SPEC_GIT)
+  GitCloneFetchCheckout(name='spec', work_dir=SPEC_SRC_DIR, git_repo=SPEC_GIT)
   # TODO(jfb) binaryen isn't mirrored yet.
-  #GitCloneFetchCheckout(name='binaryen', work_dir=BINARYEN_DIR,
+  github_hack = 'git@github.com:WebAssembly/binaryen.git'
+  GitCloneFetchCheckout(name='binaryen', work_dir=BINARYEN_SRC_DIR,
+                        git_repo=github_hack)
   #                      git_repo=BINARYEN_GIT)
 
 
@@ -332,7 +339,7 @@ def BuildLLVM():
   print 'Running cmake on llvm'
   Mkdir(LLVM_OUT_DIR)
   subprocess.check_call(
-      ['cmake', '-G', 'Ninja', LLVM_DIR,
+      ['cmake', '-G', 'Ninja', LLVM_SRC_DIR,
        '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
        '-DLLVM_BUILD_TESTS=ON',
        '-DCMAKE_C_COMPILER=' + CC,
@@ -362,12 +369,11 @@ def BuildSexpr():
   BuildStep('Build Sexpr')
   # sexpr-wasm builds in its own in-tree out/ folder. The build is fast, so
   # always clobber.
-  subprocess.check_call(['make', 'clean'], cwd=SEXPR_DIR)
+  subprocess.check_call(['make', 'clean'], cwd=SEXPR_SRC_DIR)
   # TODO(jfb) Use CC / CXX?
-  subprocess.check_call(['make'], cwd=SEXPR_DIR)
+  subprocess.check_call(['make'], cwd=SEXPR_SRC_DIR)
   sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
-  ibin = os.path.join(LLVM_INSTALL_DIR, 'bin')
-  shutil.copy2(sexpr, ibin)
+  shutil.copy2(sexpr, LLVM_INSTALL_BIN)
 
 
 def BuildOCaml():
@@ -390,17 +396,31 @@ def BuildSpec():
   subprocess.check_call(['make', 'clean'], cwd=ML_DIR)
   subprocess.check_call(['make', 'all'], cwd=ML_DIR)
   wasm = os.path.join(ML_DIR, 'wasm.opt')
-  wasm_dest = os.path.join(LLVM_INSTALL_DIR, 'bin', 'wasm')
+  wasm_dest = os.path.join(LLVM_INSTALL_BIN, 'wasm')
   shutil.copy2(wasm, wasm_dest)
+
+
+def BuildBinaryen():
+  BuildStep('Build binaryen')
+  Mkdir(BINARYEN_OUT_DIR)
+  subprocess.check_call(
+      ['cmake', '-G', 'Ninja', BINARYEN_SRC_DIR,
+       '-DCMAKE_C_COMPILER=' + CC,
+       '-DCMAKE_CXX_COMPILER=' + CXX],
+      cwd=BINARYEN_OUT_DIR)
+  print 'Running ninja'
+  subprocess.check_call(['ninja'], cwd=BINARYEN_OUT_DIR)
+  for node in os.listdir(BINARYEN_OUT_DIR):
+    f = os.path.join(BINARYEN_OUT_DIR, node)
+    if os.path.isfile(f):
+      print 'Copying %s to %s' % (f, LLVM_INSTALL_BIN)
+      shutil.copy2(f, LLVM_INSTALL_BIN)
 
 
 def ArchiveLLVM():
   if LLVM_REVISION == 'origin/master':
     return
-  ibin = os.path.join(LLVM_INSTALL_DIR, 'bin')
-  shutil.copy2(LINKER, ibin)
-  sexpr = os.path.join(ibin, 'sexpr-wasm')
-  assert os.path.isfile(sexpr), 'Expected binary %s' % sexpr
+  shutil.copy2(LINKER, LLVM_INSTALL_BIN)
   Archive('LLVM', LLVM_INSTALL_TAR)
 
 
@@ -437,7 +457,7 @@ def LinkLLVMTorture():
 
 def AssembleLLVMTorture():
   BuildStep('Assemble LLVM Torture')
-  sexpr = os.path.join(LLVM_INSTALL_DIR, 'bin', 'sexpr-wasm')
+  sexpr = os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm')
   assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
   sexpr_files = os.path.join(TORTURE_OUT_DIR, '*.wast')
   unexpected_result_count = assemble_files.run(
@@ -473,6 +493,7 @@ def main():
   BuildSexpr()
   BuildOCaml()
   BuildSpec()
+  BuildBinaryen()
   ArchiveLLVM()
   failed_steps += CompileLLVMTorture()
   failed_steps += LinkLLVMTorture()
