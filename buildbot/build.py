@@ -352,35 +352,26 @@ def BuildSexpr():
 
 def BuildOCaml():
   BuildStep('Build OCaml')
-  # TODO(jfb) Remove try/except when I know the build works on the bots.
-  try:
-    makefile = os.path.join(OCAML_DIR, 'config', 'Makefile')
-    if not os.path.isfile(makefile):
-      configure = os.path.join(OCAML_DIR, 'configure')
-      subprocess.check_call(
-          [configure, '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
-    subprocess.check_call(['make', 'world.opt', '-j%s' % NPROC], cwd=OCAML_DIR)
-    subprocess.check_call(['make', 'install'], cwd=OCAML_DIR)
-    ocamlbuild = os.path.join(OCAML_BIN_DIR, 'ocamlbuild')
-    assert os.path.isfile(ocamlbuild), 'Expected installed %s' % ocamlbuild
-    os.environ['PATH'] = OCAML_BIN_DIR + os.pathsep + os.environ['PATH']
-  except:
-    print 'Got exception: %s\n%s\n%s' % sys.exc_info()
+  makefile = os.path.join(OCAML_DIR, 'config', 'Makefile')
+  if not os.path.isfile(makefile):
+    configure = os.path.join(OCAML_DIR, 'configure')
+    subprocess.check_call(
+        [configure, '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
+  subprocess.check_call(['make', 'world.opt', '-j%s' % NPROC], cwd=OCAML_DIR)
+  subprocess.check_call(['make', 'install'], cwd=OCAML_DIR)
+  ocamlbuild = os.path.join(OCAML_BIN_DIR, 'ocamlbuild')
+  assert os.path.isfile(ocamlbuild), 'Expected installed %s' % ocamlbuild
+  os.environ['PATH'] = OCAML_BIN_DIR + os.pathsep + os.environ['PATH']
 
 
 def BuildSpec():
   BuildStep('Build spec')
   # Spec builds in-tree. Always clobber and run the tests.
-  try:
-    subprocess.check_call(['make', 'clean'], cwd=ML_DIR)
-    subprocess.check_call(['make', 'all'], cwd=ML_DIR)
-    wasm = os.path.join(ML_DIR, 'wasm.opt')
-    wasm_dest = os.path.join(LLVM_INSTALL_DIR, 'bin', 'wasm')
-    shutil.copy2(wasm, wasm_dest)
-  except:
-    # TODO(jfb) The right version of ocaml isn't available on the bots. Build
-    #           it and then remove this catchall.
-    print 'Got exception: %s\n%s\n%s' % sys.exc_info()
+  subprocess.check_call(['make', 'clean'], cwd=ML_DIR)
+  subprocess.check_call(['make', 'all'], cwd=ML_DIR)
+  wasm = os.path.join(ML_DIR, 'wasm.opt')
+  wasm_dest = os.path.join(LLVM_INSTALL_DIR, 'bin', 'wasm')
+  shutil.copy2(wasm, wasm_dest)
 
 
 def ArchiveLLVM():
