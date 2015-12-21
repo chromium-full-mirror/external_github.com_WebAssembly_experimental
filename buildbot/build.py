@@ -322,8 +322,9 @@ def SyncRepos():
   GitCloneFetchCheckout(name='sexpr', work_dir=SEXPR_DIR, git_repo=SEXPR_GIT)
   SyncOCaml()
   GitCloneFetchCheckout(name='spec', work_dir=SPEC_DIR, git_repo=SPEC_GIT)
-  GitCloneFetchCheckout(name='binaryen', work_dir=BINARYEN_DIR,
-                        git_repo=BINARYEN_GIT)
+  # TODO(jfb) binaryen isn't mirrored yet.
+  #GitCloneFetchCheckout(name='binaryen', work_dir=BINARYEN_DIR,
+  #                      git_repo=BINARYEN_GIT)
 
 
 def BuildLLVM():
