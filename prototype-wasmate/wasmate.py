@@ -808,7 +808,7 @@ def Main():
           name, module, params, returns = import_environment[sym]
           out.write_line('(import $' + sym + ' "' + module + '" "' + name + '"' +
                          ((' (param ' + params + ')') if params else '') +
-                         ((' (return ' + returns + ')') if returns else '') +
+                         ((' (result ' + returns + ')') if returns else '') +
                          ')')
       else:
           error('import ' + sym + ' not found in import environment')

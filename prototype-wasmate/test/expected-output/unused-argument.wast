@@ -23,7 +23,7 @@
     (call_import $return_something)
     (return)
   )
-  (import $return_something "misctest" "return_something" (return i32))
+  (import $return_something "misctest" "return_something" (result i32))
   (memory 0 0
   )
 )
