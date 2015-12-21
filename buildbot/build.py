@@ -66,6 +66,9 @@ SEXPR_OUT_DIR = os.path.join(SEXPR_DIR, 'out')
 TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
 TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
+# Avoid flakes: use cached repositories to avoid relying on external network.
+GITHUB_REMOTE = 'github'
+GITHUB_SSH = 'git@github.com:'
 GIT_MIRROR_BASE = 'https://chromium.googlesource.com/'
 WASM_GIT_BASE = GIT_MIRROR_BASE + 'external/github.com/WebAssembly/'
 LLVM_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/llvm'
@@ -165,18 +168,49 @@ def Archive(name, tar):
   StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
+def GitRemoteUrl(cwd, remote):
+  """Get the URL of a remote."""
+  return subprocess.check_output(['git', 'config', '--get', 'remote.%s.url' %
+                                  remote], cwd=cwd).strip()
+
+
+def HasRemote(cwd, remote):
+  """"Checked whether the named remote exists."""
+  remotes = subprocess.check_output(['git', 'remote'],
+                                    cwd=cwd).strip().splitlines()
+  return remote in remotes
+
+
+def AddGithubRemote(cwd):
+  """When using the cloned repository for development, it's useful to have a
+  remote to github because origin points at a cache which is read-only."""
+  origin_url = GitRemoteUrl(cwd, 'origin')
+  if WASM_GIT_BASE not in origin_url:
+    print '%s not a github mirror' % cwd
+    return
+  if HasRemote(cwd, GITHUB_REMOTE):
+    print '%s has %s as its "%s" remote' % (
+        cwd, GitRemoteUrl(cwd, GITHUB_REMOTE), GITHUB_REMOTE)
+    return
+  remote = GITHUB_SSH + '/'.join(GitRemoteUrl(cwd, 'origin').split('/')[-2:])
+  print '%s has no github remote, adding %s' % (cwd, remote)
+  subprocess.check_call(['git', 'remote', 'add', GITHUB_REMOTE, remote],
+                        cwd=cwd)
+
+
 def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='master'):
   """Clone a git repo if not already cloned, then fetch and checkout."""
   if os.path.isdir(work_dir):
     print '%s directory already exists' % name
   else:
-    print 'Cloning %s' % name
+    print 'Cloning %s from %s into %s' % (name, git_repo, work_dir)
     subprocess.check_call(['git', 'clone', git_repo, work_dir])
   print 'Syncing %s' % name
   subprocess.check_call(['git', 'fetch'], cwd=work_dir)
   print 'Checking out %s' % checkout
   subprocess.check_call(['git', 'checkout', checkout], cwd=work_dir)
   PrintCurrentGitRev(work_dir)
+  AddGithubRemote(work_dir)
 
 
 def GitConfigRebaseMaster(cwd):
