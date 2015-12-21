@@ -360,6 +360,8 @@ def BuildOCaml():
     ocamlbuild = os.path.join(OCAML_BIN_DIR, 'ocamlbuild')
     assert os.path.isfile(ocamlbuild), 'Expected installed %s' % ocamlbuild
     os.environ['PATH'] = OCAML_BIN_DIR + os.pathsep + os.environ['PATH']
+  except OSError as e:
+    print 'Got exception %s on %s' % (e, e.filename)
   except:
     print 'Got exception: %s\n%s\n%s' % sys.exc_info()
 
