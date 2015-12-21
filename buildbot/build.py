@@ -175,7 +175,8 @@ def PrintCurrentGitRev(cwd):
       ['git', 'log', '--oneline', '-n1'], cwd=cwd).strip()
   remote = subprocess.check_output(
       ['git', 'config', '--get', 'remote.origin.url'], cwd=cwd).strip()
-  sys.stdout.write('%s from remote %s is at revision %s\n' % (cwd, remote, log))
+  sys.stdout.write('%s from remote %s is at revision %s\n' %
+                   (cwd, remote, log))
 
 
 def FindPriorRev(path, goal):
@@ -350,7 +351,8 @@ def BuildOCaml():
   BuildStep('Build OCaml')
   # TODO(jfb) Remove try/except when I know the build works on the bots.
   try:
-    if not os.path.isfile(OCAML_DIR, 'config', 'Makefile'):
+    makefile = os.path.join(OCAML_DIR, 'config', 'Makefile')
+    if not os.path.isfile(makefile):
       subprocess.check_call(
           ['configure', '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
     subprocess.check_call(['make', 'world.opt', '-j"$(nproc)"'], cwd=OCAML_DIR)
@@ -372,8 +374,8 @@ def BuildSpec():
     wasm_dest = os.path.join(LLVM_INSTALL_DIR, 'bin', 'wasm')
     shutil.copy2(wasm, wasm_dest)
   except:
-    # TODO(jfb) The right version of ocaml isn't available on the bots. Build it
-    #           and then remove this catchall.
+    # TODO(jfb) The right version of ocaml isn't available on the bots. Build
+    #           it and then remove this catchall.
     print 'Got exception: %s\n%s\n%s' % sys.exc_info()
 
 
