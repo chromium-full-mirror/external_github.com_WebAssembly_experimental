@@ -202,7 +202,7 @@ def AddGithubRemote(cwd):
                         cwd=cwd)
 
 
-def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='master'):
+def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='origin/master'):
   """Clone a git repo if not already cloned, then fetch and checkout."""
   if os.path.isdir(work_dir):
     print '%s directory already exists' % name
