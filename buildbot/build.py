@@ -57,6 +57,7 @@ SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_DIR,
 
 SPEC_DIR = os.path.join(WORK_DIR, 'spec')
 ML_DIR = os.path.join(SPEC_DIR, 'ml-proto')
+BINARYEN_DIR = os.path.join(WORK_DIR, 'binaryen')
 
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
@@ -73,6 +74,7 @@ PREBUILT_CLANG_GIT = GIT_MIRROR_BASE + 'chromium/src/tools/clang'
 GCC_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/gcc'
 SEXPR_GIT = WASM_GIT_BASE + 'sexpr-wasm-prototype.git'
 SPEC_GIT = WASM_GIT_BASE + 'spec.git'
+BINARYEN_GIT = WASM_GIT_BASE + 'binaryen.git'
 
 # Sync OCaml from a cached tar file because the upstream repository is only
 # http. The file untars into a directory of the same name as the tar file.
@@ -163,6 +165,20 @@ def Archive(name, tar):
   StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
 
 
+def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='master'):
+  """Clone a git repo if not already cloned, then fetch and checkout."""
+  if os.path.isdir(work_dir):
+    print '%s directory already exists' % name
+  else:
+    print 'Cloning %s' % name
+    subprocess.check_call(['git', 'clone', git_repo, work_dir])
+  print 'Syncing %s' % name
+  subprocess.check_call(['git', 'fetch'], cwd=work_dir)
+  print 'Checking out %s' % checkout
+  subprocess.check_call(['git', 'checkout', checkout], cwd=work_dir)
+  PrintCurrentGitRev(work_dir)
+
+
 def GitConfigRebaseMaster(cwd):
   """Avoid generating a non-linear history in the clone
 
@@ -220,18 +236,6 @@ def SyncLLVMClang():
   PrintCurrentGitRev(CLANG_DIR)
 
 
-def SyncGCC():
-  if os.path.isdir(GCC_DIR):
-    print 'GCC directory already exists'
-  else:
-    print 'Cloning GCC'
-    subprocess.check_call(['git', 'clone', GCC_GIT, GCC_DIR])
-  print 'Syncing GCC'
-  subprocess.check_call(['git', 'fetch'], cwd=GCC_DIR)
-  subprocess.check_call(['git', 'checkout', GCC_REVISION], cwd=GCC_DIR)
-  PrintCurrentGitRev(GCC_DIR)
-
-
 def SyncPrebuiltClang():
   if os.path.isdir(PREBUILT_CLANG_TOOLS_CLANG):
     print 'Prebuilt Chromium Clang directory already exists'
@@ -251,17 +255,6 @@ def SyncPrebuiltClang():
   PrintCurrentGitRev(PREBUILT_CLANG_TOOLS_CLANG)
 
 
-def SyncSexpr():
-  if os.path.isdir(SEXPR_DIR):
-    print 'Sexpr directory already exists'
-  else:
-    print 'Cloning Sexpr'
-    subprocess.check_call(['git', 'clone', SEXPR_GIT, SEXPR_DIR])
-  print 'Syncing Sexpr'
-  subprocess.check_call(['git', 'pull'], cwd=SEXPR_DIR)
-  PrintCurrentGitRev(SEXPR_DIR)
-
-
 def SyncOCaml():
   if os.path.isdir(OCAML_DIR):
     print 'OCaml directory already exists'
@@ -277,17 +270,6 @@ def SyncOCaml():
     assert os.path.isdir(OCAML_DIR), 'Untar should produce %s' % OCAML_DIR
 
 
-def SyncSpec():
-  if os.path.isdir(SPEC_DIR):
-    print 'spec directory already exists'
-  else:
-    print 'Cloning spec'
-    subprocess.check_call(['git', 'clone', SPEC_GIT, SPEC_DIR])
-  print 'Syncing spec'
-  subprocess.check_call(['git', 'pull'], cwd=SPEC_DIR)
-  PrintCurrentGitRev(SPEC_DIR)
-
-
 def Clobber():
   if os.environ.get('BUILDBOT_CLOBBER'):
     BuildStep('Clobbering work dir')
@@ -300,11 +282,14 @@ def SyncRepos():
   BuildStep('Sync Repos')
   PrintCurrentGitRev(SCRIPT_DIR)
   SyncLLVMClang()
-  SyncGCC()
+  GitCloneFetchCheckout(name='GCC', work_dir=GCC_DIR, git_repo=GCC_GIT,
+                        checkout=GCC_REVISION)
   SyncPrebuiltClang()
-  SyncSexpr()
+  GitCloneFetchCheckout(name='sexpr', work_dir=SEXPR_DIR, git_repo=SEXPR_GIT)
   SyncOCaml()
-  SyncSpec()
+  GitCloneFetchCheckout(name='spec', work_dir=SPEC_DIR, git_repo=SPEC_GIT)
+  GitCloneFetchCheckout(name='binaryen', work_dir=BINARYEN_DIR,
+                        git_repo=BINARYEN_GIT)
 
 
 def BuildLLVM():
