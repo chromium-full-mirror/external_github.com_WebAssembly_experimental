@@ -19,6 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
+import urllib2
 
 import assemble_files
 import compile_torture_tests
@@ -69,6 +70,15 @@ PREBUILT_CLANG_GIT = GIT_MIRROR_BASE + 'chromium/src/tools/clang'
 GCC_GIT = GIT_MIRROR_BASE + 'chromiumos/third_party/gcc'
 SEXPR_GIT = WASM_GIT_BASE + 'sexpr-wasm-prototype.git'
 SPEC_GIT = WASM_GIT_BASE + 'spec.git'
+
+# Sync OCaml from a cached tar file because the upstream repository is only
+# http. The file untars into a directory of the same name as the tar file.
+OCAML_STORAGE_BASE = 'https://wasm.storage.googleapis.com/'
+OCAML_VERSION = 'ocaml-4.02.2'
+OCAML_TAR_NAME = OCAML_VERSION + '.tar.gz'
+OCAML_TAR = os.path.join(WORK_DIR, OCAML_TAR_NAME)
+OCAML_URL = OCAML_STORAGE_BASE + OCAML_TAR_NAME
+OCAML_DIR = os.path.join(WORK_DIR, OCAML_VERSION)
 
 # Try to use the LLVM revision provided by buildbot.
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
@@ -242,6 +252,21 @@ def SyncSexpr():
   PrintCurrentGitRev(SEXPR_DIR)
 
 
+def SyncOCaml():
+  if os.path.isdir(OCAML_DIR):
+    print 'OCaml directory already exists'
+  else:
+    print 'Downloading OCaml %s from %s' % (OCAML_VERSION, OCAML_URL)
+    f = urllib2.urlopen(OCAML_URL)
+    print 'URL: %s' % f.geturl()
+    print 'Info: %s' % f.info()
+    with open(OCAML_TAR, 'wb') as out:
+      out.write(f.read())
+    print 'Download done, untar %s' % OCAML_TAR
+    subprocess.check_call(['tar', '-xvf', OCAML_TAR], cwd=WORK_DIR)
+    assert os.path.isdir(OCAML_DIR), 'Untar should produce %s' % OCAML_DIR
+
+
 def SyncSpec():
   if os.path.isdir(SPEC_DIR):
     print 'spec directory already exists'
@@ -268,6 +293,7 @@ def SyncRepos():
   SyncGCC()
   SyncPrebuiltClang()
   SyncSexpr()
+  SyncOCaml()
   SyncSpec()
 
 
@@ -323,7 +349,8 @@ def BuildSpec():
     wasm_dest = os.path.join(LLVM_INSTALL_DIR, 'bin', 'wasm')
     shutil.copy2(wasm, wasm_dest)
   except:
-    # TODO(jfb) Is the right version of ocaml available on the bots?
+    # TODO(jfb) The right version of ocaml isn't available on the bots. Build it
+    #           and then remove this catchall.
     print 'Got exception: %s\n%s\n%s' % sys.exc_info()
 
 
