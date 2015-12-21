@@ -47,6 +47,8 @@ PREBUILT_CLANG_TOOLS = os.path.join(PREBUILT_CLANG, 'tools')
 PREBUILT_CLANG_TOOLS_CLANG = os.path.join(PREBUILT_CLANG_TOOLS, 'clang')
 PREBUILT_CLANG_BIN = os.path.join(
     PREBUILT_CLANG, 'third_party', 'llvm-build', 'Release+Asserts', 'bin')
+CC = os.path.join(PREBUILT_CLANG_BIN, 'clang')
+CXX = os.path.join(PREBUILT_CLANG_BIN, 'clang++')
 
 SEXPR_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
 SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_DIR,
@@ -79,6 +81,8 @@ OCAML_TAR_NAME = OCAML_VERSION + '.tar.gz'
 OCAML_TAR = os.path.join(WORK_DIR, OCAML_TAR_NAME)
 OCAML_URL = OCAML_STORAGE_BASE + OCAML_TAR_NAME
 OCAML_DIR = os.path.join(WORK_DIR, OCAML_VERSION)
+OCAML_OUT_DIR = os.path.join(WORK_DIR, 'ocaml-out')
+OCAML_BIN_DIR = os.path.join(OCAML_OUT_DIR, 'bin')
 
 # Try to use the LLVM revision provided by buildbot.
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
@@ -238,6 +242,8 @@ def SyncPrebuiltClang():
   print 'Syncing Prebuilt Chromium Clang'
   subprocess.check_call(
       [os.path.join(PREBUILT_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
+  assert os.path.isfile(CC), 'Expect clang at %s' % CC
+  assert os.path.isfile(CXX), 'Expect clang++ at %s' % CXX
   PrintCurrentGitRev(PREBUILT_CLANG_TOOLS_CLANG)
 
 
@@ -305,8 +311,8 @@ def BuildLLVM():
       ['cmake', '-G', 'Ninja', LLVM_DIR,
        '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
        '-DLLVM_BUILD_TESTS=ON',
-       '-DCMAKE_C_COMPILER=' + PREBUILT_CLANG_BIN + '/clang',
-       '-DCMAKE_CXX_COMPILER=' + PREBUILT_CLANG_BIN + '/clang++',
+       '-DCMAKE_C_COMPILER=' + CC,
+       '-DCMAKE_CXX_COMPILER=' + CXX,
        '-DCMAKE_BUILD_TYPE=Release',
        '-DCMAKE_INSTALL_PREFIX=' + LLVM_INSTALL_DIR,
        '-DLLVM_ENABLE_ASSERTIONS=ON',
@@ -333,10 +339,27 @@ def BuildSexpr():
   # sexpr-wasm builds in its own in-tree out/ folder. The build is fast, so
   # always clobber.
   subprocess.check_call(['make', 'clean'], cwd=SEXPR_DIR)
+  # TODO(jfb) Use CC / CXX?
   subprocess.check_call(['make'], cwd=SEXPR_DIR)
   sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
   ibin = os.path.join(LLVM_INSTALL_DIR, 'bin')
   shutil.copy2(sexpr, ibin)
+
+
+def BuildOCaml():
+  BuildStep('Build OCaml')
+  # TODO(jfb) Remove try/except when I know the build works on the bots.
+  try:
+    if not os.path.isfile(OCAML_DIR, 'config', 'Makefile'):
+      subprocess.check_call(
+          ['configure', '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
+    subprocess.check_call(['make', 'world.opt', '-j"$(nproc)"'], cwd=OCAML_DIR)
+    subprocess.check_call(['make', 'install'], cwd=OCAML_DIR)
+    ocamlbuild = os.path.join(OCAML_BIN_DIR, 'ocamlbuild')
+    assert os.path.isfile(ocamlbuild), 'Expected installed %s' % ocamlbuild
+    os.environ['PATH'] = OCAML_BIN_DIR + os.pathsep + os.environ['PATH']
+  except:
+    print 'Got exception: %s\n%s\n%s' % sys.exc_info()
 
 
 def BuildSpec():
@@ -431,6 +454,7 @@ def main():
   TestLLVM()
   InstallLLVM()
   BuildSexpr()
+  BuildOCaml()
   BuildSpec()
   ArchiveLLVM()
   failed_steps += CompileLLVMTorture()
