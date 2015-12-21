@@ -19,6 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
+import multiprocessing
 import urllib2
 
 import assemble_files
@@ -83,6 +84,8 @@ OCAML_URL = OCAML_STORAGE_BASE + OCAML_TAR_NAME
 OCAML_DIR = os.path.join(WORK_DIR, OCAML_VERSION)
 OCAML_OUT_DIR = os.path.join(WORK_DIR, 'ocaml-out')
 OCAML_BIN_DIR = os.path.join(OCAML_OUT_DIR, 'bin')
+
+NPROC = multiprocessing.cpu_count()
 
 # Try to use the LLVM revision provided by buildbot.
 LLVM_REVISION = os.environ.get('BUILDBOT_REVISION', 'None')
@@ -353,15 +356,14 @@ def BuildOCaml():
   try:
     makefile = os.path.join(OCAML_DIR, 'config', 'Makefile')
     if not os.path.isfile(makefile):
+      configure = os.path.join(OCAML_DIR, 'configure')
       subprocess.check_call(
-          ['configure', '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
-    subprocess.check_call(['make', 'world.opt', '-j"$(nproc)"'], cwd=OCAML_DIR)
+          [configure, '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
+    subprocess.check_call(['make', 'world.opt', '-j%s' % NPROC], cwd=OCAML_DIR)
     subprocess.check_call(['make', 'install'], cwd=OCAML_DIR)
     ocamlbuild = os.path.join(OCAML_BIN_DIR, 'ocamlbuild')
     assert os.path.isfile(ocamlbuild), 'Expected installed %s' % ocamlbuild
     os.environ['PATH'] = OCAML_BIN_DIR + os.pathsep + os.environ['PATH']
-  except OSError as e:
-    print 'Got exception %s on %s' % (e, e.filename)
   except:
     print 'Got exception: %s\n%s\n%s' % sys.exc_info()
 
