@@ -47,7 +47,7 @@ def run(c, cxx, testsuite, fails, out):
   c_torture = os.path.join(testsuite, 'gcc.c-torture', 'execute')
   assert os.path.isdir(c_torture), ('Cannot find C torture tests at %s' %
                                     c_torture)
-  assert os.path.isdir(out)
+  assert os.path.isdir(out), 'Cannot find outdir %s' % out
   c_test_files = glob.glob(os.path.join(c_torture, '*c'))
   return testing.execute(
       tester=testing.Tester(

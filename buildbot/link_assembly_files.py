@@ -42,7 +42,7 @@ def link(infile, outfile, extras):
 def run(linker, files, fails, out):
   """Link all files."""
   assert os.path.isfile(linker), 'Cannot find linker at %s' % linker
-  assert os.path.isdir(out)
+  assert os.path.isdir(out), 'Cannot find outdir %s' % out
   assembly_files = glob.glob(files)
   assert len(assembly_files), 'No files found by %s' % files
   return testing.execute(

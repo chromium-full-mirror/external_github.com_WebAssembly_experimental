@@ -37,7 +37,7 @@ def assemble(infile, outfile, extras):
 def run(sexpr, files, fails, out):
   """Assemble all files."""
   assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
-  assert os.path.isdir(out)
+  assert os.path.isdir(out), 'Cannot find outdir %s' % out
   sexpr_files = glob.glob(files)
   assert len(sexpr_files), 'No files found by %s' % files
   return testing.execute(
