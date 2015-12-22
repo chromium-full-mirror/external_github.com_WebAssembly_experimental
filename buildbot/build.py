@@ -66,10 +66,9 @@ LLVM_INSTALL_BIN = os.path.join(LLVM_INSTALL_DIR, 'bin')
 SEXPR_OUT_DIR = os.path.join(SEXPR_SRC_DIR, 'out')
 BINARYEN_OUT_DIR = os.path.join(WORK_DIR, 'binaryen-out')
 BINARYEN_BIN_DIR = os.path.join(BINARYEN_OUT_DIR, 'bin')
-TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
-
-BINARIES_TAR = os.path.join(WORK_DIR, 'binaries.tbz2')
-TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
+TORTURE_S_OUT_DIR = os.path.join(WORK_DIR, 'torture-s')
+TORTURE_WASMATE_OUT_DIR = os.path.join(WORK_DIR, 'torture-wasmate')
+TORTURE_SEXPR_OUT_DIR = os.path.join(WORK_DIR, 'torture-sexpr')
 
 # Avoid flakes: use cached repositories to avoid relying on external network.
 GITHUB_REMOTE = 'github'
@@ -147,13 +146,15 @@ def Remove(path):
       os.remove(path)
 
 
-def Tar(tar, directory):
+def Tar(directory):
   """Create a tar file from directory."""
-  Remove(tar)
   assert os.path.isdir(directory), 'Must tar a directory to avoid tarbombs'
   (up_directory, basename) = os.path.split(directory)
+  tar = os.path.join(up_directory, basename + '.tbz2')
+  Remove(tar)
   print 'Creating %s from %s/%s' % (tar, up_directory, basename)
   subprocess.check_call(['tar', 'cjf', tar, basename], cwd=up_directory)
+  return tar
 
 
 def Archive(name, tar):
@@ -421,9 +422,8 @@ def ArchiveBinaries():
   if LLVM_REVISION == 'origin/master':
     return
   # All relevant binaries were copied to the LLVM directory.
-  Tar(tar=BINARIES_TAR, directory=LLVM_INSTALL_DIR)
   shutil.copy2(LINKER, LLVM_INSTALL_BIN)
-  Archive('binaries', BINARIES_TAR)
+  Archive('binaries', Tar(LLVM_INSTALL_DIR))
 
 
 def CompileLLVMTorture():
@@ -431,12 +431,13 @@ def CompileLLVMTorture():
   BuildStep(name)
   c = os.path.join(LLVM_OUT_DIR, 'bin', 'clang')
   cxx = os.path.join(LLVM_OUT_DIR, 'bin', 'clang++')
-  Remove(TORTURE_OUT_DIR)
-  Mkdir(TORTURE_OUT_DIR)
+  Remove(TORTURE_S_OUT_DIR)
+  Mkdir(TORTURE_S_OUT_DIR)
   unexpected_result_count = compile_torture_tests.run(
       c=c, cxx=cxx, testsuite=GCC_TEST_DIR,
       fails=LLVM_KNOWN_TORTURE_FAILURES,
-      out=TORTURE_OUT_DIR)
+      out=TORTURE_S_OUT_DIR)
+  Archive('torture-s', Tar(TORTURE_S_OUT_DIR))
   if 0 != unexpected_result_count:
     StepFail()
     return 1
@@ -446,11 +447,14 @@ def CompileLLVMTorture():
 def LinkLLVMTorture():
   BuildStep('Link LLVM Torture')
   assert os.path.isfile(LINKER), 'Cannot find linker at %s' % LINKER
-  assembly_files = os.path.join(TORTURE_OUT_DIR, '*.s')
+  assembly_files = os.path.join(TORTURE_S_OUT_DIR, '*.s')
+  Remove(TORTURE_WASMATE_OUT_DIR)
+  Mkdir(TORTURE_WASMATE_OUT_DIR)
   unexpected_result_count = link_assembly_files.run(
       wasmate=LINKER, files=assembly_files,
       fails=WASMATE_KNOWN_TORTURE_FAILURES,
-      out=TORTURE_OUT_DIR)
+      out=TORTURE_WASMATE_OUT_DIR)
+  Archive('torture-wasmate', Tar(TORTURE_WASMATE_OUT_DIR))
   if 0 != unexpected_result_count:
     StepFail()
     return 1
@@ -461,21 +465,18 @@ def AssembleLLVMTorture():
   BuildStep('Assemble LLVM Torture')
   sexpr = os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm')
   assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
-  sexpr_files = os.path.join(TORTURE_OUT_DIR, '*.wast')
+  sexpr_files = os.path.join(TORTURE_WASMATE_OUT_DIR, '*.wast')
+  Remove(TORTURE_SEXPR_OUT_DIR)
+  Mkdir(TORTURE_SEXPR_OUT_DIR)
   unexpected_result_count = assemble_files.run(
       sexpr=sexpr, files=sexpr_files,
       fails=SEXPR_KNOWN_TORTURE_FAILURES,
-      out=TORTURE_OUT_DIR)
+      out=TORTURE_SEXPR_OUT_DIR)
+  Archive('torture-sexpr', Tar(TORTURE_SEXPR_OUT_DIR))
   if 0 != unexpected_result_count:
     StepFail()
     return 1
   return 0
-
-
-def ArchiveTorture():
-  if os.path.isdir(TORTURE_OUT_DIR):
-    Tar(tar=TORTURE_TAR, directory=TORTURE_OUT_DIR)
-    Archive('torture', TORTURE_TAR)
 
 
 def Summary(failed_steps):
@@ -500,7 +501,6 @@ def main():
   failed_steps += CompileLLVMTorture()
   failed_steps += LinkLLVMTorture()
   failed_steps += AssembleLLVMTorture()
-  ArchiveTorture()
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
   Summary(failed_steps)
