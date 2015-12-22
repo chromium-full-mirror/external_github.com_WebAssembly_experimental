@@ -146,6 +146,12 @@ def Remove(path):
       os.remove(path)
 
 
+def CopyBinaryToArchive(binary):
+  """All binaries are archived in the same tar file."""
+  print 'Copying binary %s to archive %s' % (binary, LLVM_INSTALL_BIN)
+  shutil.copy2(binary, LLVM_INSTALL_BIN)
+
+
 def Tar(directory):
   """Create a tar file from directory."""
   assert os.path.isdir(directory), 'Must tar a directory to avoid tarbombs'
@@ -376,7 +382,7 @@ def BuildSexpr():
                          'CXX=%s' % CXX],
                         cwd=SEXPR_SRC_DIR)
   sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
-  shutil.copy2(sexpr, LLVM_INSTALL_BIN)
+  CopyBinaryToArchive(sexpr)
 
 
 def BuildOCaml():
@@ -399,8 +405,7 @@ def BuildSpec():
   subprocess.check_call(['make', 'clean'], cwd=ML_DIR)
   subprocess.check_call(['make', 'all'], cwd=ML_DIR)
   wasm = os.path.join(ML_DIR, 'wasm.opt')
-  wasm_dest = os.path.join(LLVM_INSTALL_BIN, 'wasm')
-  shutil.copy2(wasm, wasm_dest)
+  CopyBinaryToArchive(wasm)
 
 
 def BuildBinaryen():
@@ -417,15 +422,14 @@ def BuildBinaryen():
   for node in os.listdir(BINARYEN_BIN_DIR):
     f = os.path.join(BINARYEN_BIN_DIR, node)
     if os.path.isfile(f):
-      print 'Copying %s to %s' % (f, LLVM_INSTALL_BIN)
-      shutil.copy2(f, LLVM_INSTALL_BIN)
+      CopyBinaryToArchive(f)
 
 
 def ArchiveBinaries():
   if LLVM_REVISION == 'origin/master':
     return
   # All relevant binaries were copied to the LLVM directory.
-  shutil.copy2(LINKER, LLVM_INSTALL_BIN)
+  CopyBinaryToArchive(LINKER)
   Archive('binaries', Tar(LLVM_INSTALL_DIR))
 
 
