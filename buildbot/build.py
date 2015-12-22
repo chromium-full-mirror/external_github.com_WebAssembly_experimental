@@ -30,27 +30,28 @@ import link_assembly_files
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 
+IT_IS_KNOWN = 'known_gcc_test_failures.txt'
+
 LLVM_SRC_DIR = os.path.join(WORK_DIR, 'llvm')
 CLANG_SRC_DIR = os.path.join(LLVM_SRC_DIR, 'tools', 'clang')
 LLVM_KNOWN_TORTURE_FAILURES = os.path.join(LLVM_SRC_DIR, 'lib', 'Target',
-                                           'WebAssembly',
-                                           'known_gcc_test_failures.txt')
+                                           'WebAssembly', IT_IS_KNOWN)
 
 WASMATE_DIR = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate')
 WASMATE = os.path.join(WASMATE_DIR, 'wasmate.py')
-WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(WASMATE_DIR,
-                                              'known_gcc_test_failures.txt')
+WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(WASMATE_DIR, IT_IS_KNOWN)
 
 GCC_SRC_DIR = os.path.join(WORK_DIR, 'gcc')
 GCC_TEST_DIR = os.path.join(GCC_SRC_DIR, 'gcc', 'testsuite')
 
 SEXPR_SRC_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
-SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR,
-                                            'known_gcc_test_failures.txt')
+SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR, IT_IS_KNOWN)
 
 SPEC_SRC_DIR = os.path.join(WORK_DIR, 'spec')
 ML_DIR = os.path.join(SPEC_SRC_DIR, 'ml-proto')
 BINARYEN_SRC_DIR = os.path.join(WORK_DIR, 'binaryen')
+S2WASM_KNOWN_TORTURE_FAILURES = os.path.join(BINARYEN_SRC_DIR,
+                                             's2wasm_' + IT_IS_KNOWN)
 
 PREBUILT_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
 PREBUILT_CLANG_TOOLS = os.path.join(PREBUILT_CLANG, 'tools')
@@ -67,7 +68,6 @@ SEXPR_OUT_DIR = os.path.join(SEXPR_SRC_DIR, 'out')
 BINARYEN_OUT_DIR = os.path.join(WORK_DIR, 'binaryen-out')
 BINARYEN_BIN_DIR = os.path.join(BINARYEN_OUT_DIR, 'bin')
 TORTURE_S_OUT_DIR = os.path.join(WORK_DIR, 'torture-s')
-TORTURE_WASMATE_OUT_DIR = os.path.join(WORK_DIR, 'torture-wasmate')
 TORTURE_SEXPR_OUT_DIR = os.path.join(WORK_DIR, 'torture-sexpr')
 
 # Avoid flakes: use cached repositories to avoid relying on external network.
@@ -117,9 +117,14 @@ def StepLink(label, url):
   sys.stdout.write('@@@STEP_LINK@%s@%s@@@\n' % (label, url))
 
 
+failed_steps = 0
+
+
 def StepFail():
   """Mark one step as failing, but keep going."""
   sys.stdout.write('\n@@@STEP_FAILURE@@@\n')
+  global failed_steps
+  failed_steps += 1
 
 
 def Chdir(path):
@@ -451,28 +456,26 @@ def CompileLLVMTorture():
   return 0
 
 
-def LinkLLVMTorture():
-  BuildStep('Link LLVM Torture')
-  assert os.path.isfile(WASMATE), 'Cannot find linker at %s' % WASMATE
+def LinkLLVMTorture(name, linker, fails):
+  BuildStep('Link LLVM Torture with %s' % name)
+  assert os.path.isfile(WASMATE), 'Cannot find linker at %s' % linker
   assembly_files = os.path.join(TORTURE_S_OUT_DIR, '*.s')
-  Remove(TORTURE_WASMATE_OUT_DIR)
-  Mkdir(TORTURE_WASMATE_OUT_DIR)
+  out = os.path.join(WORK_DIR, 'torture-%s' % name)
+  Remove(out)
+  Mkdir(out)
   unexpected_result_count = link_assembly_files.run(
-      linker=WASMATE, files=assembly_files,
-      fails=WASMATE_KNOWN_TORTURE_FAILURES,
-      out=TORTURE_WASMATE_OUT_DIR)
-  Archive('torture-wasmate', Tar(TORTURE_WASMATE_OUT_DIR))
+      linker=linker, files=assembly_files, fails=fails, out=out)
+  Archive('torture-%s' % name, Tar(out))
   if 0 != unexpected_result_count:
     StepFail()
-    return 1
-  return 0
+  return out
 
 
-def AssembleLLVMTorture():
+def AssembleLLVMTorture(indir):
   BuildStep('Assemble LLVM Torture')
   sexpr = os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm')
   assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
-  sexpr_files = os.path.join(TORTURE_WASMATE_OUT_DIR, '*.wast')
+  sexpr_files = os.path.join(indir, '*.wast')
   Remove(TORTURE_SEXPR_OUT_DIR)
   Mkdir(TORTURE_SEXPR_OUT_DIR)
   unexpected_result_count = assemble_files.run(
@@ -486,13 +489,12 @@ def AssembleLLVMTorture():
   return 0
 
 
-def Summary(failed_steps):
+def Summary():
   BuildStep('Summary')
   sys.stdout.write('Failed steps: %s.' % failed_steps)
 
 
 def main():
-  failed_steps = 0
   Clobber()
   Chdir(SCRIPT_DIR)
   Mkdir(WORK_DIR)
@@ -505,9 +507,16 @@ def main():
   BuildSpec()
   BuildBinaryen()
   ArchiveBinaries()
-  failed_steps += CompileLLVMTorture()
-  failed_steps += LinkLLVMTorture()
-  failed_steps += AssembleLLVMTorture()
+  CompileLLVMTorture()
+  wasmate_out = LinkLLVMTorture(
+      name='wasmate',
+      linker=WASMATE,
+      fails=WASMATE_KNOWN_TORTURE_FAILURES)
+  s2wasm_out = LinkLLVMTorture(
+      name='s2wasm',
+      linker=os.path.join(LLVM_INSTALL_BIN, 's2wasm'),
+      fails=S2WASM_KNOWN_TORTURE_FAILURES)
+  AssembleLLVMTorture(indir=wasmate_out)
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
   Summary(failed_steps)
