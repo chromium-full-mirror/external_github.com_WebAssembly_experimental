@@ -330,7 +330,7 @@ def SyncRepos():
   SyncOCaml()
   GitCloneFetchCheckout(name='spec', work_dir=SPEC_SRC_DIR, git_repo=SPEC_GIT)
   # TODO(jfb) binaryen isn't mirrored yet.
-  github_hack = 'git@github.com:WebAssembly/binaryen.git'
+  github_hack = 'https://github.com/WebAssembly/binaryen.git'
   GitCloneFetchCheckout(name='binaryen', work_dir=BINARYEN_SRC_DIR,
                         git_repo=github_hack)
   #                      git_repo=BINARYEN_GIT)
