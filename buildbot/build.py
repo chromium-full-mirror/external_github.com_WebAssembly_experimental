@@ -63,11 +63,12 @@ CXX = os.path.join(PREBUILT_CLANG_BIN, 'clang++')
 LLVM_OUT_DIR = os.path.join(WORK_DIR, 'llvm-out')
 LLVM_INSTALL_DIR = os.path.join(WORK_DIR, 'llvm-install')
 LLVM_INSTALL_BIN = os.path.join(LLVM_INSTALL_DIR, 'bin')
-LLVM_INSTALL_TAR = os.path.join(WORK_DIR, 'llvm-install.tbz2')
 SEXPR_OUT_DIR = os.path.join(SEXPR_SRC_DIR, 'out')
 BINARYEN_OUT_DIR = os.path.join(WORK_DIR, 'binaryen-out')
 BINARYEN_BIN_DIR = os.path.join(BINARYEN_OUT_DIR, 'bin')
 TORTURE_OUT_DIR = os.path.join(WORK_DIR, 'torture-out')
+
+BINARIES_TAR = os.path.join(WORK_DIR, 'binaries.tbz2')
 TORTURE_TAR = os.path.join(WORK_DIR, 'torture.tbz2')
 
 # Avoid flakes: use cached repositories to avoid relying on external network.
@@ -362,7 +363,6 @@ def InstallLLVM():
   BuildStep('Install LLVM')
   Remove(LLVM_INSTALL_DIR)
   subprocess.check_call(['ninja', 'install'], cwd=LLVM_OUT_DIR)
-  Tar(tar=LLVM_INSTALL_TAR, directory=LLVM_INSTALL_DIR)
 
 
 def BuildSexpr():
@@ -417,11 +417,13 @@ def BuildBinaryen():
       shutil.copy2(f, LLVM_INSTALL_BIN)
 
 
-def ArchiveLLVM():
+def ArchiveBinaries():
   if LLVM_REVISION == 'origin/master':
     return
+  # All relevant binaries were copied to the LLVM directory.
+  Tar(tar=BINARIES_TAR, directory=LLVM_INSTALL_DIR)
   shutil.copy2(LINKER, LLVM_INSTALL_BIN)
-  Archive('LLVM', LLVM_INSTALL_TAR)
+  Archive('binaries', BINARIES_TAR)
 
 
 def CompileLLVMTorture():
@@ -473,7 +475,7 @@ def AssembleLLVMTorture():
 def ArchiveTorture():
   if os.path.isdir(TORTURE_OUT_DIR):
     Tar(tar=TORTURE_TAR, directory=TORTURE_OUT_DIR)
-    Archive('Torture', TORTURE_TAR)
+    Archive('torture', TORTURE_TAR)
 
 
 def Summary(failed_steps):
@@ -494,7 +496,7 @@ def main():
   BuildOCaml()
   BuildSpec()
   BuildBinaryen()
-  ArchiveLLVM()
+  ArchiveBinaries()
   failed_steps += CompileLLVMTorture()
   failed_steps += LinkLLVMTorture()
   failed_steps += AssembleLLVMTorture()
