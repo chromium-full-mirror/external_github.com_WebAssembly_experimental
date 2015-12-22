@@ -371,8 +371,10 @@ def BuildSexpr():
   # sexpr-wasm builds in its own in-tree out/ folder. The build is fast, so
   # always clobber.
   subprocess.check_call(['make', 'clean'], cwd=SEXPR_SRC_DIR)
-  # TODO(jfb) Use CC / CXX?
-  subprocess.check_call(['make'], cwd=SEXPR_SRC_DIR)
+  subprocess.check_call(['make',
+                         'CC=%s' % CC,
+                         'CXX=%s' % CXX],
+                        cwd=SEXPR_SRC_DIR)
   sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
   shutil.copy2(sexpr, LLVM_INSTALL_BIN)
 
