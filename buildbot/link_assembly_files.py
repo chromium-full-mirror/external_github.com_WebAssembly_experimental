@@ -30,13 +30,18 @@ def create_outname(outdir, infile):
 
 
 def link(infile, outfile, extras):
-  """Create the command-line for a wasmate invocation."""
-  return [extras['wasmate'], '-o', outfile, '-l', 'misctest', infile]
+  """Create the command-line for a linker invocation."""
+  linker = extras['linker']
+  basename = os.path.basename(linker)
+  commands = {
+      'wasmate.py': [linker, '-o', outfile, '-l', 'misctest', infile],
+  }
+  return commands[basename]
 
 
-def run(wasmate, files, fails, out):
+def run(linker, files, fails, out):
   """Link all files."""
-  assert os.path.isfile(wasmate), 'Cannot find linker at %s' % wasmate
+  assert os.path.isfile(linker), 'Cannot find linker at %s' % linker
   assert os.path.isdir(out)
   assembly_files = glob.glob(files)
   assert len(assembly_files), 'No files found by %s' % files
@@ -45,7 +50,7 @@ def run(wasmate, files, fails, out):
           command_ctor=link,
           outname_ctor=create_outname,
           outdir=out,
-          extras={'wasmate': wasmate}),
+          extras={'linker': linker}),
       inputs=assembly_files,
       fails=fails)
 
@@ -53,7 +58,7 @@ def run(wasmate, files, fails, out):
 def getargs():
   import argparse
   parser = argparse.ArgumentParser(description='Link .s files into .wast.')
-  parser.add_argument('--wasmate', type=str, required=True,
+  parser.add_argument('--linker', type=str, required=True,
                       help='Linker path')
   parser.add_argument('--files', type=str, required=True,
                       help='Glob pattern for .s files')
@@ -66,4 +71,4 @@ def getargs():
 
 if __name__ == '__main__':
   args = getargs()
-  sys.exit(run(args.wasmate, args.files, args.fails, args.out))
+  sys.exit(run(args.linker, args.files, args.fails, args.out))

@@ -37,7 +37,7 @@ LLVM_KNOWN_TORTURE_FAILURES = os.path.join(LLVM_SRC_DIR, 'lib', 'Target',
                                            'known_gcc_test_failures.txt')
 
 WASMATE_DIR = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate')
-LINKER = os.path.join(WASMATE_DIR, 'wasmate.py')
+WASMATE = os.path.join(WASMATE_DIR, 'wasmate.py')
 WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(WASMATE_DIR,
                                               'known_gcc_test_failures.txt')
 
@@ -429,7 +429,7 @@ def ArchiveBinaries():
   if LLVM_REVISION == 'origin/master':
     return
   # All relevant binaries were copied to the LLVM directory.
-  CopyBinaryToArchive(LINKER)
+  CopyBinaryToArchive(WASMATE)
   Archive('binaries', Tar(LLVM_INSTALL_DIR))
 
 
@@ -453,12 +453,12 @@ def CompileLLVMTorture():
 
 def LinkLLVMTorture():
   BuildStep('Link LLVM Torture')
-  assert os.path.isfile(LINKER), 'Cannot find linker at %s' % LINKER
+  assert os.path.isfile(WASMATE), 'Cannot find linker at %s' % WASMATE
   assembly_files = os.path.join(TORTURE_S_OUT_DIR, '*.s')
   Remove(TORTURE_WASMATE_OUT_DIR)
   Mkdir(TORTURE_WASMATE_OUT_DIR)
   unexpected_result_count = link_assembly_files.run(
-      wasmate=LINKER, files=assembly_files,
+      linker=WASMATE, files=assembly_files,
       fails=WASMATE_KNOWN_TORTURE_FAILURES,
       out=TORTURE_WASMATE_OUT_DIR)
   Archive('torture-wasmate', Tar(TORTURE_WASMATE_OUT_DIR))
