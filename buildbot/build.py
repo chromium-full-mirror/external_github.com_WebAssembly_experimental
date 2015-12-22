@@ -411,8 +411,9 @@ def BuildBinaryen():
       cwd=BINARYEN_OUT_DIR)
   print 'Running ninja'
   subprocess.check_call(['ninja'], cwd=BINARYEN_OUT_DIR)
-  for node in os.listdir(BINARYEN_OUT_DIR):
-    f = os.path.join(BINARYEN_OUT_DIR, node)
+  assert os.path.isdir(BINARYEN_BIN_DIR), 'Expected %s' % BINARYEN_BIN_DIR
+  for node in os.listdir(BINARYEN_BIN_DIR):
+    f = os.path.join(BINARYEN_BIN_DIR, node)
     if os.path.isfile(f):
       print 'Copying %s to %s' % (f, LLVM_INSTALL_BIN)
       shutil.copy2(f, LLVM_INSTALL_BIN)
