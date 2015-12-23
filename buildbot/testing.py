@@ -148,9 +148,11 @@ def similarity(results, cutoff):
             worklist.remove(other_test)
             group_tests.append(other_test)
             group_similarities.append(similar)
-      assert len(group_tests) > 1, 'Expected to find similarities to %s' % test
-      similar_groups.append(SimilarityGroup(tests=group_tests,
-                                            similarities=group_similarities))
+      if len(group_tests) > 1:
+        # Some tests could have similar matches which were more similar to
+        # other tests, leaving this group with a single entry.
+        similar_groups.append(SimilarityGroup(tests=group_tests,
+                                              similarities=group_similarities))
   assert len(worklist) == 0, 'Failed emptying worklist %s' % worklist
   return similar_groups
 
