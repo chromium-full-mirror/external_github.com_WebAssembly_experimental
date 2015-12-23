@@ -452,8 +452,6 @@ def CompileLLVMTorture():
   Archive('torture-s', Tar(TORTURE_S_OUT_DIR))
   if 0 != unexpected_result_count:
     StepFail()
-    return 1
-  return 0
 
 
 def LinkLLVMTorture(name, linker, fails):
@@ -485,13 +483,13 @@ def AssembleLLVMTorture(indir):
   Archive('torture-sexpr', Tar(TORTURE_SEXPR_OUT_DIR))
   if 0 != unexpected_result_count:
     StepFail()
-    return 1
-  return 0
 
 
 def Summary():
   BuildStep('Summary')
   sys.stdout.write('Failed steps: %s.' % failed_steps)
+  if failed_steps:
+    StepFail()
 
 
 def main():
@@ -519,7 +517,7 @@ def main():
   AssembleLLVMTorture(indir=wasmate_out)
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
-  Summary(failed_steps)
+  Summary()
   return failed_steps
 
 
