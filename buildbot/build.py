@@ -172,7 +172,7 @@ def Archive(name, tar):
   """Archive the tar file with the given name, and with the LLVM git hash."""
   if not os.environ.get('BUILDBOT_BUILDERNAME'):
     return
-  BuildStep('Archive %s' % name)
+  print 'Archiving %s: %s' % (name, tar)
   svn_gs = 'wasm-llvm/builds/svn/wasm-%s-r%s.tbz2' % (name, LLVM_SVN_REV)
   git_gs = 'wasm-llvm/builds/git/wasm-%s-%s.tbz2' % (name, LLVM_REVISION)
   subprocess.check_call(
@@ -433,6 +433,7 @@ def BuildBinaryen():
 def ArchiveBinaries():
   if LLVM_REVISION == 'origin/master':
     return
+  BuildStep('Archive binaries')
   # All relevant binaries were copied to the LLVM directory.
   CopyBinaryToArchive(WASMATE)
   Archive('binaries', Tar(LLVM_INSTALL_DIR))
