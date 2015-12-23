@@ -50,7 +50,7 @@ SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR, IT_IS_KNOWN)
 SPEC_SRC_DIR = os.path.join(WORK_DIR, 'spec')
 ML_DIR = os.path.join(SPEC_SRC_DIR, 'ml-proto')
 BINARYEN_SRC_DIR = os.path.join(WORK_DIR, 'binaryen')
-S2WASM_KNOWN_TORTURE_FAILURES = os.path.join(BINARYEN_SRC_DIR,
+S2WASM_KNOWN_TORTURE_FAILURES = os.path.join(BINARYEN_SRC_DIR, 'test',
                                              's2wasm_' + IT_IS_KNOWN)
 
 PREBUILT_CLANG = os.path.join(WORK_DIR, 'chromium-clang')
