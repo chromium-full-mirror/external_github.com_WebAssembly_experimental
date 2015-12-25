@@ -7,6 +7,3 @@
 # Code contains `extern int abort();` and it's address-taken. .s file doesn't
 # declare `abort`.
 921110-1.c.s
-
-# IndexError: pop from empty list
-930930-1.c.s
