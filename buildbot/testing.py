@@ -187,7 +187,7 @@ def execute(tester, inputs, fails):
   similar_unexpected_failures = similarity(unexpected_failures, cutoff)
   for s in similar_unexpected_failures:
     tests = ' '.join(s.tests)
-    sys.stdout.write(('\nSimilar expected failures, '
+    sys.stdout.write(('\nSimilar unexpected failures, '
                       'average %s%% similarity with stddev %s: '
                       'for %s\n') % (s.average, s.stddev, tests))
     sample = [f for f in unexpected_failures if f.test == s.tests[0]][0]
