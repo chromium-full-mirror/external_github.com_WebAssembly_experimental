@@ -20,7 +20,6 @@ import os.path
 import math
 import multiprocessing
 import subprocess
-import sets
 import sys
 
 
@@ -113,23 +112,25 @@ class SimilarityGroup:
   def __init__(self, tests, similarities):
     self.tests = sorted(tests)
     self.similarities = [100 * s for s in similarities]
-    self.average = sum(similarities) / len(similarities)
+    self.average = (sum(similarities) / len(similarities)
+                    if similarities else 0)
     squared_diffs = [(s - self.average)**2 for s in self.similarities]
-    self.stddev = math.sqrt(sum(squared_diffs) / len(squared_diffs))
+    self.stddev = (math.sqrt(sum(squared_diffs) / len(squared_diffs))
+                   if similarities else 0)
 
 
 def similarity(results, cutoff):
   """List of lists of result test names with similar outputs."""
   similarities = TriangularArray()
-  for x in range(0, len(results) - 1):
-    for y in range(x + 1, len(results) - 1):
+  for x in range(0, len(results)):
+    for y in range(x + 1, len(results)):
       rx = results[x]
       ry = results[y]
       similarities[(rx.test, ry.test)] = rx.similarity(ry)
   # A maximum clique would be better suited to group similarities, but this
   # silly traversal is simpler and seems to do the job pretty well.
   similar_groups = []
-  worklist = sets.Set()
+  worklist = set()
   for k, v in similarities:
     if v > cutoff:
       worklist.add(k[0])
@@ -154,6 +155,15 @@ def similarity(results, cutoff):
         similar_groups.append(SimilarityGroup(tests=group_tests,
                                               similarities=group_similarities))
   assert len(worklist) == 0, 'Failed emptying worklist %s' % worklist
+  # Put all the ungrouped tests into their own group.
+  grouped = set()
+  for group in similar_groups:
+    for test in group.tests:
+      grouped.add(test)
+  uniques = list(set([r.test for r in results]) - grouped)
+  if uniques:
+    s = [similarities[(uniques[0], u)] for u in uniques[1:]]
+    similar_groups.append(SimilarityGroup(tests=uniques, similarities=s))
   return similar_groups
 
 
@@ -179,19 +189,29 @@ def execute(tester, inputs, fails):
   similar_expected_failures = similarity(expected_failures, cutoff)
   for s in similar_expected_failures:
     tests = ' '.join(s.tests)
-    sys.stdout.write(('\nSimilar expected failures, '
-                      'average %s%% similarity with stddev %s: '
-                      'for %s\n') % (s.average, s.stddev, tests))
-    sample = [f for f in expected_failures if f.test == s.tests[0]][0]
-    sys.stdout.write('Sample failure: %s\n' % sample)
+    if s.average >= cutoff:
+      sys.stdout.write(('\nSimilar expected failures, '
+                        'average %s%% similarity with stddev %s: '
+                        '%s\n') % (s.average, s.stddev, tests))
+      sample = [f for f in expected_failures if f.test == s.tests[0]][0]
+      sys.stdout.write('Sample failure: %s\n' % sample)
+    else:
+      sys.stdout.write(('\nUngrouped expected failures, '
+                        'average %s%% similarity with stddev %s: '
+                        '%s\n') % (s.average, s.stddev, tests))
   similar_unexpected_failures = similarity(unexpected_failures, cutoff)
   for s in similar_unexpected_failures:
     tests = ' '.join(s.tests)
-    sys.stdout.write(('\nSimilar unexpected failures, '
-                      'average %s%% similarity with stddev %s: '
-                      'for %s\n') % (s.average, s.stddev, tests))
-    sample = [f for f in unexpected_failures if f.test == s.tests[0]][0]
-    sys.stdout.write('Sample failure: %s\n' % sample)
+    if s.average >= cutoff:
+      sys.stdout.write(('\nSimilar unexpected failures, '
+                        'average %s%% similarity with stddev %s: '
+                        '%s\n') % (s.average, s.stddev, tests))
+      sample = [f for f in unexpected_failures if f.test == s.tests[0]][0]
+      sys.stdout.write('Sample failure: %s\n' % sample)
+    else:
+      sys.stdout.write(('\nUngrouped unexpected failures, '
+                        'average %s%% similarity with stddev %s: '
+                        '%s\n') % (s.average, s.stddev, tests))
   if expected_failures:
     sys.stdout.write('Expected failures:\n')
     for f in expected_failures:
