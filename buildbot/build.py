@@ -511,6 +511,16 @@ def Summary():
   sys.stdout.write('Failed steps: %s.' % failed_steps)
   if failed_steps:
     StepFail()
+  else:
+    try:
+      with open('lkgr', 'w+') as f:
+        f.write(LLVM_SVN_REV)
+      UploadToCloud('lkgr', 'svn/lkgr', 'svn_lkgr')
+      with open('lkgr', 'w+') as f:
+        f.write(LLVM_REVISION)
+      UploadToCloud('lkgr', 'git/lkgr', 'svn_lkgr')
+    finally:
+      Remove('lkgr')
 
 
 def main():
