@@ -30,6 +30,9 @@ import link_assembly_files
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 
+CLOUD_STORAGE_BASE_URL = 'https://storage.googleapis.com/'
+CLOUD_STORAGE_PATH = 'wasm-llvm/builds/'
+
 IT_IS_KNOWN = 'known_gcc_test_failures.txt'
 
 LLVM_SRC_DIR = os.path.join(WORK_DIR, 'llvm')
@@ -168,21 +171,38 @@ def Tar(directory):
   return tar
 
 
+def UploadToCloud(local, remote, link_name):
+  """Upload file to Cloud Storage."""
+  if not os.environ.get('BUILDBOT_BUILDERNAME'):
+    return
+  remote = 'gs://' + CLOUD_STORAGE_PATH + remote
+  print 'Uploading %s to %s' % (local, remote)
+  subprocess.check_call(
+      ['gsutil', 'cp', '-a', 'public-read', local, remote])
+  StepLink(link_name, CLOUD_STORAGE_BASE_URL + remote)
+
+
+def CopyCloudStorage(copy_from, copy_to, link_name):
+  """Copy from one Cloud Storage file to another."""
+  if not os.environ.get('BUILDBOT_BUILDERNAME'):
+    return
+  copy_from = 'gs://' + CLOUD_STORAGE_PATH + copy_from
+  copy_to = 'gs://' + CLOUD_STORAGE_PATH + copy_to
+  print 'Copying %s to %s' % (copy_from, copy_to)
+  subprocess.check_call(
+      ['gsutil', 'cp', '-a', 'public-read', copy_from, copy_to])
+  StepLink(link_name, CLOUD_STORAGE_BASE_URL + copy_to)
+
+
 def Archive(name, tar):
   """Archive the tar file with the given name, and with the LLVM git hash."""
   if not os.environ.get('BUILDBOT_BUILDERNAME'):
     return
   print 'Archiving %s: %s' % (name, tar)
-  svn_gs = 'wasm-llvm/builds/svn/wasm-%s-r%s.tbz2' % (name, LLVM_SVN_REV)
-  git_gs = 'wasm-llvm/builds/git/wasm-%s-%s.tbz2' % (name, LLVM_REVISION)
-  subprocess.check_call(
-      ['gsutil', 'cp', '-a',
-       'public-read', tar, 'gs://' + svn_gs])
-  subprocess.check_call(
-      ['gsutil', 'cp', '-a',
-       'public-read', 'gs://' + svn_gs, 'gs://' + git_gs])
-  StepLink('download', 'https://storage.googleapis.com/%s' % svn_gs)
-  StepLink('git_download', 'https://storage.googleapis.com/%s' % git_gs)
+  svn_gs = 'svn/wasm-%s-r%s.tbz2' % (name, LLVM_SVN_REV)
+  git_gs = 'git/wasm-%s-%s.tbz2' % (name, LLVM_REVISION)
+  UploadToCloud(tar, svn_gs, 'svn_download')
+  CopyCloudStorage(svn_gs, git_gs, 'git_download')
 
 
 def GitRemoteUrl(cwd, remote):
