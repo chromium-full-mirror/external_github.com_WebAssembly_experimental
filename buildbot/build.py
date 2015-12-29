@@ -175,10 +175,10 @@ def UploadToCloud(local, remote, link_name):
   """Upload file to Cloud Storage."""
   if not os.environ.get('BUILDBOT_BUILDERNAME'):
     return
-  remote = 'gs://' + CLOUD_STORAGE_PATH + remote
+  remote = CLOUD_STORAGE_PATH + remote
   print 'Uploading %s to %s' % (local, remote)
   subprocess.check_call(
-      ['gsutil', 'cp', '-a', 'public-read', local, remote])
+      ['gsutil', 'cp', '-a', 'public-read', local, 'gs://' + remote])
   StepLink(link_name, CLOUD_STORAGE_BASE_URL + remote)
 
 
@@ -186,11 +186,12 @@ def CopyCloudStorage(copy_from, copy_to, link_name):
   """Copy from one Cloud Storage file to another."""
   if not os.environ.get('BUILDBOT_BUILDERNAME'):
     return
-  copy_from = 'gs://' + CLOUD_STORAGE_PATH + copy_from
-  copy_to = 'gs://' + CLOUD_STORAGE_PATH + copy_to
+  copy_from = CLOUD_STORAGE_PATH + copy_from
+  copy_to = CLOUD_STORAGE_PATH + copy_to
   print 'Copying %s to %s' % (copy_from, copy_to)
   subprocess.check_call(
-      ['gsutil', 'cp', '-a', 'public-read', copy_from, copy_to])
+      ['gsutil', 'cp', '-a', 'public-read',
+       'gs://' + copy_from, 'gs://' + copy_to])
   StepLink(link_name, CLOUD_STORAGE_BASE_URL + copy_to)
 
 
@@ -518,7 +519,7 @@ def Summary():
       UploadToCloud('lkgr', 'svn/lkgr', 'svn_lkgr')
       with open('lkgr', 'w+') as f:
         f.write(str(LLVM_REVISION))
-      UploadToCloud('lkgr', 'git/lkgr', 'svn_lkgr')
+      UploadToCloud('lkgr', 'git/lkgr', 'git_lkgr')
     finally:
       Remove('lkgr')
 
