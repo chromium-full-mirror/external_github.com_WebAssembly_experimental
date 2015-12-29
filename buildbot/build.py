@@ -514,10 +514,10 @@ def Summary():
   else:
     try:
       with open('lkgr', 'w+') as f:
-        f.write(LLVM_SVN_REV)
+        f.write(str(LLVM_SVN_REV))
       UploadToCloud('lkgr', 'svn/lkgr', 'svn_lkgr')
       with open('lkgr', 'w+') as f:
-        f.write(LLVM_REVISION)
+        f.write(str(LLVM_REVISION))
       UploadToCloud('lkgr', 'git/lkgr', 'svn_lkgr')
     finally:
       Remove('lkgr')
