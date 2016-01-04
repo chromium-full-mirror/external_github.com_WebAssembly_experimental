@@ -111,12 +111,12 @@ class SimilarityGroup:
   """Group of similar results."""
   def __init__(self, tests, similarities):
     self.tests = sorted(tests)
-    self.similarities = [100 * s for s in similarities]
-    self.average = (sum(similarities) / len(similarities)
-                    if similarities else 0)
+    self.similarities = [100. * s for s in similarities]
+    self.average = (sum(self.similarities) / len(self.similarities)
+                    if self.similarities else 0.)
     squared_diffs = [(s - self.average)**2 for s in self.similarities]
     self.stddev = (math.sqrt(sum(squared_diffs) / len(squared_diffs))
-                   if similarities else 0)
+                   if self.similarities else 0.)
 
 
 def similarity(results, cutoff):
@@ -189,7 +189,7 @@ def execute(tester, inputs, fails):
   similar_expected_failures = similarity(expected_failures, cutoff)
   for s in similar_expected_failures:
     tests = ' '.join(s.tests)
-    if s.average >= cutoff:
+    if s.average >= cutoff * 100.:
       sys.stdout.write(('\nSimilar expected failures, '
                         'average %s%% similarity with stddev %s: '
                         '%s\n') % (s.average, s.stddev, tests))
@@ -202,7 +202,7 @@ def execute(tester, inputs, fails):
   similar_unexpected_failures = similarity(unexpected_failures, cutoff)
   for s in similar_unexpected_failures:
     tests = ' '.join(s.tests)
-    if s.average >= cutoff:
+    if s.average >= cutoff * 100.:
       sys.stdout.write(('\nSimilar unexpected failures, '
                         'average %s%% similarity with stddev %s: '
                         '%s\n') % (s.average, s.stddev, tests))
