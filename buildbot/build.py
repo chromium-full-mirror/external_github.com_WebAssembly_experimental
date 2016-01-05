@@ -48,7 +48,8 @@ GCC_SRC_DIR = os.path.join(WORK_DIR, 'gcc')
 GCC_TEST_DIR = os.path.join(GCC_SRC_DIR, 'gcc', 'testsuite')
 
 SEXPR_SRC_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
-SEXPR_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR, IT_IS_KNOWN)
+SEXPR_WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR, 'wasmate_' +
+                                                    IT_IS_KNOWN)
 
 SPEC_SRC_DIR = os.path.join(WORK_DIR, 'spec')
 ML_DIR = os.path.join(SPEC_SRC_DIR, 'ml-proto')
@@ -551,7 +552,7 @@ def main():
       name='sexpr-wasm',
       assembler=os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm'),
       indir=wasmate_out,
-      fails=SEXPR_KNOWN_TORTURE_FAILURES)
+      fails=SEXPR_WASMATE_KNOWN_TORTURE_FAILURES)
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
   Summary()
