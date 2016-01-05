@@ -30,23 +30,28 @@ def create_outname(outdir, infile):
 
 
 def assemble(infile, outfile, extras):
-  """Create the command-line for a sexpr-wasm invocation."""
-  return [extras['sexpr'], infile, '-o', outfile]
+  """Create the command-line for an assembler invocation."""
+  assembler = extras['assembler']
+  basename = os.path.basename(assembler)
+  commands = {
+      'sexpr-wasm': [extras['assembler'], infile, '-o', outfile]
+  }
+  return commands[basename]
 
 
-def run(sexpr, files, fails, out):
+def run(assembler, files, fails, out):
   """Assemble all files."""
-  assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
+  assert os.path.isfile(assembler), 'Cannot find assembler at %s' % assembler
   assert os.path.isdir(out), 'Cannot find outdir %s' % out
-  sexpr_files = glob.glob(files)
-  assert len(sexpr_files), 'No files found by %s' % files
+  assembler_files = glob.glob(files)
+  assert len(assembler_files), 'No files found by %s' % files
   return testing.execute(
       tester=testing.Tester(
           command_ctor=assemble,
           outname_ctor=create_outname,
           outdir=out,
-          extras={'sexpr': sexpr}),
-      inputs=sexpr_files,
+          extras={'assembler': assembler}),
+      inputs=assembler_files,
       fails=fails)
 
 
@@ -54,7 +59,7 @@ def getargs():
   import argparse
   parser = argparse.ArgumentParser(
       description='Assemble .wast files into .wasm.')
-  parser.add_argument('--sexpr', type=str, required=True,
+  parser.add_argument('--assembler', type=str, required=True,
                       help='Assembler path')
   parser.add_argument('--files', type=str, required=True,
                       help='Glob pattern for .wast files')
@@ -67,4 +72,4 @@ def getargs():
 
 if __name__ == '__main__':
   args = getargs()
-  sys.exit(run(args.sexpr, args.files, args.fails, args.out))
+  sys.exit(run(args.assembler, args.files, args.fails, args.out))

@@ -71,7 +71,6 @@ SEXPR_OUT_DIR = os.path.join(SEXPR_SRC_DIR, 'out')
 BINARYEN_OUT_DIR = os.path.join(WORK_DIR, 'binaryen-out')
 BINARYEN_BIN_DIR = os.path.join(BINARYEN_OUT_DIR, 'bin')
 TORTURE_S_OUT_DIR = os.path.join(WORK_DIR, 'torture-s')
-TORTURE_SEXPR_OUT_DIR = os.path.join(WORK_DIR, 'torture-sexpr')
 
 # Avoid flakes: use cached repositories to avoid relying on external network.
 GITHUB_REMOTE = 'github'
@@ -478,7 +477,7 @@ def CompileLLVMTorture():
 
 def LinkLLVMTorture(name, linker, fails):
   BuildStep('Link LLVM Torture with %s' % name)
-  assert os.path.isfile(WASMATE), 'Cannot find linker at %s' % linker
+  assert os.path.isfile(linker), 'Cannot find linker at %s' % linker
   assembly_files = os.path.join(TORTURE_S_OUT_DIR, '*.s')
   out = os.path.join(WORK_DIR, 'torture-%s' % name)
   Remove(out)
@@ -491,20 +490,22 @@ def LinkLLVMTorture(name, linker, fails):
   return out
 
 
-def AssembleLLVMTorture(indir):
-  BuildStep('Assemble LLVM Torture')
-  sexpr = os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm')
-  assert os.path.isfile(sexpr), 'Cannot find assembler at %s' % sexpr
-  sexpr_files = os.path.join(indir, '*.wast')
-  Remove(TORTURE_SEXPR_OUT_DIR)
-  Mkdir(TORTURE_SEXPR_OUT_DIR)
+def AssembleLLVMTorture(name, assembler, indir, fails):
+  BuildStep('Assemble LLVM Torture with %s' % name)
+  assert os.path.isfile(assembler), 'Cannot find assembler at %s' % assembler
+  files = os.path.join(indir, '*.wast')
+  out = os.path.join(WORK_DIR, 'torture-%s' % name)
+  Remove(out)
+  Mkdir(out)
   unexpected_result_count = assemble_files.run(
-      sexpr=sexpr, files=sexpr_files,
-      fails=SEXPR_KNOWN_TORTURE_FAILURES,
-      out=TORTURE_SEXPR_OUT_DIR)
-  Archive('torture-sexpr', Tar(TORTURE_SEXPR_OUT_DIR))
+      assembler=assembler,
+      files=files,
+      fails=fails,
+      out=out)
+  Archive('torture-%s' % name, Tar(out))
   if 0 != unexpected_result_count:
     StepFail()
+  return out
 
 
 def Summary():
@@ -546,7 +547,11 @@ def main():
       name='s2wasm',
       linker=os.path.join(LLVM_INSTALL_BIN, 's2wasm'),
       fails=S2WASM_KNOWN_TORTURE_FAILURES)
-  AssembleLLVMTorture(indir=wasmate_out)
+  sexpr_wasm_out = AssembleLLVMTorture(
+      name='sexpr-wasm',
+      assembler=os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm'),
+      indir=wasmate_out,
+      fails=SEXPR_KNOWN_TORTURE_FAILURES)
   # Keep the summary step last: it'll be marked as red if the return code is
   # non-zero. Individual steps are marked as red with StepFail().
   Summary()
