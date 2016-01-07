@@ -24,6 +24,8 @@ import urllib2
 import assemble_files
 import compile_torture_tests
 import link_assembly_files
+# Use proc instead of subprocess to get logged subprocess invocation.
+import proc
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -110,7 +112,6 @@ LLVM_SVN_REV = None  # Found after the sync step, corresponds to LLVM_REVISION.
 # should be manually updated when convenient.
 GCC_REVISION = 'b6125c702850488ac3bfb1079ae5c9db89989406'
 
-
 # Magic annotations:
 # https://chromium.googlesource.com/chromium/tools/build/+/master/scripts/common/annotator.py
 def BuildStep(name):
@@ -168,7 +169,7 @@ def Tar(directory):
   tar = os.path.join(up_directory, basename + '.tbz2')
   Remove(tar)
   print 'Creating %s from %s/%s' % (tar, up_directory, basename)
-  subprocess.check_call(['tar', 'cjf', tar, basename], cwd=up_directory)
+  proc.check_call(['tar', 'cjf', tar, basename], cwd=up_directory)
   return tar
 
 
@@ -178,7 +179,7 @@ def UploadToCloud(local, remote, link_name):
     return
   remote = CLOUD_STORAGE_PATH + remote
   print 'Uploading %s to %s' % (local, remote)
-  subprocess.check_call(
+  proc.check_call(
       ['gsutil', 'cp', '-a', 'public-read', local, 'gs://' + remote])
   StepLink(link_name, CLOUD_STORAGE_BASE_URL + remote)
 
@@ -190,7 +191,7 @@ def CopyCloudStorage(copy_from, copy_to, link_name):
   copy_from = CLOUD_STORAGE_PATH + copy_from
   copy_to = CLOUD_STORAGE_PATH + copy_to
   print 'Copying %s to %s' % (copy_from, copy_to)
-  subprocess.check_call(
+  proc.check_call(
       ['gsutil', 'cp', '-a', 'public-read',
        'gs://' + copy_from, 'gs://' + copy_to])
   StepLink(link_name, CLOUD_STORAGE_BASE_URL + copy_to)
@@ -209,14 +210,14 @@ def Archive(name, tar):
 
 def GitRemoteUrl(cwd, remote):
   """Get the URL of a remote."""
-  return subprocess.check_output(['git', 'config', '--get', 'remote.%s.url' %
-                                  remote], cwd=cwd).strip()
+  return proc.check_output(['git', 'config', '--get', 'remote.%s.url' %
+                            remote], cwd=cwd).strip()
 
 
 def HasRemote(cwd, remote):
   """"Checked whether the named remote exists."""
-  remotes = subprocess.check_output(['git', 'remote'],
-                                    cwd=cwd).strip().splitlines()
+  remotes = proc.check_output(['git', 'remote'],
+                              cwd=cwd).strip().splitlines()
   return remote in remotes
 
 
@@ -233,8 +234,8 @@ def AddGithubRemote(cwd):
     return
   remote = GITHUB_SSH + '/'.join(GitRemoteUrl(cwd, 'origin').split('/')[-2:])
   print '%s has no github remote, adding %s' % (cwd, remote)
-  subprocess.check_call(['git', 'remote', 'add', GITHUB_REMOTE, remote],
-                        cwd=cwd)
+  proc.check_call(['git', 'remote', 'add', GITHUB_REMOTE, remote],
+                  cwd=cwd)
 
 
 def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='origin/master'):
@@ -243,11 +244,11 @@ def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='origin/master'):
     print '%s directory already exists' % name
   else:
     print 'Cloning %s from %s into %s' % (name, git_repo, work_dir)
-    subprocess.check_call(['git', 'clone', git_repo, work_dir])
+    proc.check_call(['git', 'clone', git_repo, work_dir])
   print 'Syncing %s' % name
-  subprocess.check_call(['git', 'fetch'], cwd=work_dir)
+  proc.check_call(['git', 'fetch'], cwd=work_dir)
   print 'Checking out %s' % checkout
-  subprocess.check_call(['git', 'checkout', checkout], cwd=work_dir)
+  proc.check_call(['git', 'checkout', checkout], cwd=work_dir)
   PrintCurrentGitRev(work_dir)
   AddGithubRemote(work_dir)
 
@@ -258,24 +259,24 @@ def GitConfigRebaseMaster(cwd):
   The upstream repository is in Subversion. Use `git pull --rebase` instead of
   git pull: llvm.org/docs/GettingStarted.html#git-mirror
   """
-  subprocess.check_call(
+  proc.check_call(
       ['git', 'config', 'branch.master.rebase', 'true'], cwd=cwd)
 
 
 def PrintCurrentGitRev(cwd):
-  log = subprocess.check_output(
+  log = proc.check_output(
       ['git', 'log', '--oneline', '-n1'], cwd=cwd).strip()
-  remote = subprocess.check_output(
+  remote = proc.check_output(
       ['git', 'config', '--get', 'remote.origin.url'], cwd=cwd).strip()
   sys.stdout.write('%s from remote %s is at revision %s\n' %
                    (cwd, remote, log))
 
 
 def FindPriorRev(path, goal):
-  revs = subprocess.check_output(
+  revs = proc.check_output(
       ['git', 'rev-list', 'origin/master'], cwd=path).splitlines()
   for rev in revs:
-    num = subprocess.check_output(
+    num = proc.check_output(
         ['git', 'svn', 'find-rev', rev], cwd=path).strip()
     if int(num) <= goal:
       return rev
@@ -288,23 +289,23 @@ def SyncLLVMClang():
     print 'LLVM and Clang directories already exist'
   else:
     print 'Cloning LLVM and Clang'
-    subprocess.check_call(['git', 'clone', LLVM_GIT, LLVM_SRC_DIR])
+    proc.check_call(['git', 'clone', LLVM_GIT, LLVM_SRC_DIR])
     GitConfigRebaseMaster(LLVM_SRC_DIR)
-    subprocess.check_call(['git', 'clone', CLANG_GIT, CLANG_SRC_DIR])
+    proc.check_call(['git', 'clone', CLANG_GIT, CLANG_SRC_DIR])
     GitConfigRebaseMaster(CLANG_SRC_DIR)
   print 'Syncing LLVM'
-  subprocess.check_call(['git', 'fetch'], cwd=LLVM_SRC_DIR)
-  subprocess.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_SRC_DIR)
+  proc.check_call(['git', 'fetch'], cwd=LLVM_SRC_DIR)
+  proc.check_call(['git', 'checkout', LLVM_REVISION], cwd=LLVM_SRC_DIR)
   print 'Getting SVN rev'
   global LLVM_SVN_REV
-  LLVM_SVN_REV = int(subprocess.check_output(
+  LLVM_SVN_REV = int(proc.check_output(
       ['git', 'svn', 'find-rev', 'HEAD'], cwd=LLVM_SRC_DIR).strip())
   print 'SVN REV: %d' % LLVM_SVN_REV
   print 'Finding prior Clang rev'
-  subprocess.check_call(['git', 'fetch'], cwd=CLANG_SRC_DIR)
+  proc.check_call(['git', 'fetch'], cwd=CLANG_SRC_DIR)
   prior_rev = FindPriorRev(CLANG_SRC_DIR, LLVM_SVN_REV)
   print 'Checking out Clang rev: %s' % prior_rev
-  subprocess.check_call(['git', 'checkout', prior_rev], cwd=CLANG_SRC_DIR)
+  proc.check_call(['git', 'checkout', prior_rev], cwd=CLANG_SRC_DIR)
   PrintCurrentGitRev(LLVM_SRC_DIR)
   PrintCurrentGitRev(CLANG_SRC_DIR)
 
@@ -316,12 +317,12 @@ def SyncPrebuiltClang():
     print 'Cloning Prebuilt Chromium Clang directory'
     Mkdir(PREBUILT_CLANG)
     Mkdir(PREBUILT_CLANG_TOOLS)
-    subprocess.check_call(
+    proc.check_call(
         ['git', 'clone', PREBUILT_CLANG_GIT, PREBUILT_CLANG_TOOLS_CLANG])
   print 'Syncing Prebuilt Chromium Clang scripts'
-  subprocess.check_call(['git', 'fetch'], cwd=PREBUILT_CLANG_TOOLS_CLANG)
+  proc.check_call(['git', 'fetch'], cwd=PREBUILT_CLANG_TOOLS_CLANG)
   print 'Syncing Prebuilt Chromium Clang'
-  subprocess.check_call(
+  proc.check_call(
       [os.path.join(PREBUILT_CLANG_TOOLS_CLANG, 'scripts', 'update.py')])
   assert os.path.isfile(CC), 'Expect clang at %s' % CC
   assert os.path.isfile(CXX), 'Expect clang++ at %s' % CXX
@@ -339,7 +340,7 @@ def SyncOCaml():
     with open(OCAML_TAR, 'wb') as out:
       out.write(f.read())
     print 'Download done, untar %s' % OCAML_TAR
-    subprocess.check_call(['tar', '-xvf', OCAML_TAR], cwd=WORK_DIR)
+    proc.check_call(['tar', '-xvf', OCAML_TAR], cwd=WORK_DIR)
     assert os.path.isdir(OCAML_DIR), 'Untar should produce %s' % OCAML_DIR
 
 
@@ -370,7 +371,7 @@ def BuildLLVM():
   BuildStep('Build LLVM')
   print 'Running cmake on llvm'
   Mkdir(LLVM_OUT_DIR)
-  subprocess.check_call(
+  proc.check_call(
       ['cmake', '-G', 'Ninja', LLVM_SRC_DIR,
        '-DCMAKE_EXPORT_COMPILE_COMMANDS=ON',
        '-DLLVM_BUILD_TESTS=ON',
@@ -382,29 +383,29 @@ def BuildLLVM():
        '-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly',
        '-DLLVM_TARGETS_TO_BUILD=X86'], cwd=LLVM_OUT_DIR)
   print 'Running ninja'
-  subprocess.check_call(['ninja'], cwd=LLVM_OUT_DIR)
+  proc.check_call(['ninja'], cwd=LLVM_OUT_DIR)
 
 
 def TestLLVM():
   BuildStep('Test LLVM')
-  subprocess.check_call(['ninja', 'check-all'], cwd=LLVM_OUT_DIR)
+  proc.check_call(['ninja', 'check-all'], cwd=LLVM_OUT_DIR)
 
 
 def InstallLLVM():
   BuildStep('Install LLVM')
   Remove(LLVM_INSTALL_DIR)
-  subprocess.check_call(['ninja', 'install'], cwd=LLVM_OUT_DIR)
+  proc.check_call(['ninja', 'install'], cwd=LLVM_OUT_DIR)
 
 
 def BuildSexpr():
   BuildStep('Build Sexpr')
   # sexpr-wasm builds in its own in-tree out/ folder. The build is fast, so
   # always clobber.
-  subprocess.check_call(['make', 'clean'], cwd=SEXPR_SRC_DIR)
-  subprocess.check_call(['make',
-                         'CC=%s' % CC,
-                         'CXX=%s' % CXX],
-                        cwd=SEXPR_SRC_DIR)
+  proc.check_call(['make', 'clean'], cwd=SEXPR_SRC_DIR)
+  proc.check_call(['make',
+                   'CC=%s' % CC,
+                   'CXX=%s' % CXX],
+                  cwd=SEXPR_SRC_DIR)
   sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
   CopyBinaryToArchive(sexpr)
 
@@ -414,10 +415,10 @@ def BuildOCaml():
   makefile = os.path.join(OCAML_DIR, 'config', 'Makefile')
   if not os.path.isfile(makefile):
     configure = os.path.join(OCAML_DIR, 'configure')
-    subprocess.check_call(
+    proc.check_call(
         [configure, '-prefix', OCAML_OUT_DIR, '-cc', CC], cwd=OCAML_DIR)
-  subprocess.check_call(['make', 'world.opt', '-j%s' % NPROC], cwd=OCAML_DIR)
-  subprocess.check_call(['make', 'install'], cwd=OCAML_DIR)
+  proc.check_call(['make', 'world.opt', '-j%s' % NPROC], cwd=OCAML_DIR)
+  proc.check_call(['make', 'install'], cwd=OCAML_DIR)
   ocamlbuild = os.path.join(OCAML_BIN_DIR, 'ocamlbuild')
   assert os.path.isfile(ocamlbuild), 'Expected installed %s' % ocamlbuild
   os.environ['PATH'] = OCAML_BIN_DIR + os.pathsep + os.environ['PATH']
@@ -426,8 +427,8 @@ def BuildOCaml():
 def BuildSpec():
   BuildStep('Build spec')
   # Spec builds in-tree. Always clobber and run the tests.
-  subprocess.check_call(['make', 'clean'], cwd=ML_DIR)
-  subprocess.check_call(['make', 'all'], cwd=ML_DIR)
+  proc.check_call(['make', 'clean'], cwd=ML_DIR)
+  proc.check_call(['make', 'all'], cwd=ML_DIR)
   wasm = os.path.join(ML_DIR, 'wasm.opt')
   CopyBinaryToArchive(wasm)
 
@@ -435,13 +436,13 @@ def BuildSpec():
 def BuildBinaryen():
   BuildStep('Build binaryen')
   Mkdir(BINARYEN_OUT_DIR)
-  subprocess.check_call(
+  proc.check_call(
       ['cmake', '-G', 'Ninja', BINARYEN_SRC_DIR,
        '-DCMAKE_C_COMPILER=' + CC,
        '-DCMAKE_CXX_COMPILER=' + CXX],
       cwd=BINARYEN_OUT_DIR)
   print 'Running ninja'
-  subprocess.check_call(['ninja'], cwd=BINARYEN_OUT_DIR)
+  proc.check_call(['ninja'], cwd=BINARYEN_OUT_DIR)
   assert os.path.isdir(BINARYEN_BIN_DIR), 'Expected %s' % BINARYEN_BIN_DIR
   for node in os.listdir(BINARYEN_BIN_DIR):
     f = os.path.join(BINARYEN_BIN_DIR, node)
