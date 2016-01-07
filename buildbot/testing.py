@@ -15,16 +15,13 @@
 #   limitations under the License.
 
 import difflib
-import os
-import os.path
 import math
 import multiprocessing
-import subprocess
+import os
+import os.path
+# Use proc instead of subprocess to get logged subprocess invocation
+import proc
 import sys
-
-def logged_check_output(cmd, **kwargs):
-  print 'Running command:', cmd
-  subprocess.check_output(cmd, **kwargs)
 
 
 class Result:
@@ -70,12 +67,12 @@ class Tester(object):
     sys.stdout.write('.')
     sys.stdout.flush()
     try:
-      output = subprocess.check_output(
+      output = proc.check_output(
           self.command_ctor(test_file, outfile, self.extras),
-          stderr=subprocess.STDOUT, cwd=self.outdir)
+          stderr=proc.STDOUT, cwd=self.outdir)
       assert os.path.isfile(outfile), 'Missing output file %s' % outfile
       return Result(test=basename, success=True, output=output)
-    except subprocess.CalledProcessError as e:
+    except proc.CalledProcessError as e:
       return Result(test=basename, success=False, output=e.output)
 
 
