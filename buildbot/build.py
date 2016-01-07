@@ -41,16 +41,10 @@ CLANG_SRC_DIR = os.path.join(LLVM_SRC_DIR, 'tools', 'clang')
 LLVM_KNOWN_TORTURE_FAILURES = os.path.join(LLVM_SRC_DIR, 'lib', 'Target',
                                            'WebAssembly', IT_IS_KNOWN)
 
-WASMATE_DIR = os.path.join(SCRIPT_DIR, '..', 'prototype-wasmate')
-WASMATE = os.path.join(WASMATE_DIR, 'wasmate.py')
-WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(WASMATE_DIR, IT_IS_KNOWN)
-
 GCC_SRC_DIR = os.path.join(WORK_DIR, 'gcc')
 GCC_TEST_DIR = os.path.join(GCC_SRC_DIR, 'gcc', 'testsuite')
 
 SEXPR_SRC_DIR = os.path.join(WORK_DIR, 'sexpr-wasm-prototype')
-SEXPR_WASMATE_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR, 'wasmate_' +
-                                                    IT_IS_KNOWN)
 SEXPR_S2WASM_KNOWN_TORTURE_FAILURES = os.path.join(SEXPR_SRC_DIR, 's2wasm_' +
                                                    IT_IS_KNOWN)
 
@@ -455,7 +449,6 @@ def ArchiveBinaries():
     return
   BuildStep('Archive binaries')
   # All relevant binaries were copied to the LLVM directory.
-  CopyBinaryToArchive(WASMATE)
   Archive('binaries', Tar(LLVM_INSTALL_DIR))
 
 
@@ -539,19 +532,10 @@ def main():
   BuildBinaryen()
   ArchiveBinaries()
   CompileLLVMTorture()
-  wasmate_out = LinkLLVMTorture(
-      name='wasmate',
-      linker=WASMATE,
-      fails=WASMATE_KNOWN_TORTURE_FAILURES)
   s2wasm_out = LinkLLVMTorture(
       name='s2wasm',
       linker=os.path.join(LLVM_INSTALL_BIN, 's2wasm'),
       fails=S2WASM_KNOWN_TORTURE_FAILURES)
-  wasmate_sexpr_wasm_out = AssembleLLVMTorture(
-      name='wasmate-sexpr-wasm',
-      assembler=os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm'),
-      indir=wasmate_out,
-      fails=SEXPR_WASMATE_KNOWN_TORTURE_FAILURES)
   s2wasm_sexpr_wasm_out = AssembleLLVMTorture(
       name='s2wasm-sexpr-wasm',
       assembler=os.path.join(LLVM_INSTALL_BIN, 'sexpr-wasm'),

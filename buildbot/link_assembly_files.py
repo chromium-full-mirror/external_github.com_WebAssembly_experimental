@@ -34,7 +34,6 @@ def link(infile, outfile, extras):
   linker = extras['linker']
   basename = os.path.basename(linker)
   commands = {
-      'wasmate.py': [linker, '-o', outfile, '-l', 'misctest', infile],
       's2wasm': [linker, '-o', outfile, infile],
   }
   return commands[basename]
