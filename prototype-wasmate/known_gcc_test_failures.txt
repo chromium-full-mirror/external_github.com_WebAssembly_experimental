@@ -1,9 +1,0 @@
-# Expected failures from running wasmate on the GCC torture test output files.
-
-# Address-taken labels in test cause "can't resolve symbol".
-20071220-1.c.s
-20071220-2.c.s
-
-# Code contains `extern int abort();` and it's address-taken. .s file doesn't
-# declare `abort`.
-921110-1.c.s
