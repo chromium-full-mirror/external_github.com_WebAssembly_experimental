@@ -31,10 +31,10 @@ from subprocess import *
 def check_call(cmd, **kwargs):
   print 'check_call Running command:'
   print ' '.join('"' + c + '"' if ' ' in c else c  for c in cmd)
-  subprocess.check_call(cmd, **kwargs)
+  return subprocess.check_call(cmd, **kwargs)
 
 
 def check_output(cmd, **kwargs):
   print 'check_output Running command:'
   print ' '.join('"' + c + '"' if ' ' in c else c  for c in cmd)
-  subprocess.check_output(cmd, **kwargs)
+  return subprocess.check_output(cmd, **kwargs)
