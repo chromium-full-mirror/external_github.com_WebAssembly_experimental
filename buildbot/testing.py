@@ -22,6 +22,10 @@ import multiprocessing
 import subprocess
 import sys
 
+def logged_check_output(cmd, **kwargs):
+  print 'Running command:', cmd
+  subprocess.check_output(cmd, **kwargs)
+
 
 class Result:
   """Result from a single test that was run."""
