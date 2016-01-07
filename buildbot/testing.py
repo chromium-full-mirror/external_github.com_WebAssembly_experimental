@@ -19,10 +19,10 @@ import math
 import multiprocessing
 import os
 import os.path
-# Use proc instead of subprocess to get logged subprocess invocation
-import proc
 import sys
 
+# Use proc instead of subprocess to get logged subprocess invocation.
+import proc
 
 class Result:
   """Result from a single test that was run."""
@@ -63,13 +63,12 @@ class Tester(object):
     """Execute a single test."""
     basename = os.path.basename(test_file)
     outfile = self.outname_ctor(self.outdir, test_file)
-    # Print something simple so buildbots don't think the script is dead.
-    sys.stdout.write('.')
-    sys.stdout.flush()
     try:
       output = proc.check_output(
           self.command_ctor(test_file, outfile, self.extras),
           stderr=proc.STDOUT, cwd=self.outdir)
+      # Flush the logged command sobuildbots don't think the script is dead.
+      sys.stdout.flush()
       assert os.path.isfile(outfile), 'Missing output file %s' % outfile
       return Result(test=basename, success=True, output=output)
     except proc.CalledProcessError as e:

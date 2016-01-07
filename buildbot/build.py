@@ -22,18 +22,18 @@ import sys
 import multiprocessing
 import urllib2
 
-# Use proc instead of subprocess to get logged subprocess invocation
-import proc
 import assemble_files
 import compile_torture_tests
 import link_assembly_files
+# Use proc instead of subprocess to get logged subprocess invocation.
+import proc
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 WORK_DIR = os.path.join(SCRIPT_DIR, 'work')
 
 CLOUD_STORAGE_BASE_URL = 'https://storage.googleapis.com/'
-CLOUD_STORAGE_PATH = 'Wasm-llvm/builds/'
+CLOUD_STORAGE_PATH = 'wasm-llvm/builds/'
 
 IT_IS_KNOWN = 'known_gcc_test_failures.txt'
 
@@ -212,13 +212,13 @@ def Archive(name, tar):
 def GitRemoteUrl(cwd, remote):
   """Get the URL of a remote."""
   return proc.check_output(['git', 'config', '--get', 'remote.%s.url' %
-                                  remote], cwd=cwd).strip()
+                            remote], cwd=cwd).strip()
 
 
 def HasRemote(cwd, remote):
   """"Checked whether the named remote exists."""
   remotes = proc.check_output(['git', 'remote'],
-                                    cwd=cwd).strip().splitlines()
+                              cwd=cwd).strip().splitlines()
   return remote in remotes
 
 
@@ -236,7 +236,7 @@ def AddGithubRemote(cwd):
   remote = GITHUB_SSH + '/'.join(GitRemoteUrl(cwd, 'origin').split('/')[-2:])
   print '%s has no github remote, adding %s' % (cwd, remote)
   proc.check_call(['git', 'remote', 'add', GITHUB_REMOTE, remote],
-                        cwd=cwd)
+                  cwd=cwd)
 
 
 def GitCloneFetchCheckout(name, work_dir, git_repo, checkout='origin/master'):
@@ -404,9 +404,9 @@ def BuildSexpr():
   # always clobber.
   proc.check_call(['make', 'clean'], cwd=SEXPR_SRC_DIR)
   proc.check_call(['make',
-                         'CC=%s' % CC,
-                         'CXX=%s' % CXX],
-                        cwd=SEXPR_SRC_DIR)
+                   'CC=%s' % CC,
+                   'CXX=%s' % CXX],
+                  cwd=SEXPR_SRC_DIR)
   sexpr = os.path.join(SEXPR_OUT_DIR, 'sexpr-wasm')
   CopyBinaryToArchive(sexpr)
 
